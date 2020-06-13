@@ -13,8 +13,10 @@ class ApiConstants{
   static const String TPB_ENDPOINT = "api/thepiratebay";
   static const String TORRENTDOWNLOADS_ENDPOINT = "api/torrentdownloads";
   static const String TGX_ENDPOINT = "api/tgx";
-  static const String RARBG_ENDPOINT = "api/rarbg";
   static const String YTS_ENDPOINT = "api/yts";
   static const String EZTV_TORRENT = "api/eztv";
+  static const String NOTIFICATION = "api/notification";
+
+  static const List INDEXERS = ["1337x" , "Eztv" , "Kickass" , "Limetorrents" , "Skytorrents" , "Pirate Bay" , "Torrent Downloads" , "Torrent Galaxy" , "Yts" , "Nyaa" , "Horriblesubs"];
 }
 

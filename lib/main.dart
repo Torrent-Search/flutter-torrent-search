@@ -6,13 +6,24 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/network/model/RecentResponse.dart';
+import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/pages/Home.dart';
+import 'package:torrentsearch/pages/RecentInformation.dart';
+import 'package:torrentsearch/pages/Home.dart';
+import 'package:intent/intent.dart' as android_intent;
+import 'package:intent/action.dart' as android_action;
+import 'package:intent/extra.dart' as android_extra;
+import 'package:torrentsearch/pages/Settings.dart';
 
 import 'package:torrentsearch/pages/TorrentResult.dart';
 import 'package:torrentsearch/utils/DarkThemeProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/utils/Themes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 void main() async {
@@ -20,7 +31,6 @@ void main() async {
 
 }
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  print(message);
   return Future<void>.value();
 }
 class MyApp extends StatefulWidget {
@@ -31,7 +41,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+  final DarkThemeProvider themeChangeProvider = DarkThemeProvider();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   final Firestore _db = Firestore.instance;
@@ -41,26 +51,36 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+//    openTgChannel();
     getCurrentAppTheme();
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
-          print("onMessage: $message");
+          print("onMessage: ${message['data']['click_action']}");
+          openTgChannel(message['data']['tg']);
         },
         onLaunch: (Map<String, dynamic> message) async {
           print("onLaunch: $message");
+          openTgChannel(message['data']['tg']);
         },
         onResume: (Map<String, dynamic> message) async {
           print("onResume: $message");
+          openTgChannel(message['data']['tg']);
         },
         onBackgroundMessage: myBackgroundMessageHandler
     );
     _saveDeviceToken();
   }
 
+  void openTgChannel(String url)async{
+    if(await canLaunch(url)){
+      launch(url);
+    }
+  }
   void getCurrentAppTheme() async {
     themeChangeProvider.darkTheme =
     await themeChangeProvider.preferences.getTheme();
     themeChangeProvider.accent = await themeChangeProvider.preferences.getAccent();
+
   }
 
   @override
@@ -77,6 +97,9 @@ class _MyAppState extends State<MyApp> {
             routes: {
 //              '/': (context) => Home(),
               "/result": (context) => TorrentResult(),
+              "/recentinfo":(context) => RecentInformation(),
+              "/allrecents" : (context) => AllRecents(),
+              "/settings" : (context) => Settings(),
             },
             navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
             debugShowCheckedModeBanner: false,
@@ -93,13 +116,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _saveDeviceToken() async {
-    AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
+    final AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
+
     String uid = info.androidId;
-
-
-    // Get the token for this device to Send Push Notifications
     String fcmToken = await _fcm.getToken();
-    // Save it to Firestore
+
     if (fcmToken != null  ) {
       if(!await _preferences.getIsTokenSaved()){
         var tokens = _db

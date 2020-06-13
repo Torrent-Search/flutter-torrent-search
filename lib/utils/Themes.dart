@@ -50,7 +50,9 @@ final ThemeData dark = ThemeData.dark().copyWith(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10), topRight: Radius.circular(10)),
           color: Colors.grey),
-    ));
+    ),
+    textSelectionHandleColor: Colors.grey
+);
 
 final ThemeData light = ThemeData.light().copyWith(
     primaryColor: primaryColor,
@@ -83,7 +85,9 @@ final ThemeData light = ThemeData.light().copyWith(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10), topRight: Radius.circular(10)),
           color: Colors.white),
-    ));
+    ),
+    textSelectionHandleColor: accentColor,
+);
 
 
 abstract class Themes {

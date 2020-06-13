@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 
-class AccentList extends StatefulWidget {
+class IndexersList extends StatefulWidget {
 
   @override
-  _AccentListState createState() => _AccentListState();
+  _IndexersListState createState() => _IndexersListState();
 }
 
-class _AccentListState extends State<AccentList> {
+class _IndexersListState extends State<IndexersList> {
   final Preferences pref = Preferences();
   Map map = Map();
 
@@ -36,9 +36,7 @@ class _AccentListState extends State<AccentList> {
                 return ListTile(
                   title: Text(ApiConstants.INDEXERS[index]),
                   trailing: Switch(
-                    activeColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey
-                        : Theme.of(context).accentColor,
+                    activeColor: Theme.of(context).accentColor,
                     onChanged: (val) async {
 
                       map.update(ApiConstants.INDEXERS[index], (existingvalue) => value, ifAbsent: ()=> value);

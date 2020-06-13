@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,14 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:http/http.dart' as http;
+import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/utils/DarkThemeProvider.dart';
 import 'package:torrentsearch/widgets/TorrentCard.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -23,6 +25,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   TextEditingController _textEditingController;
+
 
   @override
   void initState() {
@@ -37,79 +40,129 @@ class _HomeState extends State<Home> {
     final double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: themeProvider.darkTheme ? Theme.of(context).backgroundColor : Colors.white ,
-        body: SingleChildScrollView(
-          child: Container(
-            width: width,
-            height: height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: getSearch(context),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "Recent Movies",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                        fontSize: 16),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                BuildRecent(context),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "Recent TV Shows",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                        fontSize: 16),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                BuildRecent(context, movies: false),
-              ],
+        backgroundColor: themeProvider.darkTheme
+            ? Theme.of(context).backgroundColor
+            : Colors.white,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Text(
+            "Torrent Search",
+            style: TextStyle(
+              color: themeProvider.darkTheme
+                  ? Colors.grey
+                  : Theme.of(context).accentColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 25.0,
             ),
           ),
+          centerTitle: true,
+          elevation: 0.0,
+          backgroundColor: Colors.transparent,
         ),
+        body: Container(
+            width: width,
+            height: height,
+            child: ListView(
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _buildSearch(context),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Recent Movies",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2.0,
+                                fontSize: 16),
+                            textAlign: TextAlign.left,
+                          ),
+                          Spacer(),
+                          InkWell(
+                            child: Text("View all"),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/allrecents",
+                                  arguments: true);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildRecent(context),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Recent TV Shows",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2.0,
+                                fontSize: 16),
+                            textAlign: TextAlign.left,
+                          ),
+                          Spacer(),
+                          InkWell(
+                            child: Text("View all"),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/allrecents",
+                                  arguments: false);
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    _buildRecent(context, movies: false),
+                  ],
+                ),
+              ],
+            )),
       ),
     );
   }
 
-  Widget getSearch(BuildContext ctx) {
+  Widget _buildSearch(BuildContext ctx) {
 //    final double height = MediaQuery.of(ctx).size.height;
     final themeProvider = Provider.of<DarkThemeProvider>(context);
     final double width = MediaQuery.of(ctx).size.width;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        TextField(
-          controller: _textEditingController,
-          decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(10.0),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                borderSide:
-                    BorderSide(color: Colors.deepPurpleAccent, width: 2.0),
-              ),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
-          cursorColor: Colors.deepPurpleAccent,
-          keyboardType: TextInputType.text,
-          maxLines: 1,
-          textAlign: TextAlign.center,
-          textInputAction: TextInputAction.search,
-          onSubmitted: (term) {
-            if (_textEditingController.text != "") {
-              Navigator.pushNamed(context, "/result",
-                  arguments: _textEditingController.text);
-            }
-          },
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            controller: _textEditingController,
+            decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(10.0),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                      color: themeProvider.darkTheme
+                          ? Colors.grey
+                          : Theme.of(context).accentColor,
+                      width: 2.0),
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0))),
+            cursorColor: themeProvider.darkTheme
+                ? Colors.grey
+                : Theme.of(context).accentColor,
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (term) {
+              if (_textEditingController.text != "") {
+                Navigator.pushNamed(context, "/result",
+                    arguments: _textEditingController.text);
+              }
+            },
+          ),
         ),
         SizedBox(
           height: 20.0,
@@ -135,62 +188,46 @@ class _HomeState extends State<Home> {
                       arguments: _textEditingController.text);
                 }
               },
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-              color: themeProvider.darkTheme ? Colors.grey : Theme.of(context).accentColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: themeProvider.darkTheme
+                  ? Colors.grey
+                  : Theme.of(context).accentColor,
             ),
-            RaisedButton(
-              child: Text(
-                "Change Accent",
+            RaisedButton.icon(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              label: Text(
+                "Settings",
                 style: TextStyle(
                   letterSpacing: 2.0,
                   color: Colors.white,
                 ),
               ),
-              color: Theme.of(context).accentColor,
-              onPressed: () {
-                showDialog(
-                  barrierDismissible: true,
-                  context: context,
-                  child: _buildAccentDialog(context,themeProvider),
-                );
+              onPressed: () async {
+                Navigator.pushNamed(context, "/settings");
               },
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: themeProvider.darkTheme
+                  ? Colors.grey
+                  : Theme.of(context).accentColor,
             ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Dark Mode",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black
-              ),
-            ),
-            Switch(
-              value: themeProvider.darkTheme,
-              activeColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey : Theme.of(context).accentColor,
-              onChanged: (bool val){
-                setState(() {
-                  themeProvider.darkTheme = val;
-                });
-              },
-            )
+
           ],
         ),
       ],
     );
   }
 
-  Widget BuildRecent(BuildContext ctx, {movies = true}) {
+  Widget _buildRecent(BuildContext ctx, {movies = true}) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final borderRadius = BorderRadius.circular(5);
     return Container(
-      height: height * 0.25,
+      height: height * 0.27,
       width: width,
       padding: EdgeInsets.only(left: 5.0),
       child: FutureBuilder<List<RecentInfo>>(
@@ -208,15 +245,15 @@ class _HomeState extends State<Home> {
                 },
                 itemBuilder: (BuildContext ctxt, int index) {
                   return InkWell(
-                    onTap: (){
-                      Navigator.pushNamed(context, "/recentinfo",arguments: {
-                        "imdbcode":snapshot.data[index].imdbcode,
-                        "imgurl":snapshot.data[index].imgUrl,
+                    onTap: () {
+                      Navigator.pushNamed(context, "/recentinfo", arguments: {
+                        "imdbcode": snapshot.data[index].imdbcode,
+                        "imgurl": snapshot.data[index].imgUrl,
                       });
                     },
                     child: Container(
-                      width: width * 0.30,
-                      height: height * 0.25,
+                      width: width * 0.40,
+//                      height: height * 0.20,
                       child: Card(
                         shape:
                             RoundedRectangleBorder(borderRadius: borderRadius),
@@ -265,60 +302,7 @@ class _HomeState extends State<Home> {
           }),
     );
   }
-  Widget _buildAccentDialog(BuildContext ctx,provider){
-    final width = MediaQuery.of(ctx).size.width;
-    final height = MediaQuery.of(ctx).size.height;
 
-    final List colors0 = [Colors.deepPurpleAccent.value,Colors.red.value,Colors.blue.value];
-    final List colors1 = [Colors.deepOrange.value,Colors.cyan.value,Colors.green.value];
-    return SizedBox(
-      width: width * 0.80,
-      height: height * 0.50,
-      child: AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: colors0.map((e)  {
-                    return InkWell(
-                      onTap: (){
-                        setState(() {
-                          provider.accent = e;
-                        });
-                        Navigator.pop(ctx);
-                      },
-                      child: CircleAvatar(
-                        radius: 20.0,
-                        backgroundColor: Color(e),
-                      ),
-                    );
-                  }).toList()
-              ),
-              SizedBox(height: 20,),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: colors1.map((e)  {
-                    return InkWell(
-                      onTap: (){
-                        setState(() {
-                          provider.accent = e;
-                        });
-                        Navigator.pop(ctx);
-                      },
-                      child: CircleAvatar(
-                        radius: 20.0,
-                        backgroundColor: Color(e),
-                      ),
-                    );
-                  }).toList()
-              ),
-            ],
-          )
-      ),
-    );
-  }
 
   @override
   void dispose() {

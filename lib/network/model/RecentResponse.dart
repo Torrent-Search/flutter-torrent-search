@@ -1,29 +1,49 @@
 import 'dart:convert';
 
-import 'package:json_annotation/json_annotation.dart';
-import 'package:http/http.dart' as http;
-import 'package:torrentsearch/network/model/Magnet.dart';
+RecentResponse RecentResponseFromJson(String str) => RecentResponse.fromJson(json.decode(str));
 
-import 'TorrentRepo.dart';
-part 'Recent.g.dart';
+String RecentResponseToJson(RecentResponse data) => json.encode(data.toJson());
 
-@JsonSerializable()
-class Recent {
+class RecentResponse {
+  RecentResponse({
+    this.data,
+  });
 
-  @JsonKey(name:"name")
-  String name;
-  @JsonKey(name:"torrent_url")
-  String url;
-  @JsonKey(name: "img_url")
-  String imgUrl;
-  @JsonKey(name: "imdbcode")
-  String imdbcode;
+  List<RecentInfo> data;
 
-  factory Recent.fromJson(Map<String, dynamic> json) => _$RecentFromJson(json);
-  Map<String, dynamic> toJson() => _$RecentToJson(this);
+  factory RecentResponse.fromJson(Map<String, dynamic> json) => RecentResponse(
+    data: List<RecentInfo>.from(json["Data"].map((x) => RecentInfo.fromJson(x))),
+  );
 
-
-  Recent(this.name, this.url, this.imgUrl,this.imdbcode);
-
+  Map<String, dynamic> toJson() => {
+    "Data": List<dynamic>.from(data.map((x) => x.toJson())),
+  };
 }
 
+class RecentInfo {
+  RecentInfo({
+    this.name,
+    this.torrentUrl,
+    this.imgUrl,
+    this.imdbcode,
+  });
+
+  String name;
+  String torrentUrl;
+  String imgUrl;
+  String imdbcode;
+
+  factory RecentInfo.fromJson(Map<String, dynamic> json) => RecentInfo(
+    name: json["name"],
+    torrentUrl: json["torrent_url"],
+    imgUrl: json["img_url"],
+    imdbcode: json["imdbcode"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "torrent_url": torrentUrl,
+    "img_url": imgUrl,
+    "imdbcode": imdbcode,
+  };
+}

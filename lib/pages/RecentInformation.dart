@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/network/ApiConstants.dart';
+import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/Imdb.dart';
@@ -19,12 +21,12 @@ import 'package:torrentsearch/widgets/TorrentCard.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
 import 'package:http/http.dart' as http;
 
-class RecentInfo extends StatefulWidget {
+class RecentInformation extends StatefulWidget {
   @override
-  _RecentInfoState createState() => _RecentInfoState();
+  _RecentInformationState createState() => _RecentInformationState();
 }
 
-class _RecentInfoState extends State<RecentInfo> {
+class _RecentInformationState extends State<RecentInformation> {
   Future<Imdb> _imdb;
   bool isClicked = false;
   String plot = "Loading...";
@@ -45,126 +47,124 @@ class _RecentInfoState extends State<RecentInfo> {
     }
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          padding: EdgeInsets.only(top: 5.0),
-          width: width,
-          height: height,
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                    width: width * 0.30,
-                    height: height * 0.25,
-                    child: Card(
-                      shape:
-                          RoundedRectangleBorder(borderRadius: borderRadius),
-                      child: ClipRRect(
-                        borderRadius: borderRadius,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fill,
-                          imageUrl: search["imgurl"],
-                          progressIndicatorBuilder: (ctx, url, progress) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).accentColor),
-                              ),
-                            );
-                          },
-                        ),
+        body: ListView(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(
+                  width: width * 0.30,
+                  height: height * 0.25,
+                  child: Card(
+                    shape:
+                    RoundedRectangleBorder(borderRadius: borderRadius),
+                    child: ClipRRect(
+                      borderRadius: borderRadius,
+                      child: CachedNetworkImage(
+                        fit: BoxFit.fill,
+                        imageUrl: search["imgurl"],
+                        progressIndicatorBuilder: (ctx, url, progress) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                  buildInfo(search["imdbcode"],width,height)
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: FutureBuilder(
-                  future: _imdb,
-                  builder: (BuildContext ctx, AsyncSnapshot<Imdb> snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        snapshot.data.plot,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text(
-                        "Error !",
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      );
-                    }
+                ),
+                buildInfo(search["imdbcode"],width,height)
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: FutureBuilder(
+                future: _imdb,
+                builder: (BuildContext ctx, AsyncSnapshot<Imdb> snapshot) {
+                  if (snapshot.hasData) {
                     return Text(
-                      "Loading...",
+                      snapshot.data.plot,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13.0,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(
+                      "Error !",
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                     );
-                  },
-                ),
+                  }
+                  return Text(
+                    "Loading...",
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  );
+                },
               ),
+            ),
 //                SizedBox(height: 20.0,),
-              Flexible(
-//                height: height,
-                child: FutureBuilder<List<TorrentInfo>>(
-                    future: getInfos( search["imdbcode"]),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return AnimationLimiter(
-                          child: ListView.builder(
-                            itemCount:snapshot.data.length,
-                            itemBuilder: (BuildContext ctxt, int index){
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: Duration(milliseconds: 300),
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  child: FadeInAnimation(
-                                    child: TorrentCard(snapshot.data[index]),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        switch(snapshot.error.runtimeType){
-                          case NoContentFoundException:
-                            return noContentFound();
-                            break;
-                          case InternalServerError:
-                            return serverError();
-                            break;
-                          case SocketException:
-                            return noInternet();
-                            break;
-                          default:
-                            return unExpectedError();
-                        }
-                      }
-                      else
-                      {
-                        return Center(
-                            child: SpinKitThreeBounce(
-                              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey : Theme.of(context).accentColor ,
-                            )
-                        );
-                      }
+            FutureBuilder<List<TorrentInfo>>(
+                future: getApiResponse(ApiConstants.TGX_ENDPOINT , search["imdbcode"]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: snapshot.data.map((e) {
+                        return TorrentCard(e);
+                      }).toList(),
+                    );
+//                    return ListView.builder(
+//                      itemCount:snapshot.data.length,
+//                      itemBuilder: (BuildContext ctxt, int index){
+//                        return TorrentCard(
+//                            snapshot.data[index] //[index]
+//                        );
+//                      },
+//                    );
+                  } else if (snapshot.hasError) {
+                    switch(snapshot.error.runtimeType){
+                      case NoContentFoundException:
+                        return noContentFound();
+                        break;
+                      case InternalServerError:
+                        return serverError();
+                        break;
+                      case SocketException:
+                        return noInternet();
+                        break;
+                      default:
+                        return unExpectedError();
                     }
-                ),
-              )
-            ],
-          ),
-        ),
+                  }
+                  else
+                  {
+                    return Center(
+                        child: SpinKitThreeBounce(
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.grey : Theme.of(context).accentColor ,
+                        )
+                    );
+                  }
+                }
+            )
+          ],
+        )
+//        Container(
+//          padding: EdgeInsets.only(top: 5.0),
+//          width: width,
+//          height: height,
+//          child:  Column(
+//            children: <Widget>[
+//
+//            ],
+//          ),
+//        ),
       ),
     );
   }
@@ -186,8 +186,8 @@ class _RecentInfoState extends State<RecentInfo> {
                   text: TextSpan(
                       text: "Title : ",
                       style: TextStyle(
-                        fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       ),
                       children: <TextSpan>[
@@ -200,7 +200,7 @@ class _RecentInfoState extends State<RecentInfo> {
                   text: TextSpan(
                       text: "Rating : ",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       ),
@@ -214,7 +214,7 @@ class _RecentInfoState extends State<RecentInfo> {
                   text: TextSpan(
                       text: "Year : ",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       ),
@@ -240,10 +240,10 @@ class _RecentInfoState extends State<RecentInfo> {
           } else {
             return Center(
                 child: SpinKitThreeBounce(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey
-                  : Theme.of(context).accentColor,
-            ));
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey
+                      : Theme.of(context).accentColor,
+                ));
           }
         },
       ),
@@ -251,27 +251,6 @@ class _RecentInfoState extends State<RecentInfo> {
   }
 
 
-  Future<Imdb> getImdb(String id) async {
-    var response;
-    response =
-        await http.get('https://torr-scraper.herokuapp.com/api/imdb?id=$id');
-    if (response.statusCode == 200) {
-      return Imdb.fromJson(json.decode(response.body));
-    } else if (response.statusCode == 204) {
-      throw NoContentFoundException();
-    } else if (response.statusCode == 500) {
-      throw InternalServerError();
-    }
-  }
-  Future<List<TorrentInfo>> getInfos(String query) async{
-    var response;
-    response = await http.get('https://torr-scraper.herokuapp.com/api/tgx?search=$query');
-    if (response.statusCode == 200) {
-      return TorrentRepo.fromJSON(json.decode(response.body)).torrentInfo;
-    } else if(response.statusCode == 204){
-      throw NoContentFoundException();
-    }else if(response.statusCode == 500) {
-      throw InternalServerError();
-    }
-  }
+
+
 }
