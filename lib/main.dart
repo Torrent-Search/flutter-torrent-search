@@ -7,46 +7,39 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/pages/Home.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
-import 'package:torrentsearch/pages/Home.dart';
-import 'package:intent/intent.dart' as android_intent;
-import 'package:intent/action.dart' as android_action;
-import 'package:intent/extra.dart' as android_extra;
 import 'package:torrentsearch/pages/Settings.dart';
-
 import 'package:torrentsearch/pages/TorrentResult.dart';
 import 'package:torrentsearch/utils/DarkThemeProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 void main() async {
   runApp(MyApp());
-
 }
+
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
   return Future<void>.value();
 }
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
-
 }
 
 class _MyAppState extends State<MyApp> {
-
   final DarkThemeProvider themeChangeProvider = DarkThemeProvider();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   final Firestore _db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   final Preferences _preferences = Preferences();
+  static const platform = const MethodChannel('flutter.native/helper');
+
   int accent;
   @override
   void initState() {
@@ -66,44 +59,56 @@ class _MyAppState extends State<MyApp> {
           print("onResume: $message");
           openTgChannel(message['data']['tg']);
         },
-        onBackgroundMessage: myBackgroundMessageHandler
-    );
+        onBackgroundMessage: myBackgroundMessageHandler);
     _saveDeviceToken();
   }
 
-  void openTgChannel(String url)async{
-    if(await canLaunch(url)){
+  void openTgChannel(String url) async {
+    if (await canLaunch(url)) {
       launch(url);
     }
   }
+
   void getCurrentAppTheme() async {
     themeChangeProvider.darkTheme =
-    await themeChangeProvider.preferences.getTheme();
-    themeChangeProvider.accent = await themeChangeProvider.preferences.getAccent();
-
+        await themeChangeProvider.preferences.getTheme();
+    themeChangeProvider.useSystemAccent =
+        await themeChangeProvider.preferences.UseSystemAccent();
+    Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
+    Color compatilbleToFlutter = Color.fromARGB(
+        255, fromChannel.red, fromChannel.green, fromChannel.blue);
+    themeChangeProvider.systemaccent = compatilbleToFlutter.value;
+    themeChangeProvider.accent =
+        await themeChangeProvider.preferences.getAccent();
+    print(themeChangeProvider.useSystemAccent);
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
-      return themeChangeProvider;
+        return themeChangeProvider;
       },
       child: Consumer<DarkThemeProvider>(
         builder: (BuildContext context, value, Widget child) {
           return MaterialApp(
 //            initialRoute: '/',
-             home : Home(),
+            home: Home(),
             routes: {
 //              '/': (context) => Home(),
               "/result": (context) => TorrentResult(),
-              "/recentinfo":(context) => RecentInformation(),
-              "/allrecents" : (context) => AllRecents(),
-              "/settings" : (context) => Settings(),
+              "/recentinfo": (context) => RecentInformation(),
+              "/allrecents": (context) => AllRecents(),
+              "/settings": (context) => Settings(),
             },
-            navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
+            navigatorObservers: [
+              FirebaseAnalyticsObserver(analytics: analytics)
+            ],
             debugShowCheckedModeBanner: false,
-            theme: Themes.themeData(themeChangeProvider.darkTheme, context,color: themeChangeProvider.accent),
+            theme: Themes.themeData(themeChangeProvider.darkTheme, context,
+                color: themeChangeProvider.useSystemAccent
+                    ? themeChangeProvider.systemaccent
+                    : themeChangeProvider.accent),
           );
         },
       ),
@@ -121,24 +126,26 @@ class _MyAppState extends State<MyApp> {
     String uid = info.androidId;
     String fcmToken = await _fcm.getToken();
 
-    if (fcmToken != null  ) {
-      if(!await _preferences.getIsTokenSaved()){
+    if (fcmToken != null) {
+      if (!await _preferences.getIsTokenSaved()) {
         var tokens = _db
             .collection('users')
             .document(uid)
             .collection('tokens')
             .document(fcmToken);
 
-        await tokens.setData({
-          'uid' : uid,
-          'token': fcmToken,
-          'createdAt': FieldValue.serverTimestamp(), // optional
-          'platform': Platform.operatingSystem // optional
-        }).then((value) => _preferences.setIsTokenSaved(true)).catchError((err){
-          _preferences.setIsTokenSaved(false);
-        });
+        await tokens
+            .setData({
+              'uid': uid,
+              'token': fcmToken,
+              'createdAt': FieldValue.serverTimestamp(), // optional
+              'platform': Platform.operatingSystem // optional
+            })
+            .then((value) => _preferences.setIsTokenSaved(true))
+            .catchError((err) {
+              _preferences.setIsTokenSaved(false);
+            });
       }
     }
   }
 }
-

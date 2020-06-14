@@ -3,20 +3,15 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
-import 'package:http/http.dart' as http;
-import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/utils/DarkThemeProvider.dart';
-import 'package:torrentsearch/widgets/TorrentCard.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,7 +20,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   TextEditingController _textEditingController;
-
 
   @override
   void initState() {
@@ -215,7 +209,6 @@ class _HomeState extends State<Home> {
                   ? Colors.grey
                   : Theme.of(context).accentColor,
             ),
-
           ],
         ),
       ],
@@ -302,7 +295,6 @@ class _HomeState extends State<Home> {
           }),
     );
   }
-
 
   @override
   void dispose() {

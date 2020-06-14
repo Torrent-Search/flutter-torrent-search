@@ -7,6 +7,7 @@ class Preferences {
   static const ISTOKENSAVED = "ISTOKENSAVED";
   static const ACCENT = "ACCENT";
   static const INDEXERS = "INDEXERS";
+  static const SYSTEMACCENT = "SYSTEMACCENT";
 
   setDarkTheme(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,5 +43,14 @@ class Preferences {
   setIndexers(String indexer,bool enable)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(indexer, enable);
+  }
+
+  setSystemAccent(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(SYSTEMACCENT, value);
+  }
+  Future<bool> UseSystemAccent() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SYSTEMACCENT) ?? false;
   }
 }
