@@ -143,6 +143,7 @@ class _RecentInformationState extends State<RecentInformation> {
 
   Widget buildInfo(String imdbid, double width, double height) {
     final Color accentColor = Theme.of(context).accentColor;
+    final Brightness br = Theme.of(context).brightness;
     return Container(
       height: height * 0.25,
       width: width * 0.60,
@@ -159,39 +160,57 @@ class _RecentInformationState extends State<RecentInformation> {
                   text: TextSpan(
                       text: "Title : ",
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: br == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
                       children: <TextSpan>[
                         TextSpan(
                             text: snapshot.data.title,
-                            style: TextStyle(fontWeight: FontWeight.normal))
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: br == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black))
                       ]),
                 ),
                 RichText(
                   text: TextSpan(
                       text: "Rating : ",
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: br == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
                       children: <TextSpan>[
                         TextSpan(
                             text: snapshot.data.imdbRating,
-                            style: TextStyle(fontWeight: FontWeight.normal))
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: br == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black))
                       ]),
                 ),
                 RichText(
                   text: TextSpan(
                       text: "Year : ",
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: br == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
                       children: <TextSpan>[
                         TextSpan(
                             text: snapshot.data.year,
-                            style: TextStyle(fontWeight: FontWeight.normal))
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: br == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black))
                       ]),
                 )
               ],
