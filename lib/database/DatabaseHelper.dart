@@ -36,7 +36,6 @@ class DatabaseHelper {
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'torrent.db');
-    print(path);
     await deleteDatabase(path); // just for testing
 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
@@ -61,7 +60,6 @@ class DatabaseHelper {
     if (torrentinfo != null) {
       result = await dbClient.insert(tableTorrentInfo, torrentinfo.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
-      print(result);
     }
     if (history != null) {
       result = await dbClient.insert(tableHistory, history.toMap(),

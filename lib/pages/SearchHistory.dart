@@ -19,7 +19,6 @@ class _SearchHistoryState extends State<SearchHistory> {
           future: _databaseHelper.queryAll(history: true),
           builder: (ctx, snapshot) {
             if (snapshot.hasData) {
-              print(snapshot.data.length);
               if (snapshot.data.length != 0) {
                 return ListView.builder(
                   itemCount: snapshot.data.length,

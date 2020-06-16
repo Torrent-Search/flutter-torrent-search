@@ -54,15 +54,12 @@ class _MyAppState extends State<MyApp> {
     getCurrentAppTheme();
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
-          print("onMessage: ${message['data']['click_action']}");
           openTgChannel(message['data']['tg']);
         },
         onLaunch: (Map<String, dynamic> message) async {
-          print("onLaunch: $message");
           openTgChannel(message['data']['tg']);
         },
         onResume: (Map<String, dynamic> message) async {
-          print("onResume: $message");
           openTgChannel(message['data']['tg']);
         },
         onBackgroundMessage: myBackgroundMessageHandler);
@@ -81,17 +78,11 @@ class _MyAppState extends State<MyApp> {
     themeChangeProvider.useSystemAccent =
         await themeChangeProvider.preferences.UseSystemAccent();
     Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
-    print(fromChannel.red.toString() +
-        " " +
-        fromChannel.green.toString() +
-        " " +
-        fromChannel.blue.toString());
     Color compatilbleToFlutter = Color.fromRGBO(
         fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
     themeChangeProvider.systemaccent = compatilbleToFlutter.value;
     themeChangeProvider.accent =
         await themeChangeProvider.preferences.getAccent();
-    print(themeChangeProvider.useSystemAccent);
   }
 
   @override
