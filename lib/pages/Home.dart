@@ -205,8 +205,10 @@ class _HomeState extends State<Home> {
             Icons.search,
             color: Colors.white,
           ),
-          onPressed: () {
+          onPressed: () async {
             if (_textEditingController.text != "") {
+              await databaseHelper.insert(
+                  history: History(_textEditingController.text));
               Navigator.pushNamed(context, "/result",
                   arguments: _textEditingController.text);
             }

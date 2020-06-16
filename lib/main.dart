@@ -20,6 +20,8 @@ import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'database/DatabaseHelper.dart';
+
 void main() async {
   runApp(MyApp());
 }
@@ -40,6 +42,8 @@ class _MyAppState extends State<MyApp> {
   final Firestore _db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   final Preferences _preferences = Preferences();
+
+  final DatabaseHelper dbhelper = DatabaseHelper();
   static const platform = const MethodChannel('flutter.native/helper');
 
   int accent;
@@ -127,6 +131,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
+    dbhelper.close();
   }
 
   void _saveDeviceToken() async {
