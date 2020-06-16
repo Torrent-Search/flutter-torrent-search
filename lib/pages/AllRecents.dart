@@ -20,7 +20,7 @@ class _AllRecentsState extends State<AllRecents> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     final BorderRadius borderRadius = BorderRadius.circular(5);
-
+    final Color accentColor = Theme.of(context).accentColor;
     bool movies = ModalRoute.of(context).settings.arguments;
     return SafeArea(
       child: Scaffold(
@@ -41,7 +41,7 @@ class _AllRecentsState extends State<AllRecents> {
                     crossAxisCount: 3,
                     mainAxisSpacing: 5.0,
                     crossAxisSpacing: 5.0,
-                    childAspectRatio: (((width+48) / 2)/(height /2)),
+                    childAspectRatio: (((width + 48) / 2) / (height / 2)),
                     children: snapshot.data.map((e) {
                       return InkWell(
                         onTap: () {
@@ -59,12 +59,10 @@ class _AllRecentsState extends State<AllRecents> {
                             child: CachedNetworkImage(
                               fit: BoxFit.fill,
                               imageUrl: e.imgUrl,
-                              progressIndicatorBuilder:
-                                  (ctx, url, progress) {
+                              progressIndicatorBuilder: (ctx, url, progress) {
                                 return Center(
                                   child: CircularProgressIndicator(
-                                    valueColor:
-                                    AlwaysStoppedAnimation<Color>(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
                                         Theme.of(context).accentColor),
                                   ),
                                 );
@@ -94,9 +92,7 @@ class _AllRecentsState extends State<AllRecents> {
             } else {
               return Center(
                   child: SpinKitThreeBounce(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey
-                    : Theme.of(context).accentColor,
+                color: accentColor,
               ));
             }
           },

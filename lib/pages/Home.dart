@@ -32,32 +32,43 @@ class _HomeState extends State<Home> {
     final themeProvider = Provider.of<DarkThemeProvider>(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final Color accentColor = Theme.of(context).accentColor;
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeProvider.darkTheme
             ? Theme.of(context).backgroundColor
             : Colors.white,
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          title: Text(
-            "Torrent Search",
-            style: TextStyle(
-              color: themeProvider.darkTheme
-                  ? Colors.grey
-                  : Theme.of(context).accentColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 25.0,
-            ),
-          ),
-          centerTitle: true,
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
-        ),
         body: Container(
             width: width,
             height: height,
             child: ListView(
               children: <Widget>[
+//                Stack(
+//                  children: <Widget>[
+//                    Text(
+//                      "Torrent Search",
+//                      style: TextStyle(
+//                        color: accentColor,
+//                        fontWeight: FontWeight.bold,
+//                        fontSize: 25.0,
+//                      ),
+//                    ),
+//                    Row(
+//                      children: <Widget>[
+//                        IconButton(
+//                          icon: Icon(Icons.favorite),
+//                          onPressed: () {},
+//                        ),
+//                        Spacer(),
+//                        IconButton(
+//                          icon: Icon(Icons.history),
+//                          onPressed: () {},
+//                        ),
+//                      ],
+//                    )
+//                  ],
+//                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -124,6 +135,8 @@ class _HomeState extends State<Home> {
 //    final double height = MediaQuery.of(ctx).size.height;
     final themeProvider = Provider.of<DarkThemeProvider>(context);
     final double width = MediaQuery.of(ctx).size.width;
+    final Color accentColor = Theme.of(context).accentColor;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -132,20 +145,17 @@ class _HomeState extends State<Home> {
           child: TextField(
             controller: _textEditingController,
             decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                      color: themeProvider.darkTheme
-                          ? Colors.grey
-                          : Theme.of(context).accentColor,
-                      width: 2.0),
-                ),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0))),
-            cursorColor: themeProvider.darkTheme
-                ? Colors.grey
-                : Theme.of(context).accentColor,
+              contentPadding: EdgeInsets.all(10.0),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: BorderSide(color: accentColor, width: 2.0),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: BorderSide(color: accentColor, width: 2.0),
+              ),
+            ),
+            cursorColor: accentColor,
             keyboardType: TextInputType.text,
             maxLines: 1,
             textAlign: TextAlign.center,
@@ -161,55 +171,47 @@ class _HomeState extends State<Home> {
         SizedBox(
           height: 20.0,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton.icon(
-              label: Text(
-                "SEARCH",
-                style: TextStyle(
-                  letterSpacing: 2.0,
-                  color: Colors.white,
-                ),
-              ),
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                if (_textEditingController.text != "") {
-                  Navigator.pushNamed(context, "/result",
-                      arguments: _textEditingController.text);
-                }
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              color: themeProvider.darkTheme
-                  ? Colors.grey
-                  : Theme.of(context).accentColor,
+        RaisedButton.icon(
+          label: Text(
+            "SEARCH",
+            style: TextStyle(
+              letterSpacing: 2.0,
+              color: Colors.white,
             ),
-            RaisedButton.icon(
-              icon: Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-              label: Text(
-                "Settings",
-                style: TextStyle(
-                  letterSpacing: 2.0,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () async {
-                Navigator.pushNamed(context, "/settings");
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              color: themeProvider.darkTheme
-                  ? Colors.grey
-                  : Theme.of(context).accentColor,
+          ),
+          icon: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            if (_textEditingController.text != "") {
+              Navigator.pushNamed(context, "/result",
+                  arguments: _textEditingController.text);
+            }
+          },
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          color: accentColor,
+        ),
+        SizedBox(height: 10.0),
+        RaisedButton.icon(
+          icon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+          label: Text(
+            "Settings",
+            style: TextStyle(
+              letterSpacing: 2.0,
+              color: Colors.white,
             ),
-          ],
+          ),
+          onPressed: () async {
+            Navigator.pushNamed(context, "/settings");
+          },
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          color: accentColor,
         ),
       ],
     );
@@ -219,6 +221,7 @@ class _HomeState extends State<Home> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final borderRadius = BorderRadius.circular(5);
+    final Color accentColor = Theme.of(context).accentColor;
     return Container(
       height: height * 0.27,
       width: width,
@@ -259,7 +262,7 @@ class _HomeState extends State<Home> {
                               return Center(
                                 child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).accentColor),
+                                      accentColor),
                                 ),
                               );
                             },
@@ -287,9 +290,7 @@ class _HomeState extends State<Home> {
             } else {
               return Center(
                   child: SpinKitThreeBounce(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey
-                    : Theme.of(context).accentColor,
+                color: accentColor,
               ));
             }
           }),

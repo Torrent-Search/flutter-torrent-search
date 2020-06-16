@@ -75,8 +75,13 @@ class _MyAppState extends State<MyApp> {
     themeChangeProvider.useSystemAccent =
         await themeChangeProvider.preferences.UseSystemAccent();
     Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
-    Color compatilbleToFlutter = Color.fromARGB(
-        255, fromChannel.red, fromChannel.green, fromChannel.blue);
+    print(fromChannel.red.toString() +
+        " " +
+        fromChannel.green.toString() +
+        " " +
+        fromChannel.blue.toString());
+    Color compatilbleToFlutter = Color.fromRGBO(
+        fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
     themeChangeProvider.systemaccent = compatilbleToFlutter.value;
     themeChangeProvider.accent =
         await themeChangeProvider.preferences.getAccent();
