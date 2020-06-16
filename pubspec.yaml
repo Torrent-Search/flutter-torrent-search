@@ -42,12 +42,14 @@ dependencies:
   device_info: ^0.4.2+4
   url_launcher: ^5.4.10
   package_info: ^0.4.1
+  like_button: ^1.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^3.3.0
   build_runner: ^1.8.1
+  flutter_launcher_icons: ^0.7.5
 
 
 
@@ -90,3 +92,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_icons:
+  image_path: android/app/src/main/res/drawable/ic_launcher.png
+  android : true
