@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
@@ -20,6 +21,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   TextEditingController _textEditingController;
+  final DatabaseHelper databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -44,31 +46,49 @@ class _HomeState extends State<Home> {
             height: height,
             child: ListView(
               children: <Widget>[
-//                Stack(
-//                  children: <Widget>[
-//                    Text(
-//                      "Torrent Search",
-//                      style: TextStyle(
-//                        color: accentColor,
-//                        fontWeight: FontWeight.bold,
-//                        fontSize: 25.0,
-//                      ),
-//                    ),
-//                    Row(
-//                      children: <Widget>[
-//                        IconButton(
-//                          icon: Icon(Icons.favorite),
-//                          onPressed: () {},
-//                        ),
-//                        Spacer(),
-//                        IconButton(
-//                          icon: Icon(Icons.history),
-//                          onPressed: () {},
-//                        ),
-//                      ],
-//                    )
-//                  ],
-//                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 5.0),
+                  child: Stack(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 5.0),
+                        child: Center(
+                          child: Text(
+                            "Torrent Search",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/favourite");
+                            },
+                          ),
+                          Spacer(),
+                          IconButton(
+                            icon: Icon(
+                              Icons.history,
+                              color: accentColor,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/history");
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -160,8 +180,10 @@ class _HomeState extends State<Home> {
             maxLines: 1,
             textAlign: TextAlign.center,
             textInputAction: TextInputAction.search,
-            onSubmitted: (term) {
+            onSubmitted: (term) async {
               if (_textEditingController.text != "") {
+                await databaseHelper.insert(
+                    history: History(_textEditingController.text));
                 Navigator.pushNamed(context, "/result",
                     arguments: _textEditingController.text);
               }

@@ -9,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/pages/AllRecents.dart';
+import 'package:torrentsearch/pages/FavouriteTorrents.dart';
 import 'package:torrentsearch/pages/Home.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
+import 'package:torrentsearch/pages/SearchHistory.dart';
 import 'package:torrentsearch/pages/Settings.dart';
 import 'package:torrentsearch/pages/TorrentResult.dart';
 import 'package:torrentsearch/utils/DarkThemeProvider.dart';
@@ -105,6 +107,8 @@ class _MyAppState extends State<MyApp> {
               "/recentinfo": (context) => RecentInformation(),
               "/allrecents": (context) => AllRecents(),
               "/settings": (context) => Settings(),
+              "/favourite": (context) => FavouriteTorrents(),
+              "/history": (context) => SearchHistory()
             },
             navigatorObservers: [
               FirebaseAnalyticsObserver(analytics: analytics)

@@ -85,6 +85,11 @@ class _TorrenttabState extends State<Torrenttab>
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
 Widget noContentFound() {

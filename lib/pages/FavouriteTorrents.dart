@@ -1,34 +1,55 @@
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intent/action.dart' as android_action;
 import 'package:intent/extra.dart' as android_extra;
 import 'package:intent/intent.dart' as android_intent;
-import 'package:like_button/like_button.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 
-class TorrentCard extends StatefulWidget {
-  TorrentInfo info;
+class FavouriteTorrents extends StatefulWidget {
   bool isClicked = false;
-  bool useLikeIcon;
-  TorrentCard(TorrentInfo list, {bool useLikeIcon = true}) {
-    this.info = list;
-    this.useLikeIcon = useLikeIcon;
-  }
+
   @override
-  _TorrentCardState createState() => _TorrentCardState();
+  _FavouriteTorrentsState createState() => _FavouriteTorrentsState();
 }
 
-class _TorrentCardState extends State<TorrentCard> {
-  bool isLiked = false;
+class _FavouriteTorrentsState extends State<FavouriteTorrents> {
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder(
+        future: _databaseHelper.queryAll(torrentinfo: true),
+        builder: (ctx, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length != 0) {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (ctx, index) {
+                  return _buildCard(
+                    context,
+                    TorrentInfo.fromMap(snapshot.data[index]),
+                  );
+                },
+              );
+            }
+            return _buildNoFavourite();
+          }
+          return SpinKitThreeBounce(
+            color: accentColor,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext ctx, TorrentInfo info) {
     final Brightness br = Theme.of(context).brightness;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
@@ -46,7 +67,7 @@ class _TorrentCardState extends State<TorrentCard> {
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                  child: Text(widget.info.name,
+                  child: Text(info.name,
                       textAlign: TextAlign.center,
                       style: defaultTextStyleBold(br)),
                 ),
@@ -65,7 +86,7 @@ class _TorrentCardState extends State<TorrentCard> {
                           ),
                           SizedBox(width: 2.0),
                           Text(
-                            widget.info.seeders,
+                            info.seeders,
                             style: defaultTextStyle(br),
                           ),
                         ],
@@ -78,7 +99,7 @@ class _TorrentCardState extends State<TorrentCard> {
                           Icon(Icons.data_usage),
                           SizedBox(width: 2.0),
                           Text(
-                            widget.info.size,
+                            info.size,
                             style: defaultTextStyle(br),
                           ),
                         ],
@@ -96,7 +117,7 @@ class _TorrentCardState extends State<TorrentCard> {
                           ),
                           SizedBox(width: 2.0),
                           Text(
-                            widget.info.leechers,
+                            info.leechers,
                             style: defaultTextStyle(br),
                           ),
                         ],
@@ -109,9 +130,7 @@ class _TorrentCardState extends State<TorrentCard> {
                           Icon(Icons.event),
                           SizedBox(width: 2.0),
                           Text(
-                            widget.info.upload_date == null
-                                ? ""
-                                : widget.info.upload_date,
+                            info.upload_date == null ? "" : info.upload_date,
                             style: defaultTextStyle(br),
                           ),
                         ],
@@ -122,11 +141,29 @@ class _TorrentCardState extends State<TorrentCard> {
                     icon: Icon(Icons.content_copy),
                     onPressed: () async {
                       if (widget.isClicked == false) {
-                        await setMagnet(context);
-                        ClipboardManager.copyToClipBoard(widget.info.magnet)
+                        String endpoint;
+                        if (info.magnet == "") {
+                          switch (info.website) {
+                            case "Kickass":
+                              endpoint = ApiConstants.KICKASS_MG_ENDPOINT;
+                              break;
+                            case "1337x":
+                              endpoint = ApiConstants.ENDPOINT_MG_1337x;
+                              break;
+                            case "Limetorrents":
+                              endpoint = ApiConstants.LIMETORRENTS_ENDPOINT_MG;
+                              break;
+                          }
+                          info.magnet =
+                              await getMagnetResponse(endpoint, info.url);
+                        }
+                        ClipboardManager.copyToClipBoard(info.magnet)
                             .then((value) {
-                          showFlushBar(
-                              context, "Magnet link Copied to Clipboard");
+                          Flushbar(
+                            message: "Magnet link Copied to Clipboard",
+                            duration: Duration(seconds: 2),
+                            flushbarStyle: FlushbarStyle.FLOATING,
+                          ).show(context);
                         });
                         widget.isClicked = false;
                       }
@@ -136,49 +173,43 @@ class _TorrentCardState extends State<TorrentCard> {
                     icon: Icon(Icons.share),
                     onPressed: () async {
                       if (widget.isClicked == false) {
-                        await setMagnet(context);
+                        String endpoint;
+                        if (info.magnet == "") {
+                          switch (info.website) {
+                            case "Kickass":
+                              endpoint = ApiConstants.KICKASS_MG_ENDPOINT;
+                              break;
+                            case "1337x":
+                              endpoint = ApiConstants.ENDPOINT_MG_1337x;
+                              break;
+                            case "Limetorrents":
+                              endpoint = ApiConstants.LIMETORRENTS_ENDPOINT_MG;
+                              break;
+                          }
+                          info.magnet =
+                              await getMagnetResponse(endpoint, info.url);
+                        }
                         android_intent.Intent()
                           ..setAction(android_action.Action.ACTION_SEND)
-                          ..putExtra(android_extra.Extra.EXTRA_TEXT,
-                              widget.info.magnet)
+                          ..putExtra(
+                              android_extra.Extra.EXTRA_TEXT, info.magnet)
                           ..setType("text/plain")
                           ..startActivity(createChooser: true);
                         widget.isClicked = false;
                       }
                     },
                   ),
-                  widget.useLikeIcon
-                      ? Container(
-                          alignment: Alignment.bottomRight,
-                          child: LikeButton(
-                            onTap: (bool isLiked) async {
-                              final DatabaseHelper dbhelper = DatabaseHelper();
-                              if (!isLiked) {
-                                await setMagnet(context);
-                                await dbhelper.insert(torrentinfo: widget.info);
-                                showFlushBar(context, "Added to Favourite");
-                                return true;
-                              } else {
-                                await dbhelper.delete(widget.info.name,
-                                    torrentinfo: true);
-                                showFlushBar(context, "Removed from Favourite");
-                                return false;
-                              }
-                            },
-                          ),
-                        )
-                      : Container(
-                          alignment: Alignment.bottomRight,
-                          child: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () async {
-                              final DatabaseHelper dbhelper = DatabaseHelper();
-                              await dbhelper.delete(widget.info.name,
-                                  torrentinfo: true);
-                              setState(() {});
-                            },
-                          ),
-                        )
+                  Container(
+                    alignment: Alignment.bottomRight,
+                    child: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () async {
+                        final DatabaseHelper dbhelper = DatabaseHelper();
+                        await dbhelper.delete(info.name, torrentinfo: true);
+                        setState(() {});
+                      },
+                    ),
+                  )
                 ],
               ),
             ],
@@ -188,31 +219,25 @@ class _TorrentCardState extends State<TorrentCard> {
     );
   }
 
-  Future<void> setMagnet(BuildContext ctx) async {
-    if (widget.info.magnet == "") {
-      String endpoint;
-      switch (widget.info.website) {
-        case "Kickass":
-          endpoint = ApiConstants.KICKASS_MG_ENDPOINT;
-          break;
-        case "1337x":
-          endpoint = ApiConstants.ENDPOINT_MG_1337x;
-          break;
-        case "Limetorrents":
-          endpoint = ApiConstants.LIMETORRENTS_ENDPOINT_MG;
-          break;
-      }
-      showFlushBar(ctx, "Fetching Magnet Link from Server");
-      widget.info.magnet = await getMagnetResponse(endpoint, widget.info.url);
-    }
-    return;
-  }
-
-  void showFlushBar(BuildContext ctx, String msg) {
-    Flushbar(
-      message: msg,
-      duration: Duration(seconds: 1),
-      flushbarStyle: FlushbarStyle.FLOATING,
-    ).show(ctx);
+  Widget _buildNoFavourite() {
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Icon(
+          Icons.favorite,
+          size: 50.0,
+        ),
+        SizedBox(
+          height: 10.0,
+        ),
+        Text(
+          "No Favourites added",
+          style: TextStyle(
+            fontSize: 20.0,
+          ),
+        )
+      ],
+    ));
   }
 }
