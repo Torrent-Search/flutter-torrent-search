@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;
