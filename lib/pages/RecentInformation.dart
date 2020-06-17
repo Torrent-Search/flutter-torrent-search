@@ -11,7 +11,7 @@ import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/Imdb.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
-import 'package:torrentsearch/utils/DarkThemeProvider.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/TorrentCard.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
 
@@ -33,7 +33,7 @@ class _RecentInformationState extends State<RecentInformation> {
   Widget build(BuildContext context) {
     final Map search = ModalRoute.of(context).settings.arguments;
     final double height = MediaQuery.of(context).size.height;
-    final themeProvider = Provider.of<DarkThemeProvider>(context);
+    final themeProvider = Provider.of<PreferenceProvider>(context);
     final double width = MediaQuery.of(context).size.width;
     final borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
@@ -50,6 +50,7 @@ class _RecentInformationState extends State<RecentInformation> {
               Container(
                 width: width * 0.30,
                 height: height * 0.25,
+                padding: EdgeInsets.only(top: 10.0),
                 child: Card(
                   shape: RoundedRectangleBorder(borderRadius: borderRadius),
                   child: ClipRRect(

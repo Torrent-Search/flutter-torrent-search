@@ -34,6 +34,10 @@ class _SearchHistoryState extends State<SearchHistory> {
                           setState(() {});
                         },
                       ),
+                      onTap: () {
+                        Navigator.pushNamed(context, "/result",
+                            arguments: history.searchHistory);
+                      },
                     );
                   },
                 );

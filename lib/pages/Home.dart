@@ -11,7 +11,8 @@ import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
-import 'package:torrentsearch/utils/DarkThemeProvider.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
+import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
 
 class Home extends StatefulWidget {
@@ -22,6 +23,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   TextEditingController _textEditingController;
   final DatabaseHelper databaseHelper = DatabaseHelper();
+  final Preferences pref = Preferences();
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<DarkThemeProvider>(context);
+    final themeProvider = Provider.of<PreferenceProvider>(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final Color accentColor = Theme.of(context).accentColor;
@@ -153,8 +155,7 @@ class _HomeState extends State<Home> {
 
   Widget _buildSearch(BuildContext ctx) {
 //    final double height = MediaQuery.of(ctx).size.height;
-    final themeProvider = Provider.of<DarkThemeProvider>(context);
-    final double width = MediaQuery.of(ctx).size.width;
+
     final Color accentColor = Theme.of(context).accentColor;
 
     return Column(
@@ -165,6 +166,11 @@ class _HomeState extends State<Home> {
           child: TextField(
             controller: _textEditingController,
             decoration: InputDecoration(
+              hintText: "Search Here",
+              prefixIcon: Icon(
+                Icons.search,
+                color: accentColor,
+              ),
               contentPadding: EdgeInsets.all(10.0),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5.0),
@@ -193,49 +199,53 @@ class _HomeState extends State<Home> {
         SizedBox(
           height: 20.0,
         ),
-        RaisedButton.icon(
-          label: Text(
-            "SEARCH",
-            style: TextStyle(
-              letterSpacing: 2.0,
-              color: Colors.white,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton.icon(
+              label: Text(
+                "SEARCH",
+                style: TextStyle(
+                  letterSpacing: 2.0,
+                  color: Colors.white,
+                ),
+              ),
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                if (_textEditingController.text != "") {
+                  await databaseHelper.insert(
+                      history: History(_textEditingController.text));
+                  Navigator.pushNamed(context, "/result",
+                      arguments: _textEditingController.text);
+                }
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: accentColor,
             ),
-          ),
-          icon: Icon(
-            Icons.search,
-            color: Colors.white,
-          ),
-          onPressed: () async {
-            if (_textEditingController.text != "") {
-              await databaseHelper.insert(
-                  history: History(_textEditingController.text));
-              Navigator.pushNamed(context, "/result",
-                  arguments: _textEditingController.text);
-            }
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          color: accentColor,
-        ),
-        SizedBox(height: 10.0),
-        RaisedButton.icon(
-          icon: Icon(
-            Icons.settings,
-            color: Colors.white,
-          ),
-          label: Text(
-            "Settings",
-            style: TextStyle(
-              letterSpacing: 2.0,
-              color: Colors.white,
+            RaisedButton.icon(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              label: Text(
+                "SETTINGS",
+                style: TextStyle(
+                  letterSpacing: 2.0,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () async {
+                Navigator.pushNamed(context, "/settings");
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: accentColor,
             ),
-          ),
-          onPressed: () async {
-            Navigator.pushNamed(context, "/settings");
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          color: accentColor,
+          ],
         ),
       ],
     );
@@ -247,7 +257,7 @@ class _HomeState extends State<Home> {
     final borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
     return Container(
-      height: height * 0.27,
+      height: height * 0.29,
       width: width,
       padding: EdgeInsets.only(left: 5.0),
       child: FutureBuilder<List<RecentInfo>>(

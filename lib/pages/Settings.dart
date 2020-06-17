@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/utils/DarkThemeProvider.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/IndexersList.dart';
 
 class Settings extends StatefulWidget {
@@ -46,7 +46,7 @@ class _SettingState extends State<Settings> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final themeProvider = Provider.of<DarkThemeProvider>(context);
+    final themeProvider = Provider.of<PreferenceProvider>(context);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -187,6 +187,21 @@ class _SettingState extends State<Settings> {
                   IndexersList(),
                 ],
               ),
+              ListTile(
+                title: Text("Terms and Conditions",
+                    style: TextStyle(letterSpacing: 2.0)),
+                trailing: Icon(Icons.description),
+                onTap: () {
+                  Navigator.pushNamed(context, "/tac");
+                },
+              ),
+              ListTile(
+                title: Text("About", style: TextStyle(letterSpacing: 2.0)),
+                trailing: Icon(Icons.info_outline),
+                onTap: () {
+                  Navigator.pushNamed(context, "/about");
+                },
+              ),
               Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -199,7 +214,7 @@ class _SettingState extends State<Settings> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
