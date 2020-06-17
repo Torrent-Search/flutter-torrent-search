@@ -153,6 +153,6 @@ class TermsandConditions extends StatelessWidget {
         style: TextStyle(fontSize: 14.0, color: color),
         maxLines: 20,
         overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.start);
+        textAlign: TextAlign.justify);
   }
 }
