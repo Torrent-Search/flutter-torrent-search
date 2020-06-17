@@ -199,53 +199,49 @@ class _HomeState extends State<Home> {
         SizedBox(
           height: 20.0,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton.icon(
-              label: Text(
-                "SEARCH",
-                style: TextStyle(
-                  letterSpacing: 2.0,
-                  color: Colors.white,
-                ),
-              ),
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                if (_textEditingController.text != "") {
-                  await databaseHelper.insert(
-                      history: History(_textEditingController.text));
-                  Navigator.pushNamed(context, "/result",
-                      arguments: _textEditingController.text);
-                }
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              color: accentColor,
+        RaisedButton.icon(
+          label: Text(
+            "SEARCH",
+            style: TextStyle(
+              letterSpacing: 2.0,
+              color: Colors.white,
             ),
-            RaisedButton.icon(
-              icon: Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-              label: Text(
-                "SETTINGS",
-                style: TextStyle(
-                  letterSpacing: 2.0,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () async {
-                Navigator.pushNamed(context, "/settings");
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              color: accentColor,
+          ),
+          icon: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          onPressed: () async {
+            if (_textEditingController.text != "") {
+              await databaseHelper.insert(
+                  history: History(_textEditingController.text));
+              Navigator.pushNamed(context, "/result",
+                  arguments: _textEditingController.text);
+            }
+          },
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0)),
+          color: accentColor,
+        ),
+        SizedBox(height:10.0),
+        RaisedButton.icon(
+          icon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+          label: Text(
+            "SETTINGS",
+            style: TextStyle(
+              letterSpacing: 2.0,
+              color: Colors.white,
             ),
-          ],
+          ),
+          onPressed: () async {
+            Navigator.pushNamed(context, "/settings");
+          },
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0)),
+          color: accentColor,
         ),
       ],
     );
