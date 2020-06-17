@@ -5,10 +5,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intent/action.dart' as android_action;
 import 'package:intent/extra.dart' as android_extra;
 import 'package:intent/intent.dart' as android_intent;
+import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 
 class FavouriteTorrents extends StatefulWidget {
@@ -23,7 +25,13 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<PreferenceProvider>(context);
+
     return Scaffold(
+      backgroundColor: themeProvider.darkTheme
+          ? Theme.of(context).backgroundColor
+          : Colors.white,
+      extendBodyBehindAppBar: true,
       body: FutureBuilder(
         future: _databaseHelper.queryAll(torrentinfo: true),
         builder: (ctx, snapshot) {

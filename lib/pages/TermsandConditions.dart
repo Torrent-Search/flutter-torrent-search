@@ -10,6 +10,9 @@ class TermsandConditions extends StatelessWidget {
     final provider = Provider.of<PreferenceProvider>(context);
     final Color accentColor = Theme.of(context).accentColor;
     return Scaffold(
+      backgroundColor:
+          provider.darkTheme ? Theme.of(context).backgroundColor : Colors.white,
+      extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Container(
             padding: EdgeInsets.all(20.0),

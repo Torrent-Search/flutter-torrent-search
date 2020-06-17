@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 
 class SearchHistory extends StatefulWidget {
   @override
@@ -12,8 +14,12 @@ class _SearchHistoryState extends State<SearchHistory> {
   @override
   Widget build(BuildContext context) {
     final Color accentColor = Theme.of(context).accentColor;
-
+    final themeProvider = Provider.of<PreferenceProvider>(context);
     return Scaffold(
+      backgroundColor: themeProvider.darkTheme
+          ? Theme.of(context).backgroundColor
+          : Colors.white,
+      extendBodyBehindAppBar: true,
       body: SafeArea(
         child: FutureBuilder(
           future: _databaseHelper.queryAll(history: true),

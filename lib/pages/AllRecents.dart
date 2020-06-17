@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
 
 class AllRecents extends StatefulWidget {
@@ -17,14 +19,19 @@ class AllRecents extends StatefulWidget {
 class _AllRecentsState extends State<AllRecents> {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<PreferenceProvider>(context);
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     final BorderRadius borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
     bool movies = ModalRoute.of(context).settings.arguments;
-    return SafeArea(
-      child: Scaffold(
-        body: FutureBuilder(
+    return Scaffold(
+      backgroundColor: themeProvider.darkTheme
+          ? Theme.of(context).backgroundColor
+          : Colors.white,
+      extendBodyBehindAppBar: true,
+      body: SafeArea(
+        child: FutureBuilder(
           future: movies
               ? getRecentMovies(longList: true)
               : getRecentSeries(longList: true),

@@ -40,106 +40,110 @@ class _RecentInformationState extends State<RecentInformation> {
     if (_imdb == null) {
       _imdb = getImdb(search["imdbcode"]);
     }
-    return SafeArea(
-      child: Scaffold(
-          body: ListView(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Scaffold(
+        backgroundColor: themeProvider.darkTheme
+            ? Theme.of(context).backgroundColor
+            : Colors.white,
+        extendBodyBehindAppBar: true,
+        body: SafeArea(
+          child: ListView(
             children: <Widget>[
-              Container(
-                width: width * 0.30,
-                height: height * 0.25,
-                padding: EdgeInsets.only(top: 10.0),
-                child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: borderRadius),
-                  child: ClipRRect(
-                    borderRadius: borderRadius,
-                    child: CachedNetworkImage(
-                      fit: BoxFit.fill,
-                      imageUrl: search["imgurl"],
-                      progressIndicatorBuilder: (ctx, url, progress) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(accentColor),
-                          ),
-                        );
-                      },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    width: width * 0.30,
+                    height: height * 0.25,
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: borderRadius),
+                      child: ClipRRect(
+                        borderRadius: borderRadius,
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fill,
+                          imageUrl: search["imgurl"],
+                          progressIndicatorBuilder: (ctx, url, progress) {
+                            return Center(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(accentColor),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
+                  buildInfo(search["imdbcode"], width, height)
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: FutureBuilder(
+                  future: _imdb,
+                  builder: (BuildContext ctx, AsyncSnapshot<Imdb> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.data.plot,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13.0,
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text(
+                        "Error !",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      );
+                    }
+                    return Text(
+                      "Loading...",
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    );
+                  },
                 ),
               ),
-              buildInfo(search["imdbcode"], width, height)
+//                SizedBox(height: 20.0,),
+              FutureBuilder<List<TorrentInfo>>(
+                  future: getApiResponse(
+                      ApiConstants.TGX_ENDPOINT, search["imdbcode"]),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: snapshot.data.map((e) {
+                          return TorrentCard(e);
+                        }).toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      switch (snapshot.error.runtimeType) {
+                        case NoContentFoundException:
+                          return noContentFound();
+                          break;
+                        case InternalServerError:
+                          return serverError();
+                          break;
+                        case SocketException:
+                          return noInternet();
+                          break;
+                        default:
+                          return unExpectedError();
+                      }
+                    } else {
+                      return Center(
+                          child: SpinKitThreeBounce(
+                        color: accentColor,
+                      ));
+                    }
+                  })
             ],
           ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: FutureBuilder(
-              future: _imdb,
-              builder: (BuildContext ctx, AsyncSnapshot<Imdb> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    snapshot.data.plot,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13.0,
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text(
-                    "Error !",
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  );
-                }
-                return Text(
-                  "Loading...",
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                );
-              },
-            ),
-          ),
-//                SizedBox(height: 20.0,),
-          FutureBuilder<List<TorrentInfo>>(
-              future:
-                  getApiResponse(ApiConstants.TGX_ENDPOINT, search["imdbcode"]),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Column(
-                    children: snapshot.data.map((e) {
-                      return TorrentCard(e);
-                    }).toList(),
-                  );
-                } else if (snapshot.hasError) {
-                  switch (snapshot.error.runtimeType) {
-                    case NoContentFoundException:
-                      return noContentFound();
-                      break;
-                    case InternalServerError:
-                      return serverError();
-                      break;
-                    case SocketException:
-                      return noInternet();
-                      break;
-                    default:
-                      return unExpectedError();
-                  }
-                } else {
-                  return Center(
-                      child: SpinKitThreeBounce(
-                    color: accentColor,
-                  ));
-                }
-              })
-        ],
-      )),
-    );
+        ));
   }
 
   Widget buildInfo(String imdbid, double width, double height) {

@@ -47,9 +47,13 @@ class _SettingState extends State<Settings> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<PreferenceProvider>(context);
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
+    return Scaffold(
+      backgroundColor: themeProvider.darkTheme
+          ? Theme.of(context).backgroundColor
+          : Colors.white,
+      extendBodyBehindAppBar: true,
+      body: SafeArea(
+        child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).backgroundColor,
           ),

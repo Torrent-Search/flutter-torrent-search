@@ -37,13 +37,13 @@ class _HomeState extends State<Home> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final Color accentColor = Theme.of(context).accentColor;
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: themeProvider.darkTheme
-            ? Theme.of(context).backgroundColor
-            : Colors.white,
-        extendBodyBehindAppBar: true,
-        body: Container(
+    return Scaffold(
+      backgroundColor: themeProvider.darkTheme
+          ? Theme.of(context).backgroundColor
+          : Colors.white,
+      extendBodyBehindAppBar: true,
+      body: SafeArea(
+        child: Container(
             width: width,
             height: height,
             child: ListView(
