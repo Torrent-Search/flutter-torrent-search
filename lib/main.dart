@@ -8,14 +8,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/pages/About.dart';
 import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/pages/FavouriteTorrents.dart';
 import 'package:torrentsearch/pages/Home.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
 import 'package:torrentsearch/pages/SearchHistory.dart';
 import 'package:torrentsearch/pages/Settings.dart';
+import 'package:torrentsearch/pages/SplashScreen.dart';
+import 'package:torrentsearch/pages/TermsandConditions.dart';
 import 'package:torrentsearch/pages/TorrentResult.dart';
-import 'package:torrentsearch/utils/DarkThemeProvider.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,7 +39,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+  final PreferenceProvider preferenceProvider = PreferenceProvider();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FirebaseAnalytics analytics = FirebaseAnalytics();
   final Firestore _db = Firestore.instance;
@@ -73,46 +76,49 @@ class _MyAppState extends State<MyApp> {
   }
 
   void getCurrentAppTheme() async {
-    themeChangeProvider.darkTheme =
-        await themeChangeProvider.preferences.getTheme();
-    themeChangeProvider.useSystemAccent =
-        await themeChangeProvider.preferences.UseSystemAccent();
+    preferenceProvider.tacaccepted =
+        await preferenceProvider.preferences.getTacAccepted();
+    preferenceProvider.darkTheme =
+        await preferenceProvider.preferences.getTheme();
+    preferenceProvider.useSystemAccent =
+        await preferenceProvider.preferences.UseSystemAccent();
     Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
     Color compatilbleToFlutter = Color.fromRGBO(
         fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
-    themeChangeProvider.systemaccent = compatilbleToFlutter.value;
-    themeChangeProvider.accent =
-        await themeChangeProvider.preferences.getAccent();
+    preferenceProvider.systemaccent = compatilbleToFlutter.value;
+    preferenceProvider.accent =
+        await preferenceProvider.preferences.getAccent();
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
-        return themeChangeProvider;
+        return preferenceProvider;
       },
-      child: Consumer<DarkThemeProvider>(
+      child: Consumer<PreferenceProvider>(
         builder: (BuildContext context, value, Widget child) {
           return MaterialApp(
-//            initialRoute: '/',
-            home: Home(),
+            home: SplashScreen(),
             routes: {
-//              '/': (context) => Home(),
+              "/home": (context) => Home(),
               "/result": (context) => TorrentResult(),
               "/recentinfo": (context) => RecentInformation(),
               "/allrecents": (context) => AllRecents(),
               "/settings": (context) => Settings(),
               "/favourite": (context) => FavouriteTorrents(),
-              "/history": (context) => SearchHistory()
+              "/history": (context) => SearchHistory(),
+              "/tac": (context) => TermsandConditions(),
+              "/about": (context) => About(),
             },
             navigatorObservers: [
               FirebaseAnalyticsObserver(analytics: analytics)
             ],
             debugShowCheckedModeBanner: false,
-            theme: Themes.themeData(themeChangeProvider.darkTheme, context,
-                color: themeChangeProvider.useSystemAccent
-                    ? themeChangeProvider.systemaccent
-                    : themeChangeProvider.accent),
+            theme: Themes.themeData(preferenceProvider.darkTheme, context,
+                color: preferenceProvider.useSystemAccent
+                    ? preferenceProvider.systemaccent
+                    : preferenceProvider.accent),
           );
         },
       ),
