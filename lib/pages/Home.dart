@@ -265,6 +265,7 @@ class _HomeState extends State<Home> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.separated(
+                physics: BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
                 shrinkWrap: true,

@@ -41,6 +41,7 @@ class _TorrenttabState extends State<Torrenttab>
                 if (snapshot.hasData) {
                   return AnimationLimiter(
                     child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext ctxt, int index) {
                         return AnimationConfiguration.staggeredList(
