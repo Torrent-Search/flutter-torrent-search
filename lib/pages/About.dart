@@ -38,7 +38,7 @@ class About extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Text(
-                "Torrent Search is an Open Source app , It uses Crawler technology to scrap multiple Torrent Websites, Working principle similar to browser, content parsing from DHT(Distributed Hash Table) protocol based Bittorrent resource search engine website. All the resources are scraped by Crawler API (https://github.com/Tejasvp25/torr_scraper_golang) written in Golang",
+                "Torrent Search is an Open Source app written in Flutter, It uses Crawler technology to scrap multiple Torrent Websites, Working principle similar to browser, content parsing from DHT(Distributed Hash Table) protocol based Bittorrent resource search engine website. All the resources are scraped by Crawler API (https://github.com/Tejasvp25/torr_scraper_golang) written in Golang",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
