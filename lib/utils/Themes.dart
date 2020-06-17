@@ -50,6 +50,7 @@ final ThemeData dark = ThemeData.dark().copyWith(
               topLeft: Radius.circular(10), topRight: Radius.circular(10)),
           color: Colors.white),
     ),
+    scaffoldBackgroundColor: Colors.black,
     textSelectionHandleColor: Colors.white);
 
 final ThemeData light = ThemeData.light().copyWith(
