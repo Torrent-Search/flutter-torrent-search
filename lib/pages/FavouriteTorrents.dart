@@ -32,6 +32,16 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
           ? Theme.of(context).backgroundColor
           : Colors.white,
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(
+          "Favourite",
+          style: TextStyle(letterSpacing: 3.0),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(
+            color: themeProvider.darkTheme ? Colors.white : Colors.black),
+      ),
       body: FutureBuilder(
         future: _databaseHelper.queryAll(torrentinfo: true),
         builder: (ctx, snapshot) {

@@ -52,6 +52,16 @@ class _SettingState extends State<Settings> {
           ? Theme.of(context).backgroundColor
           : Colors.white,
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(
+          'SETTINGS',
+          style: TextStyle(letterSpacing: 3.0),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(
+            color: themeProvider.darkTheme ? Colors.white : Colors.black),
+      ),
       body: SafeArea(
         child: Container(
           decoration: BoxDecoration(

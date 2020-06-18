@@ -30,6 +30,16 @@ class _AllRecentsState extends State<AllRecents> {
           ? Theme.of(context).backgroundColor
           : Colors.white,
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(
+          movies ? "Recent Movies" : "Recent TV Shows",
+          style: TextStyle(letterSpacing: 3.0),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(
+            color: themeProvider.darkTheme ? Colors.white : Colors.black),
+      ),
       body: SafeArea(
         child: FutureBuilder(
           future: movies
