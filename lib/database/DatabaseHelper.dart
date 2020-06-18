@@ -74,11 +74,12 @@ class DatabaseHelper {
       {TorrentInfo torrentinfo = null, History history = null}) async {
     Database dbClient = await db;
     int result = 0;
-    if (torrentinfo != null) {
+    if (torrentinfo != null &&
+        await getTorrentInfoCount(torrentinfo.name) == 0) {
       result = await dbClient.insert(tableTorrentInfo, torrentinfo.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
-    if (history != null) {
+    if (history != null && await getHistoyCount(history.searchHistory) == 0) {
       result = await dbClient.insert(tableHistory, history.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
@@ -121,6 +122,28 @@ class DatabaseHelper {
       return TorrentInfo.fromMap(result.first);
     }
     return null;
+  }
+
+  Future<int> getHistoyCount(String name) async {
+    Database dbClient = await db;
+    List<Map> result = await dbClient.query(tableHistory,
+        where: '$columnSearchHistory = ?', whereArgs: [name]);
+
+    if (result.length > 0) {
+      return result.length;
+    }
+    return 0;
+  }
+
+  Future<int> getTorrentInfoCount(String name) async {
+    Database dbClient = await db;
+    List<Map> result = await dbClient
+        .query(tableTorrentInfo, where: '$columnName = ?', whereArgs: [name]);
+
+    if (result.length > 0) {
+      return result.length;
+    }
+    return 0;
   }
 
   Future<int> delete(String name,
