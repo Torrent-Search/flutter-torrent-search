@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -219,11 +236,11 @@ class _HomeState extends State<Home> {
                   arguments: _textEditingController.text);
             }
           },
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           color: accentColor,
         ),
-        SizedBox(height:10.0),
+        SizedBox(height: 10.0),
         RaisedButton.icon(
           icon: Icon(
             Icons.settings,
@@ -239,8 +256,8 @@ class _HomeState extends State<Home> {
           onPressed: () async {
             Navigator.pushNamed(context, "/settings");
           },
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           color: accentColor,
         ),
       ],
