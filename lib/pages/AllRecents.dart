@@ -58,7 +58,8 @@ class _AllRecentsState extends State<AllRecents> {
                     crossAxisCount: 3,
                     mainAxisSpacing: 5.0,
                     crossAxisSpacing: 5.0,
-                    childAspectRatio: (((width + 48) / 2) / (height / 2)),
+                    childAspectRatio:
+                        (((width) / 2) / ((height / 2) - height * 0.1)),
                     children: snapshot.data.map((e) {
                       return InkWell(
                         onTap: () {
