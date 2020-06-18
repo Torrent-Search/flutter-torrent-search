@@ -51,8 +51,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<PreferenceProvider>(context);
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
     final Color accentColor = Theme.of(context).accentColor;
     return Scaffold(
       backgroundColor: themeProvider.darkTheme
@@ -60,121 +58,117 @@ class _HomeState extends State<Home> {
           : Colors.white,
       extendBodyBehindAppBar: true,
       body: SafeArea(
-        child: Container(
-            width: width,
-            height: height,
-            child: ListView(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Stack(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5.0),
-                        child: Center(
-                          child: Text(
-                            "Torrent Search",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25.0,
-                            ),
+        child: Center(
+          child: ListView(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(bottom: 5.0),
+                child: Stack(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      child: Center(
+                        child: Text(
+                          "Torrent Search",
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0,
                           ),
                         ),
                       ),
-                      Row(
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, "/favourite");
-                            },
-                          ),
-                          Spacer(),
-                          IconButton(
-                            icon: Icon(
-                              Icons.history,
-                              color: accentColor,
-                            ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, "/history");
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    _buildSearch(context),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 8.0),
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            "Recent Movies",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 2.0,
-                                fontSize: 16),
-                            textAlign: TextAlign.left,
-                          ),
-                          Spacer(),
-                          InkWell(
-                            child: Text("View all"),
-                            onTap: () {
-                              Navigator.pushNamed(context, "/allrecents",
-                                  arguments: true);
-                            },
-                          ),
-                        ],
-                      ),
                     ),
-                    _buildRecent(context),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 8.0),
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            "Recent TV Shows",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 2.0,
-                                fontSize: 16),
-                            textAlign: TextAlign.left,
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.favorite,
+                            color: Colors.red,
                           ),
-                          Spacer(),
-                          InkWell(
-                            child: Text("View all"),
-                            onTap: () {
-                              Navigator.pushNamed(context, "/allrecents",
-                                  arguments: false);
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                    _buildRecent(context, movies: false),
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/favourite");
+                          },
+                        ),
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            Icons.history,
+                            color: accentColor,
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/history");
+                          },
+                        ),
+                      ],
+                    )
                   ],
                 ),
-              ],
-            )),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _buildSearch(context),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 8.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          "Recent Movies",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
+                              fontSize: 16),
+                          textAlign: TextAlign.left,
+                        ),
+                        Spacer(),
+                        InkWell(
+                          child: Text("View all"),
+                          onTap: () {
+                            Navigator.pushNamed(context, "/allrecents",
+                                arguments: true);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildRecent(context),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 8.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          "Recent TV Shows",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
+                              fontSize: 16),
+                          textAlign: TextAlign.left,
+                        ),
+                        Spacer(),
+                        InkWell(
+                          child: Text("View all"),
+                          onTap: () {
+                            Navigator.pushNamed(context, "/allrecents",
+                                arguments: false);
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                  _buildRecent(context, movies: false),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildSearch(BuildContext ctx) {
-//    final double height = MediaQuery.of(ctx).size.height;
-
     final Color accentColor = Theme.of(context).accentColor;
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -216,50 +210,54 @@ class _HomeState extends State<Home> {
         SizedBox(
           height: 20.0,
         ),
-        RaisedButton.icon(
-          label: Text(
-            "SEARCH",
-            style: TextStyle(
-              letterSpacing: 2.0,
-              color: Colors.white,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton.icon(
+              label: Text(
+                "SEARCH",
+                style: TextStyle(
+                  letterSpacing: 2.0,
+                  color: Colors.white,
+                ),
+              ),
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                if (_textEditingController.text != "") {
+                  await databaseHelper.insert(
+                      history: History(_textEditingController.text));
+                  Navigator.pushNamed(context, "/result",
+                      arguments: _textEditingController.text);
+                }
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: accentColor,
             ),
-          ),
-          icon: Icon(
-            Icons.search,
-            color: Colors.white,
-          ),
-          onPressed: () async {
-            if (_textEditingController.text != "") {
-              await databaseHelper.insert(
-                  history: History(_textEditingController.text));
-              Navigator.pushNamed(context, "/result",
-                  arguments: _textEditingController.text);
-            }
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          color: accentColor,
-        ),
-        SizedBox(height: 10.0),
-        RaisedButton.icon(
-          icon: Icon(
-            Icons.settings,
-            color: Colors.white,
-          ),
-          label: Text(
-            "SETTINGS",
-            style: TextStyle(
-              letterSpacing: 2.0,
-              color: Colors.white,
+            RaisedButton.icon(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              label: Text(
+                "SETTINGS",
+                style: TextStyle(
+                  letterSpacing: 2.0,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () async {
+                Navigator.pushNamed(context, "/settings");
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              color: accentColor,
             ),
-          ),
-          onPressed: () async {
-            Navigator.pushNamed(context, "/settings");
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          color: accentColor,
-        ),
+          ],
+        )
       ],
     );
   }
@@ -271,7 +269,6 @@ class _HomeState extends State<Home> {
     final Color accentColor = Theme.of(context).accentColor;
     return Container(
       height: height * 0.29,
-      width: width,
       padding: EdgeInsets.only(left: 5.0),
       child: FutureBuilder<List<RecentInfo>>(
           future: movies ? getRecentMovies() : getRecentSeries(),
