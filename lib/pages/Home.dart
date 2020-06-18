@@ -197,9 +197,9 @@ class _HomeState extends State<Home> {
             maxLines: 1,
             textAlign: TextAlign.center,
             textInputAction: TextInputAction.search,
-            onSubmitted: (term) async {
+            onSubmitted: (term) {
               if (_textEditingController.text != "") {
-                await databaseHelper.insert(
+                databaseHelper.insert(
                     history: History(_textEditingController.text));
                 Navigator.pushNamed(context, "/result",
                     arguments: _textEditingController.text);
@@ -225,9 +225,9 @@ class _HomeState extends State<Home> {
                 Icons.search,
                 color: Colors.white,
               ),
-              onPressed: () async {
+              onPressed: () {
                 if (_textEditingController.text != "") {
-                  await databaseHelper.insert(
+                  databaseHelper.insert(
                       history: History(_textEditingController.text));
                   Navigator.pushNamed(context, "/result",
                       arguments: _textEditingController.text);

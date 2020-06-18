@@ -172,11 +172,11 @@ class _TorrentCardState extends State<TorrentCard> {
                               final DatabaseHelper dbhelper = DatabaseHelper();
                               if (!isLiked) {
                                 await setMagnet(context);
-                                await dbhelper.insert(torrentinfo: widget.info);
+                                dbhelper.insert(torrentinfo: widget.info);
                                 showFlushBar(context, "Added to Favourite");
                                 return true;
                               } else {
-                                await dbhelper.delete(widget.info.name,
+                                dbhelper.delete(widget.info.name,
                                     torrentinfo: true);
                                 showFlushBar(context, "Removed from Favourite");
                                 return false;
