@@ -15,6 +15,7 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -57,20 +58,31 @@ class _SearchHistoryState extends State<SearchHistory> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (ctx, index) {
                     History history = History.fromMap(snapshot.data[index]);
-                    return ListTile(
-                      title: Text(history.searchHistory),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _databaseHelper.delete(history.searchHistory,
-                              history: true);
-                          setState(() {});
-                        },
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, "/result",
-                            arguments: history.searchHistory);
-                      },
+                    return Card(
+                      elevation: 2.0,
+                      child: ListTile(
+                          title: Text(history.searchHistory),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  _databaseHelper.delete(history.searchHistory,
+                                      history: true);
+                                  setState(() {});
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.search),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "/result",
+                                      arguments: history.searchHistory);
+                                },
+                              ),
+                            ],
+                          )),
                     );
                   },
                 );
