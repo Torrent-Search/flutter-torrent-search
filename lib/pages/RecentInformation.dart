@@ -62,6 +62,27 @@ class _RecentInformationState extends State<RecentInformation> {
             ? Theme.of(context).backgroundColor
             : Colors.white,
         extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: FutureBuilder(
+            future: _imdb,
+            builder: (BuildContext ctx, AsyncSnapshot<Imdb> snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.data.title,
+                  style: TextStyle(letterSpacing: 2.0),
+                );
+              }
+              return Text(
+                "",
+                style: TextStyle(letterSpacing: 2.0),
+              );
+            },
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(
+              color: themeProvider.darkTheme ? Colors.white : Colors.black),
+        ),
         body: SafeArea(
           child: ListView(
             children: <Widget>[
