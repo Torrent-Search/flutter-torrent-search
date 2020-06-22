@@ -19,6 +19,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
@@ -64,6 +65,8 @@ class _SettingState extends State<Settings> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<PreferenceProvider>(context);
+    Color color;
+
     return Scaffold(
       backgroundColor: themeProvider.darkTheme
           ? Theme.of(context).backgroundColor
@@ -108,69 +111,23 @@ class _SettingState extends State<Settings> {
               ExpansionTile(
                 title: Text(
                   "Accent",
-                  style: TextStyle(
-                    letterSpacing: 2.0,
-                  ),
+                  style: TextStyle(letterSpacing: 2.0),
                 ),
-                trailing: Icon(Icons.keyboard_arrow_down),
-                children: <Widget>[
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: colors0.map((e) {
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              themeProvider.accent = e;
-                              themeProvider.useSystemAccent = false;
-                              themeProvider.preferences.setSystemAccent(false);
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 20.0,
-                            backgroundColor: Color(e),
-                          ),
-                        );
-                      }).toList()),
-                  SizedBox(
-                    height: 20,
+                onExpansionChanged: (bool expansion) {},
+                children: [
+                  Container(
+                    child: MaterialColorPicker(
+                      allowShades: true,
+                      selectedColor: themeProvider.useSystemAccent
+                          ? Color(themeProvider.systemaccent)
+                          : Color(themeProvider.accent),
+                      onlyShadeSelection: true,
+                      onColorChange: (Color c) {
+                        themeProvider.useSystemAccent = false;
+                        themeProvider.accent = c.value;
+                      },
+                    ),
                   ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: colors1.map((e) {
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              themeProvider.accent = e;
-                              themeProvider.useSystemAccent = false;
-                              themeProvider.preferences.setSystemAccent(false);
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 20.0,
-                            backgroundColor: Color(e),
-                          ),
-                        );
-                      }).toList()),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: colors2.map((e) {
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              themeProvider.useSystemAccent = false;
-                              themeProvider.preferences.setSystemAccent(false);
-                              themeProvider.accent = e;
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 20.0,
-                            backgroundColor: Color(e),
-                          ),
-                        );
-                      }).toList()),
                   FutureBuilder(
                       future: deviceInfoPlugin.androidInfo,
                       builder: (BuildContext ctx,
