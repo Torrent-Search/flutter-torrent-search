@@ -60,25 +60,24 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int newVersion) async {
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS $tableTorrentInfo($columnName TEXT, $columnUrl TEXT'
+        'CREATE TABLE IF NOT EXISTS $tableTorrentInfo($columnName TEXT UNIQUE, $columnUrl TEXT'
         ', $columnSeeders TEXT, $columnLeechers TEXT'
         ', $columnUploadDate TEXT, $columnSize TEXT'
         ', $columnUploader TEXT, $columnMagnet TEXT'
         ', $columnWebsite TEXT, $columnTorrentFile TEXT)');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT)');
+        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)');
   }
 
   Future<int> insert(
       {TorrentInfo torrentinfo = null, History history = null}) async {
     Database dbClient = await db;
     int result = 0;
-    if (torrentinfo != null &&
-        await getTorrentInfoCount(torrentinfo.name) == 0) {
+    if (torrentinfo != null) {
       result = await dbClient.insert(tableTorrentInfo, torrentinfo.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
-    if (history != null && await getHistoyCount(history.searchHistory) == 0) {
+    if (history != null) {
       result = await dbClient.insert(tableHistory, history.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
