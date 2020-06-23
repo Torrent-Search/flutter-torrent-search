@@ -49,6 +49,7 @@ final ThemeData dark = ThemeData.dark().copyWith(
       elevation: 0.0,
       color: ThemeData.dark().primaryColor,
       brightness: Brightness.dark,
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     textTheme: ThemeData.dark().textTheme.apply(
           fontFamily: 'OpenSans',
@@ -83,6 +84,7 @@ final ThemeData light = ThemeData.light().copyWith(
       elevation: 0.0,
       color: primaryColor,
       brightness: Brightness.light,
+      iconTheme: IconThemeData(color: Colors.black),
     ),
     textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'OpenSans',
@@ -101,6 +103,7 @@ final ThemeData light = ThemeData.light().copyWith(
               topLeft: Radius.circular(10), topRight: Radius.circular(10)),
           color: Colors.white),
     ),
+    scaffoldBackgroundColor: Colors.white,
     textSelectionHandleColor: Colors.black);
 
 abstract class Themes {

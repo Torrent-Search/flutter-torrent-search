@@ -66,9 +66,6 @@ class _SettingState extends State<Settings> {
     final themeProvider = Provider.of<PreferenceProvider>(context);
 
     return Scaffold(
-      backgroundColor: themeProvider.darkTheme
-          ? Theme.of(context).backgroundColor
-          : Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
@@ -77,8 +74,6 @@ class _SettingState extends State<Settings> {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(
-            color: themeProvider.darkTheme ? Colors.white : Colors.black),
       ),
       body: SafeArea(
         child: Container(
