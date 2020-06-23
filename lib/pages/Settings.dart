@@ -16,12 +16,16 @@
  */
 
 import 'package:device_info/device_info.dart';
+import 'package:downloader/downloader.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
+import 'package:torrentsearch/network/model/Update.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/IndexersList.dart';
 
@@ -50,11 +54,6 @@ class _SettingState extends State<Settings> {
     Colors.yellow.value
   ];
 
-  Future<bool> _init() async {
-    version = await getAppVersion();
-    return true;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +64,6 @@ class _SettingState extends State<Settings> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<PreferenceProvider>(context);
-    Color color;
 
     return Scaffold(
       backgroundColor: themeProvider.darkTheme
@@ -126,6 +124,7 @@ class _SettingState extends State<Settings> {
                         themeProvider.useSystemAccent = false;
                         themeProvider.accent = c.value;
                       },
+                      shrinkWrap: true,
                     ),
                   ),
                   FutureBuilder(
@@ -181,6 +180,78 @@ class _SettingState extends State<Settings> {
                 trailing: Icon(Icons.description),
                 onTap: () {
                   Navigator.pushNamed(context, "/tac");
+                },
+              ),
+              FutureBuilder(
+                future: PackageInfo.fromPlatform(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<PackageInfo> snapshot) {
+                  if (snapshot.hasData) {
+                    return FutureBuilder(
+                      future: getAppVersion(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Update> snapshoti) {
+                        if (snapshoti.hasData) {
+                          print(snapshot.data.version);
+                          if (snapshot.data.version
+                                  .compareTo(snapshoti.data.version) ==
+                              -1) {
+                            return ExpansionTile(
+                              title: Text(
+                                "Update",
+                                style: TextStyle(letterSpacing: 2.0),
+                              ),
+                              trailing: Icon(Icons.keyboard_arrow_down),
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Center(
+                                        child: Text(
+                                          "New Update Available : ${snapshoti.data.version}",
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 2.0),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          Downloader.download(
+                                              snapshoti.data.link,
+                                              "Torrent_Search_${snapshoti.data.version}",
+                                              ".apk");
+                                          Flushbar(
+                                            message: "Downloading Update",
+                                            duration: Duration(seconds: 3),
+                                            flushbarStyle:
+                                                FlushbarStyle.FLOATING,
+                                          ).show(context);
+                                        },
+                                        icon: Icon(Icons.file_download),
+                                        color: Theme.of(context).accentColor,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                        }
+                        return Container(
+                          height: 0.0,
+                          width: 0.0,
+                        );
+                      },
+                    );
+                  }
+                  return Container(
+                    height: 0.0,
+                    width: 0.0,
+                  );
                 },
               ),
               ListTile(

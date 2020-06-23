@@ -25,6 +25,7 @@ import 'package:torrentsearch/network/model/Magnet.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/network/model/TorrentRepo.dart';
+import 'package:torrentsearch/network/model/Update.dart';
 
 const String BASE_URL = "https://torr-scraper.herokuapp.com/";
 
@@ -95,10 +96,13 @@ Future<Imdb> getImdb(String id) async {
   }
 }
 
-Future<String> getAppVersion() async {
+Future<Update> getAppVersion() async {
   http.Response response = await http.get('${BASE_URL}api/appversion');
   if (response.statusCode == 200) {
-    return response.body.toString();
+    return Update.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
   }
-  return "";
 }

@@ -15,24 +15,20 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
+import 'package:json_annotation/json_annotation.dart';
 
-part of 'TorrentRepo.dart';
+part 'Update.g.dart';
 
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
+@JsonSerializable()
+class Update {
+  @JsonKey(name: "version")
+  String version;
 
-TorrentRepo _$TorrentRepoFromJson(Map<String, dynamic> json) {
-  return TorrentRepo(
-    (json['data'] as List)
-        ?.map((e) =>
-            e == null ? null : TorrentInfo.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-  );
+  @JsonKey(name: "link")
+  String link;
+
+  Update({this.version, this.link});
+
+  factory Update.fromJson(Map<String, dynamic> json) => _$UpdateFromJson(json);
+  Map<String, dynamic> toJson() => _$UpdateToJson(this);
 }
-
-Map<String, dynamic> _$TorrentRepoToJson(TorrentRepo instance) =>
-    <String, dynamic>{
-      'data': instance.torrentInfo,
-    };

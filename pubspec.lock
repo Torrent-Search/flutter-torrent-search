@@ -106,13 +106,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0+1"
-  characters:
-    dependency: transitive
-    description:
-      name: characters
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   charcode:
     dependency: transitive
     description:
@@ -204,6 +197,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2+4"
+  downloader:
+    dependency: "direct main"
+    description:
+      name: downloader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   extended_tabs:
     dependency: "direct main"
     description:
@@ -211,13 +211,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.3"
-  fake_async:
-    dependency: transitive
-    description:
-      name: fake_async
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   file:
     dependency: transitive
     description:
@@ -512,7 +505,7 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.6.4"
   path_provider:
     dependency: transitive
     description:
@@ -748,7 +741,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.16"
+    version: "0.2.15"
   timing:
     dependency: transitive
     description:
@@ -841,5 +834,5 @@ packages:
     source: hosted
     version: "2.2.1"
 sdks:
-  dart: ">=2.9.0-14.0.dev <3.0.0"
+  dart: ">=2.7.2 <3.0.0"
   flutter: ">=1.16.0 <2.0.0"

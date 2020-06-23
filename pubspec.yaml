@@ -44,12 +44,13 @@ dependencies:
   package_info: ^0.4.1
   like_button: ^1.0.1
   flutter_material_color_picker: ^1.0.5
+  downloader: ^0.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^3.3.0
-  build_runner: ^1.8.1
+  build_runner: ^1.10.0
   flutter_launcher_icons: ^0.7.5
 
 

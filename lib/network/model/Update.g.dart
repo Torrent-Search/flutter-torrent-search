@@ -17,22 +17,20 @@
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'TorrentRepo.dart';
+part of 'Update.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TorrentRepo _$TorrentRepoFromJson(Map<String, dynamic> json) {
-  return TorrentRepo(
-    (json['data'] as List)
-        ?.map((e) =>
-            e == null ? null : TorrentInfo.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+Update _$UpdateFromJson(Map<String, dynamic> json) {
+  return Update(
+    version: json['version'] as String,
+    link: json['link'] as String,
   );
 }
 
-Map<String, dynamic> _$TorrentRepoToJson(TorrentRepo instance) =>
-    <String, dynamic>{
-      'data': instance.torrentInfo,
+Map<String, dynamic> _$UpdateToJson(Update instance) => <String, dynamic>{
+      'version': instance.version,
+      'link': instance.link,
     };
