@@ -192,7 +192,6 @@ class _SettingState extends State<Settings> {
                       builder: (BuildContext context,
                           AsyncSnapshot<Update> snapshoti) {
                         if (snapshoti.hasData) {
-                          print(snapshot.data.version);
                           if (snapshot.data.version
                                   .compareTo(snapshoti.data.version) ==
                               -1) {
