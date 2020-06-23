@@ -182,6 +182,13 @@ class _HomeState extends State<Home> {
                 Icons.search,
                 color: accentColor,
               ),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  _textEditingController.clear();
+                },
+                color: accentColor,
+              ),
               contentPadding: EdgeInsets.all(10.0),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5.0),
