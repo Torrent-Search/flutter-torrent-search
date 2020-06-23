@@ -116,9 +116,7 @@ class _SettingState extends State<Settings> {
                   Container(
                     child: MaterialColorPicker(
                       allowShades: true,
-                      selectedColor: themeProvider.useSystemAccent
-                          ? Color(themeProvider.systemaccent)
-                          : Color(themeProvider.accent),
+                      selectedColor: Color(themeProvider.accent),
                       onlyShadeSelection: true,
                       onColorChange: (Color c) {
                         themeProvider.useSystemAccent = false;
@@ -224,7 +222,8 @@ class _SettingState extends State<Settings> {
                                               "Torrent_Search_${snapshoti.data.version}",
                                               ".apk");
                                           Flushbar(
-                                            message: "Downloading Update",
+                                            message:
+                                                "Downloading Update to Downloads",
                                             duration: Duration(seconds: 3),
                                             flushbarStyle:
                                                 FlushbarStyle.FLOATING,
