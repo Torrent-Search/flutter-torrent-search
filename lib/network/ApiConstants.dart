@@ -31,7 +31,6 @@ class ApiConstants {
   static const String YTS_ENDPOINT = "api/yts";
   static const String EZTV_TORRENT = "api/eztv";
   static const String NOTIFICATION = "api/notification";
-  static const String ZOOQLE = "api/zooqle";
 
   static const List INDEXERS = [
     "1337x",
@@ -43,7 +42,6 @@ class ApiConstants {
     "Torrent Downloads",
     "Torrent Galaxy",
     "Yts",
-    "Zooqle",
     "Nyaa",
     "Horriblesubs"
   ];
