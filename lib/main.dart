@@ -181,16 +181,14 @@ class _MyAppState extends State<MyApp> {
 
   void _initializeRemoteConfig() async {
     _remoteConfig = await RemoteConfig.instance;
-    preferenceProvider.remoteconfig = _remoteConfig;
-
     try {
-      preferenceProvider.remoteconfig
-          .setConfigSettings(RemoteConfigSettings(debugMode: false));
-      preferenceProvider.remoteconfig.setDefaults(<String, dynamic>{
+      _remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: false));
+      _remoteConfig.setDefaults(<String, dynamic>{
         'baseUrl': 'https://torr-scraper.herokuapp.com/',
       });
-      preferenceProvider.remoteconfig.fetch(expiration: Duration(hours: 12));
-      preferenceProvider.remoteconfig.activateFetched();
+      _remoteConfig.fetch(expiration: Duration(hours: 12));
+      _remoteConfig.activateFetched();
+      preferenceProvider.remoteconfig = _remoteConfig;
     } on FetchThrottledException catch (_) {}
   }
 }
