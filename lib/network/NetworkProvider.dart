@@ -27,9 +27,8 @@ import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/network/model/TorrentRepo.dart';
 import 'package:torrentsearch/network/model/Update.dart';
 
-const String BASE_URL = "https://torr-scraper.herokuapp.com/";
-
-Future<List<TorrentInfo>> getApiResponse(String endpoint, String query) async {
+Future<List<TorrentInfo>> getApiResponse(
+    String BASE_URL, String endpoint, String query) async {
   http.Response response = await http.get('$BASE_URL$endpoint?search=$query');
   if (response.statusCode == 200) {
     return TorrentRepo.fromJSON(json.decode(response.body)).torrentInfo;
@@ -41,7 +40,8 @@ Future<List<TorrentInfo>> getApiResponse(String endpoint, String query) async {
   return null;
 }
 
-Future<String> getMagnetResponse(String endpoint, String url) async {
+Future<String> getMagnetResponse(
+    String BASE_URL, String endpoint, String url) async {
   var response = await http.get("$BASE_URL$endpoint?url=$url");
   if (response.statusCode == 200) {
     return Magnet.fromJson(json.decode(response.body)).magnet;
@@ -52,7 +52,8 @@ Future<String> getMagnetResponse(String endpoint, String url) async {
   }
 }
 
-Future<List<RecentInfo>> getRecentMovies({bool longList = false}) async {
+Future<List<RecentInfo>> getRecentMovies(String BASE_URL,
+    {bool longList = false}) async {
   String url = '${BASE_URL}api/tgxmov';
   if (longList) {
     url += "?list=long";
@@ -67,7 +68,8 @@ Future<List<RecentInfo>> getRecentMovies({bool longList = false}) async {
   }
 }
 
-Future<List<RecentInfo>> getRecentSeries({bool longList = false}) async {
+Future<List<RecentInfo>> getRecentSeries(String BASE_URL,
+    {bool longList = false}) async {
   List<RecentInfo> list;
   String url = '${BASE_URL}api/tgxseries';
   if (longList) {
@@ -84,7 +86,7 @@ Future<List<RecentInfo>> getRecentSeries({bool longList = false}) async {
   }
 }
 
-Future<Imdb> getImdb(String id) async {
+Future<Imdb> getImdb(String BASE_URL, String id) async {
   var response;
   response = await http.get('${BASE_URL}api/imdb?id=$id');
   if (response.statusCode == 200) {
@@ -96,7 +98,9 @@ Future<Imdb> getImdb(String id) async {
   }
 }
 
-Future<Update> getAppVersion() async {
+Future<Update> getAppVersion(
+  String BASE_URL,
+) async {
   http.Response response = await http.get('${BASE_URL}api/appversion');
   if (response.statusCode == 200) {
     return Update.fromJson(json.decode(response.body));

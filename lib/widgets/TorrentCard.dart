@@ -23,10 +23,12 @@ import 'package:intent/action.dart' as android_action;
 import 'package:intent/extra.dart' as android_extra;
 import 'package:intent/intent.dart' as android_intent;
 import 'package:like_button/like_button.dart';
+import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Themes.dart';
 
 class TorrentCard extends StatefulWidget {
@@ -46,6 +48,9 @@ class _TorrentCardState extends State<TorrentCard> {
 
   @override
   Widget build(BuildContext context) {
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
+    final String baseUrl = preferenceProvider.baseUrl;
     final Brightness br = Theme.of(context).brightness;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
@@ -139,7 +144,7 @@ class _TorrentCardState extends State<TorrentCard> {
                     icon: Icon(Icons.content_copy),
                     onPressed: () async {
                       if (widget.isClicked == false) {
-                        await setMagnet(context);
+                        await setMagnet(context, baseUrl);
                         ClipboardManager.copyToClipBoard(widget.info.magnet)
                             .then((value) {
                           showFlushBar(
@@ -153,7 +158,7 @@ class _TorrentCardState extends State<TorrentCard> {
                     icon: Icon(Icons.share),
                     onPressed: () async {
                       if (widget.isClicked == false) {
-                        await setMagnet(context);
+                        await setMagnet(context, baseUrl);
                         android_intent.Intent()
                           ..setAction(android_action.Action.ACTION_SEND)
                           ..putExtra(android_extra.Extra.EXTRA_TEXT,
@@ -171,7 +176,7 @@ class _TorrentCardState extends State<TorrentCard> {
                             onTap: (bool isLiked) async {
                               final DatabaseHelper dbhelper = DatabaseHelper();
                               if (!isLiked) {
-                                await setMagnet(context);
+                                await setMagnet(context, baseUrl);
                                 dbhelper.insert(torrentinfo: widget.info);
                                 showFlushBar(context, "Added to Favourite");
                                 return true;
@@ -205,7 +210,7 @@ class _TorrentCardState extends State<TorrentCard> {
     );
   }
 
-  Future<void> setMagnet(BuildContext ctx) async {
+  Future<void> setMagnet(BuildContext ctx, String baseUrl) async {
     if (widget.info.magnet == "") {
       String endpoint;
       switch (widget.info.website) {
@@ -220,7 +225,8 @@ class _TorrentCardState extends State<TorrentCard> {
           break;
       }
       showFlushBar(ctx, "Fetching Magnet Link from Server");
-      widget.info.magnet = await getMagnetResponse(endpoint, widget.info.url);
+      widget.info.magnet =
+          await getMagnetResponse(baseUrl, endpoint, widget.info.url);
     }
     return;
   }

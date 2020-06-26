@@ -36,14 +36,15 @@ class AllRecents extends StatefulWidget {
 class _AllRecentsState extends State<AllRecents> {
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<PreferenceProvider>(context);
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     final BorderRadius borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
     bool movies = ModalRoute.of(context).settings.arguments;
     return Scaffold(
-      backgroundColor: themeProvider.darkTheme
+      backgroundColor: preferenceProvider.darkTheme
           ? Theme.of(context).backgroundColor
           : Colors.white,
       extendBodyBehindAppBar: true,
@@ -55,13 +56,13 @@ class _AllRecentsState extends State<AllRecents> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         iconTheme: IconThemeData(
-            color: themeProvider.darkTheme ? Colors.white : Colors.black),
+            color: preferenceProvider.darkTheme ? Colors.white : Colors.black),
       ),
       body: SafeArea(
         child: FutureBuilder(
           future: movies
-              ? getRecentMovies(longList: true)
-              : getRecentSeries(longList: true),
+              ? getRecentMovies(preferenceProvider.baseUrl, longList: true)
+              : getRecentSeries(preferenceProvider.baseUrl, longList: true),
           builder:
               (BuildContext ctx, AsyncSnapshot<List<RecentInfo>> snapshot) {
             if (snapshot.hasData) {

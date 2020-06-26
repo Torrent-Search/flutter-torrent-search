@@ -270,6 +270,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildRecent(BuildContext ctx, {movies = true}) {
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
+    final String baseUrl = preferenceProvider.baseUrl;
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final borderRadius = BorderRadius.circular(5);
@@ -278,7 +281,7 @@ class _HomeState extends State<Home> {
       height: height * 0.29,
       padding: EdgeInsets.only(left: 5.0),
       child: FutureBuilder<List<RecentInfo>>(
-          future: movies ? getRecentMovies() : getRecentSeries(),
+          future: movies ? getRecentMovies(baseUrl) : getRecentSeries(baseUrl),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.separated(

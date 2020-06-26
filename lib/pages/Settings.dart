@@ -181,7 +181,8 @@ class _SettingState extends State<Settings> {
                     AsyncSnapshot<PackageInfo> snapshot) {
                   if (snapshot.hasData) {
                     return FutureBuilder(
-                      future: getAppVersion(),
+                      future: getAppVersion(
+                          Provider.of<PreferenceProvider>(context).baseUrl),
                       builder: (BuildContext context,
                           AsyncSnapshot<Update> snapshoti) {
                         if (snapshoti.hasData) {

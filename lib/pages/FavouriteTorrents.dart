@@ -42,10 +42,11 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<PreferenceProvider>(context);
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
 
     return Scaffold(
-      backgroundColor: themeProvider.darkTheme
+      backgroundColor: preferenceProvider.darkTheme
           ? Theme.of(context).backgroundColor
           : Colors.white,
       extendBodyBehindAppBar: true,
@@ -57,7 +58,7 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         iconTheme: IconThemeData(
-            color: themeProvider.darkTheme ? Colors.white : Colors.black),
+            color: preferenceProvider.darkTheme ? Colors.white : Colors.black),
       ),
       body: FutureBuilder(
         future: _databaseHelper.queryAll(torrentinfo: true),
@@ -68,9 +69,9 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (ctx, index) {
                   return _buildCard(
-                    context,
-                    TorrentInfo.fromMap(snapshot.data[index]),
-                  );
+                      context,
+                      TorrentInfo.fromMap(snapshot.data[index]),
+                      preferenceProvider.baseUrl);
                 },
               );
             }
@@ -84,7 +85,7 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
     );
   }
 
-  Widget _buildCard(BuildContext ctx, TorrentInfo info) {
+  Widget _buildCard(BuildContext ctx, TorrentInfo info, String baseurl) {
     final Brightness br = Theme.of(context).brightness;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
@@ -189,8 +190,8 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
                               endpoint = ApiConstants.LIMETORRENTS_ENDPOINT_MG;
                               break;
                           }
-                          info.magnet =
-                              await getMagnetResponse(endpoint, info.url);
+                          info.magnet = await getMagnetResponse(
+                              baseurl, endpoint, info.url);
                         }
                         ClipboardManager.copyToClipBoard(info.magnet)
                             .then((value) {
@@ -221,8 +222,8 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
                               endpoint = ApiConstants.LIMETORRENTS_ENDPOINT_MG;
                               break;
                           }
-                          info.magnet =
-                              await getMagnetResponse(endpoint, info.url);
+                          info.magnet = await getMagnetResponse(
+                              baseurl, endpoint, info.url);
                         }
                         android_intent.Intent()
                           ..setAction(android_action.Action.ACTION_SEND)

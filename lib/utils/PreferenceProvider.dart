@@ -15,6 +15,7 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
@@ -27,6 +28,8 @@ class PreferenceProvider with ChangeNotifier {
   bool _useSystemAccent = false;
   int _systemaccent = Colors.deepPurpleAccent.value;
   bool _tacaccepted = false;
+  RemoteConfig _remoteConfig = null;
+  String _base_url = "https://torr-scraper.herokuapp.com/";
 
   bool get darkTheme => _darkTheme;
   set darkTheme(bool value) {
@@ -59,5 +62,13 @@ class PreferenceProvider with ChangeNotifier {
     _tacaccepted = value;
     preferences.setTacAccepted(_tacaccepted);
     notifyListeners();
+  }
+
+  String get baseUrl => _base_url;
+
+  RemoteConfig get remoteconfig => _remoteConfig;
+  set remoteconfig(RemoteConfig config) {
+    _remoteConfig = config;
+    _base_url = _remoteConfig.getString("baseUrl");
   }
 }

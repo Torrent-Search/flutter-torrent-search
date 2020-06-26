@@ -50,15 +50,17 @@ class _RecentInformationState extends State<RecentInformation> {
   Widget build(BuildContext context) {
     final Map search = ModalRoute.of(context).settings.arguments;
     final double height = MediaQuery.of(context).size.height;
-    final themeProvider = Provider.of<PreferenceProvider>(context);
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
     final double width = MediaQuery.of(context).size.width;
     final borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
+    final String baseUrl = preferenceProvider.baseUrl;
     if (_imdb == null) {
-      _imdb = getImdb(search["imdbcode"]);
+      _imdb = getImdb(baseUrl, search["imdbcode"]);
     }
     return Scaffold(
-        backgroundColor: themeProvider.darkTheme
+        backgroundColor: preferenceProvider.darkTheme
             ? Theme.of(context).backgroundColor
             : Colors.white,
         extendBodyBehindAppBar: true,
@@ -81,7 +83,8 @@ class _RecentInformationState extends State<RecentInformation> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           iconTheme: IconThemeData(
-              color: themeProvider.darkTheme ? Colors.white : Colors.black),
+              color:
+                  preferenceProvider.darkTheme ? Colors.white : Colors.black),
         ),
         body: SafeArea(
           child: ListView(
@@ -150,7 +153,7 @@ class _RecentInformationState extends State<RecentInformation> {
 //                SizedBox(height: 20.0,),
               FutureBuilder<List<TorrentInfo>>(
                   future: getApiResponse(
-                      ApiConstants.TGX_ENDPOINT, search["imdbcode"]),
+                      baseUrl, ApiConstants.TGX_ENDPOINT, search["imdbcode"]),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Column(

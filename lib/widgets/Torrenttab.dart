@@ -20,10 +20,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
+import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/TorrentCard.dart';
 
 class Torrenttab extends StatefulWidget {
@@ -49,11 +51,14 @@ class _TorrenttabState extends State<Torrenttab>
   @override
   Widget build(BuildContext context) {
     final Color accentColor = Theme.of(context).accentColor;
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
+    final String baseUrl = preferenceProvider.baseUrl;
     return Scaffold(
       body: SafeArea(
         child: Container(
           child: FutureBuilder<List<TorrentInfo>>(
-              future: getApiResponse(widget.endpoint, widget.query),
+              future: getApiResponse(baseUrl, widget.endpoint, widget.query),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return AnimationLimiter(

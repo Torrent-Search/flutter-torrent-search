@@ -22,6 +22,7 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,7 @@ class _MyAppState extends State<MyApp> {
   final Firestore _db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   final Preferences _preferences = Preferences();
+  RemoteConfig _remoteConfig;
 
   final DatabaseHelper dbhelper = DatabaseHelper();
   static const platform = const MethodChannel('flutter.native/helper');
@@ -70,7 +72,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-//    openTgChannel();
     getCurrentAppTheme();
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
@@ -84,6 +85,7 @@ class _MyAppState extends State<MyApp> {
         },
         onBackgroundMessage: myBackgroundMessageHandler);
     _saveDeviceToken();
+    _initializeRemoteConfig();
   }
 
   void openTgChannel(String url) async {
@@ -175,5 +177,20 @@ class _MyAppState extends State<MyApp> {
             });
       }
     }
+  }
+
+  void _initializeRemoteConfig() async {
+    _remoteConfig = await RemoteConfig.instance;
+    preferenceProvider.remoteconfig = _remoteConfig;
+
+    try {
+      preferenceProvider.remoteconfig
+          .setConfigSettings(RemoteConfigSettings(debugMode: false));
+      preferenceProvider.remoteconfig.setDefaults(<String, dynamic>{
+        'baseUrl': 'https://torr-scraper.herokuapp.com/',
+      });
+      preferenceProvider.remoteconfig.fetch(expiration: Duration(hours: 12));
+      preferenceProvider.remoteconfig.activateFetched();
+    } on FetchThrottledException catch (_) {}
   }
 }
