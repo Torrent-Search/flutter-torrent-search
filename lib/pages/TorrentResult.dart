@@ -73,12 +73,16 @@ class _TorrentResultState extends State<TorrentResult> {
             titles.add(ApiConstants.INDEXERS[8]);
             endpoints.add(ApiConstants.YTS_ENDPOINT);
             break;
-          case "Nyaa":
+          case "Zooqle":
             titles.add(ApiConstants.INDEXERS[9]);
+            endpoints.add(ApiConstants.ZOOQLE);
+            break;
+          case "Nyaa":
+            titles.add(ApiConstants.INDEXERS[10]);
             endpoints.add(ApiConstants.NYAA_ENDPOINT);
             break;
           case "Horriblesubs":
-            titles.add(ApiConstants.INDEXERS[10]);
+            titles.add(ApiConstants.INDEXERS[11]);
             endpoints.add(ApiConstants.HORRIBLESUBS_ENDPOINT);
             break;
         }
