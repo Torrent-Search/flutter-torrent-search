@@ -48,7 +48,7 @@ class TorrentInfo {
   Map<String, dynamic> toJson() => _$TorrentInfoToJson(this);
 
   TorrentInfo(this.name, this.url, this.seeders, this.leechers,
-      this.upload_date, this.size, this.uploader, this.magnet, this.website);
+      this.upload_date, this.size, this.magnet, this.website);
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         'name': this.name,
@@ -57,10 +57,8 @@ class TorrentInfo {
         'leechers': this.leechers,
         'uploaddate': this.upload_date,
         'size': this.size,
-        'uploader': this.uploader,
         'magnet': this.magnet,
         'website': this.website,
-        'torrenfileurl': this.torrentFile,
       };
 
   factory TorrentInfo.fromMap(Map<String, dynamic> json) {
@@ -71,9 +69,8 @@ class TorrentInfo {
       json['leechers'] as String,
       json['uploaddate'] as String,
       json['size'] as String,
-      json['uploader'] as String,
       json['magnet'] as String,
       json['website'] as String,
-    )..torrentFile = json['torrenfileurl'] as String;
+    );
   }
 }
