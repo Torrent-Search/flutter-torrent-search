@@ -278,7 +278,7 @@ class _HomeState extends State<Home> {
     final borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
     return Container(
-      height: height * 0.29,
+      height: height * 0.35,
       padding: EdgeInsets.only(left: 5.0),
       child: FutureBuilder<List<RecentInfo>>(
           future: movies ? getRecentMovies(baseUrl) : getRecentSeries(baseUrl),
@@ -303,7 +303,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: width * 0.40,
+                      width: width * 0.45,
 //                      height: height * 0.20,
                       child: Card(
                         shape:
