@@ -73,7 +73,7 @@ class _AllRecentsState extends State<AllRecents> {
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
-                    crossAxisCount: 3,
+                    crossAxisCount: (width / (width * 0.40)).floor(),
                     mainAxisSpacing: 5.0,
                     crossAxisSpacing: 5.0,
                     childAspectRatio:
