@@ -20,12 +20,14 @@ import 'package:downloader/downloader.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/Update.dart';
+import 'package:torrentsearch/utils/GitlogModel.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/IndexersList.dart';
 
@@ -53,6 +55,7 @@ class _SettingState extends State<Settings> {
     Color.fromARGB(255, 94, 151, 246).value,
     Colors.yellow.value
   ];
+  double bottomPadding = 0;
 
   @override
   void initState() {
@@ -64,7 +67,6 @@ class _SettingState extends State<Settings> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<PreferenceProvider>(context);
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -178,6 +180,46 @@ class _SettingState extends State<Settings> {
                   );
                 },
               ),
+              FutureBuilder(
+                future: _loadFromJson(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.hasData) {
+                    return ExpansionTile(
+                      title: Text(
+                        "Changelog",
+                        style: TextStyle(letterSpacing: 2.0),
+                      ),
+                      children: <Widget>[
+                        ListView(
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          children: gitlogFromJson(snapshot.data).map((e) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 5.0,
+                                horizontal: 15.0,
+                              ),
+                              child: Text(
+                                e.message,
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        SizedBox(height: 15.0)
+                      ],
+                    );
+                  }
+                  return Container(
+                    height: 0.0,
+                    width: 0.0,
+                  );
+                },
+              ),
               ListTile(
                 title: Text("About", style: TextStyle(letterSpacing: 2.0)),
                 trailing: Icon(Icons.info_outline),
@@ -265,5 +307,9 @@ class _SettingState extends State<Settings> {
             }),
       ],
     );
+  }
+
+  Future<String> _loadFromJson() async {
+    return await rootBundle.loadString("assets/changelog.json");
   }
 }
