@@ -86,77 +86,7 @@ class _SettingState extends State<Settings> {
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             children: <Widget>[
-              ListTile(
-                title: Text(
-                  "Dark Mode",
-                  style: TextStyle(letterSpacing: 2.0),
-                ),
-                trailing: Switch(
-                  value: themeProvider.darkTheme,
-                  activeColor: Theme.of(context).accentColor,
-                  onChanged: (bool val) {
-                    setState(() {
-                      themeProvider.darkTheme = val;
-                    });
-                  },
-                ),
-              ),
-              ExpansionTile(
-                title: Text(
-                  "Accent",
-                  style: TextStyle(letterSpacing: 2.0),
-                ),
-                onExpansionChanged: (bool expansion) {},
-                children: [
-                  Container(
-                    child: MaterialColorPicker(
-                      allowShades: true,
-                      selectedColor: Color(themeProvider.accent),
-                      onlyShadeSelection: true,
-                      onColorChange: (Color c) {
-                        themeProvider.useSystemAccent = false;
-                        themeProvider.accent = c.value;
-                      },
-                      shrinkWrap: true,
-                    ),
-                  ),
-                  FutureBuilder(
-                      future: deviceInfoPlugin.androidInfo,
-                      builder: (BuildContext ctx,
-                          AsyncSnapshot<AndroidDeviceInfo> snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data.version.sdkInt >= 23) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    "Use System Accent",
-                                    style: TextStyle(letterSpacing: 2.0),
-                                  ),
-                                  Switch(
-                                    value: themeProvider.useSystemAccent,
-                                    activeColor: Theme.of(context).accentColor,
-                                    onChanged: (bool val) {
-                                      setState(() {
-                                        themeProvider.preferences
-                                            .setSystemAccent(val);
-                                        themeProvider.useSystemAccent = val;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        }
-                        return Container(
-                          height: 20.0,
-                        );
-                      })
-                ],
-              ),
+              _buildDecoration(themeProvider),
               ExpansionTile(
                 title: Text(
                   "Indexers",
@@ -272,6 +202,68 @@ class _SettingState extends State<Settings> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDecoration(PreferenceProvider provider) {
+    return ExpansionTile(
+      title: Text(
+        "Decoration",
+        style: TextStyle(letterSpacing: 3.0),
+      ),
+      children: <Widget>[
+        Container(
+          child: MaterialColorPicker(
+            allowShades: true,
+            selectedColor: Color(provider.accent),
+            onlyShadeSelection: true,
+            onColorChange: (Color c) {
+              provider.useSystemAccent = false;
+              provider.accent = c.value;
+            },
+            shrinkWrap: true,
+          ),
+        ),
+        SwitchListTile(
+          title: Text(
+            "Dark Mode",
+            style: TextStyle(letterSpacing: 1.0),
+          ),
+          value: provider.darkTheme,
+          activeColor: Theme.of(context).accentColor,
+          onChanged: (bool val) {
+            setState(() {
+              provider.darkTheme = val;
+            });
+          },
+        ),
+        FutureBuilder(
+            future: deviceInfoPlugin.androidInfo,
+            builder:
+                (BuildContext ctx, AsyncSnapshot<AndroidDeviceInfo> snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.version.sdkInt >= 23) {
+                  return SwitchListTile(
+                    title: Text(
+                      "Use System Accent",
+                      style: TextStyle(letterSpacing: 2.0),
+                    ),
+                    value: provider.useSystemAccent,
+                    activeColor: Theme.of(context).accentColor,
+                    onChanged: (bool val) {
+                      setState(() {
+                        provider.preferences.setSystemAccent(val);
+                        provider.useSystemAccent = val;
+                      });
+                    },
+                  );
+                }
+              }
+              return Container(
+                height: 20.0,
+              );
+            }),
+      ],
     );
   }
 }
