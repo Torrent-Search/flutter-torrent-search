@@ -209,7 +209,7 @@ class _SettingState extends State<Settings> {
     return ExpansionTile(
       title: Text(
         "Decoration",
-        style: TextStyle(letterSpacing: 3.0),
+        style: TextStyle(letterSpacing: 2.0),
       ),
       children: <Widget>[
         Container(
