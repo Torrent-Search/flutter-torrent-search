@@ -42,6 +42,7 @@ class _AllRecentsState extends State<AllRecents> {
     final double height = MediaQuery.of(context).size.height;
     final BorderRadius borderRadius = BorderRadius.circular(5);
     final Color accentColor = Theme.of(context).accentColor;
+    final Orientation orientation = MediaQuery.of(context).orientation;
     bool movies = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       backgroundColor: preferenceProvider.darkTheme
@@ -73,7 +74,7 @@ class _AllRecentsState extends State<AllRecents> {
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
-                    crossAxisCount: (width / (width * 0.40)).floor(),
+                    crossAxisCount: Orientation.portrait == orientation ? 2 : 3,
                     mainAxisSpacing: 5.0,
                     crossAxisSpacing: 5.0,
                     childAspectRatio:
