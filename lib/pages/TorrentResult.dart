@@ -129,6 +129,11 @@ class _TorrentResultState extends State<TorrentResult> {
                     return Text(e);
                   }).toList(),
                 ),
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                  color: Colors.white,
+                ),
               ),
               body: ExtendedTabBarView(
                 children: endpoints.map((e) {
