@@ -15,9 +15,6 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,12 +22,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
-import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
-import 'package:torrentsearch/widgets/Torrenttab.dart';
+import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/Thumbnail.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -50,63 +46,48 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<PreferenceProvider>(context);
+    final PreferenceProvider preferenceProvider =
+        Provider.of<PreferenceProvider>(context);
     final Color accentColor = Theme.of(context).accentColor;
     return Scaffold(
-      backgroundColor: themeProvider.darkTheme
-          ? Theme.of(context).backgroundColor
-          : Colors.white,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Center(
-          child: ListView(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(bottom: 5.0),
-                child: Stack(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5.0),
-                      child: Center(
-                        child: Text(
-                          "Torrent Search",
-                          style: TextStyle(
-                            color: accentColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/favourite");
-                          },
-                        ),
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(
-                            Icons.history,
-                            color: accentColor,
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/history");
-                          },
-                        ),
-                      ],
-                    )
-                  ],
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/favourite");
+                  },
                 ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.history,
+                      color: accentColor,
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/history");
+                    },
+                  ),
+                ],
+                title: Text(
+                  "Torrent Search",
+                  style: TextStyle(
+                    color: accentColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25.0,
+                  ),
+                ),
+                centerTitle: true,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
+              SliverList(
+                delegate: SliverChildListDelegate([
                   _buildSearch(context),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -114,7 +95,7 @@ class _HomeState extends State<Home> {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          "Recent Movies",
+                          "Movies",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               letterSpacing: 2.0,
@@ -139,7 +120,7 @@ class _HomeState extends State<Home> {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          "Recent TV Shows",
+                          "TV Shows",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               letterSpacing: 2.0,
@@ -158,8 +139,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   _buildRecent(context, movies: false),
-                ],
-              ),
+                ]),
+              )
             ],
           ),
         ),
@@ -168,8 +149,17 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildSearch(BuildContext ctx) {
-    final Color accentColor = Theme.of(context).accentColor;
+    final ThemeData theme = Theme.of(context);
+    final Color accentColor = theme.accentColor;
+    final OutlineInputBorder inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide.none,
+    );
+    final Color fillColor = theme.brightness == Brightness.dark
+        ? Color(0xff424242)
+        : Colors.black12;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Padding(
@@ -177,6 +167,8 @@ class _HomeState extends State<Home> {
           child: TextField(
             controller: _textEditingController,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: fillColor,
               hintText: "Search Here",
               prefixIcon: Icon(
                 Icons.search,
@@ -190,14 +182,8 @@ class _HomeState extends State<Home> {
                 color: accentColor,
               ),
               contentPadding: EdgeInsets.all(10.0),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                borderSide: BorderSide(color: accentColor, width: 2.0),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                borderSide: BorderSide(color: accentColor, width: 2.0),
-              ),
+              border: inputBorder,
+              focusedBorder: inputBorder,
             ),
             cursorColor: accentColor,
             keyboardType: TextInputType.text,
@@ -273,9 +259,9 @@ class _HomeState extends State<Home> {
     final PreferenceProvider preferenceProvider =
         Provider.of<PreferenceProvider>(context);
     final String baseUrl = preferenceProvider.baseUrl;
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    final borderRadius = BorderRadius.circular(5);
+    final MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final double width = mediaQueryData.size.width;
+    final double height = MediaQuery.of(context).size.height;
     final Color accentColor = Theme.of(context).accentColor;
     return Container(
       height: height * 0.35,
@@ -284,64 +270,17 @@ class _HomeState extends State<Home> {
           future: movies ? getRecentMovies(baseUrl) : getRecentSeries(baseUrl),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ListView.separated(
+              return ListView.builder(
                 physics: BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
                 shrinkWrap: true,
-                separatorBuilder: (ctx, index) {
-                  return SizedBox(
-                    width: 5.0,
-                  );
-                },
                 itemBuilder: (BuildContext ctxt, int index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, "/recentinfo", arguments: {
-                        "imdbcode": snapshot.data[index].imdbcode,
-                        "imgurl": snapshot.data[index].imgUrl,
-                      });
-                    },
-                    child: Container(
-                      width: width * 0.45,
-//                      height: height * 0.20,
-                      child: Card(
-                        shape:
-                            RoundedRectangleBorder(borderRadius: borderRadius),
-                        child: ClipRRect(
-                          borderRadius: borderRadius,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fill,
-                            imageUrl: snapshot.data[index].imgUrl,
-                            progressIndicatorBuilder: (ctx, url, progress) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      accentColor),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  return Thumbnail(snapshot.data[index], width: width * 0.40);
                 },
               );
             } else if (snapshot.hasError) {
-              switch (snapshot.error.runtimeType) {
-                case NoContentFoundException:
-                  return noContentFound();
-                  break;
-                case InternalServerError:
-                  return serverError();
-                  break;
-                case SocketException:
-                  return noInternet();
-                  break;
-                default:
-                  return unExpectedError();
-              }
+              return ExceptionWidget(snapshot.error);
             } else {
               return Center(
                   child: SpinKitThreeBounce(

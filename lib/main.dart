@@ -36,6 +36,7 @@ import 'package:torrentsearch/pages/Settings.dart';
 import 'package:torrentsearch/pages/SplashScreen.dart';
 import 'package:torrentsearch/pages/TermsandConditions.dart';
 import 'package:torrentsearch/pages/TorrentResult.dart';
+import 'package:torrentsearch/utils/FadeRouteBuilder.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/utils/Themes.dart';
@@ -119,16 +120,37 @@ class _MyAppState extends State<MyApp> {
         builder: (BuildContext context, value, Widget child) {
           return MaterialApp(
             home: SplashScreen(),
-            routes: {
-              "/home": (context) => Home(),
-              "/result": (context) => TorrentResult(),
-              "/recentinfo": (context) => RecentInformation(),
-              "/allrecents": (context) => AllRecents(),
-              "/settings": (context) => Settings(),
-              "/favourite": (context) => FavouriteTorrents(),
-              "/history": (context) => SearchHistory(),
-              "/tac": (context) => TermsandConditions(),
-              "/about": (context) => About(),
+            onGenerateRoute: (RouteSettings settings) {
+              dynamic args = settings.arguments;
+              switch (settings.name) {
+                case '/home':
+                  return FadeRouteBuilder(page: Home());
+                  break;
+                case '/result':
+                  return FadeRouteBuilder(page: TorrentResult(args));
+                  break;
+                case '/recentinfo':
+                  return FadeRouteBuilder(page: RecentInformation(args));
+                  break;
+                case '/allrecents':
+                  return FadeRouteBuilder(page: AllRecents(args));
+                  break;
+                case '/settings':
+                  return FadeRouteBuilder(page: Settings());
+                  break;
+                case '/favourite':
+                  return FadeRouteBuilder(page: FavouriteTorrents());
+                  break;
+                case '/history':
+                  return FadeRouteBuilder(page: SearchHistory());
+                  break;
+                case '/tac':
+                  return FadeRouteBuilder(page: TermsandConditions());
+                  break;
+                case '/about':
+                  return FadeRouteBuilder(page: About());
+                  break;
+              }
             },
             navigatorObservers: [
               FirebaseAnalyticsObserver(analytics: analytics)

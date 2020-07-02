@@ -17,21 +17,28 @@
 
 import 'package:extended_tabs/extended_tabs.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/widgets/Torrenttab.dart';
 
 class TorrentResult extends StatefulWidget {
+  final String search;
+
+  const TorrentResult(this.search);
+
   @override
   _TorrentResultState createState() => _TorrentResultState();
 }
 
-class _TorrentResultState extends State<TorrentResult> {
+class _TorrentResultState extends State<TorrentResult>
+    with TickerProviderStateMixin {
   final Preferences pref = Preferences();
   List<String> titles = List<String>();
   List<String> endpoints = List<String>();
   bool _isSnackbarShown = false;
+  TabController _tabController;
 
   Future<void> _init() async {
     ApiConstants.INDEXERS.forEach((element) async {
@@ -88,6 +95,7 @@ class _TorrentResultState extends State<TorrentResult> {
         }
       }
     });
+
     return true;
   }
 
@@ -100,7 +108,6 @@ class _TorrentResultState extends State<TorrentResult> {
   Widget build(BuildContext context) {
     titles.clear();
     endpoints.clear();
-    String search = ModalRoute.of(context).settings.arguments;
     final Color accentColor = Theme.of(context).accentColor;
     return Scaffold(
         body: FutureBuilder(
@@ -112,35 +119,42 @@ class _TorrentResultState extends State<TorrentResult> {
             endpoints.add(ApiConstants.ENDPOINT_1337x);
             pref.setIndexers("1337x", true);
           }
-          return DefaultTabController(
-            length: titles.length,
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: accentColor,
-                title: Text(
-                  'RESULTS',
-                  style: TextStyle(color: Colors.white, letterSpacing: 3.0),
-                ),
-                centerTitle: true,
-                bottom: TabBar(
-                  labelColor: accentColor,
-                  isScrollable: true,
-                  tabs: titles.map((e) {
-                    return Text(e);
-                  }).toList(),
-                ),
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                  color: Colors.white,
-                ),
+          _tabController = TabController(length: titles.length, vsync: this);
+          _tabController.addListener(() {
+            if (_tabController.indexIsChanging) {
+              _tabController.animateTo(_tabController.index);
+            }
+          });
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: accentColor,
+              title: Text(
+                'RESULTS',
+                style: TextStyle(color: Colors.white, letterSpacing: 3.0),
               ),
-              body: ExtendedTabBarView(
-                children: endpoints.map((e) {
-                  return Torrenttab(e, search);
+              centerTitle: true,
+              bottom: TabBar(
+                labelColor: accentColor,
+                isScrollable: true,
+                tabs: titles.map((e) {
+                  return Text(e);
                 }).toList(),
-                cacheExtent: endpoints.length,
+                controller: _tabController,
               ),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+                color: Colors.white,
+              ),
+            ),
+            body: ExtendedTabBarView(
+              children: endpoints.map((e) {
+                return Torrenttab(e, widget.search);
+              }).toList(),
+              controller: _tabController,
+              physics: AlwaysScrollableScrollPhysics(),
+              dragStartBehavior: DragStartBehavior.down,
+              cacheExtent: _tabController.length,
             ),
           );
         } else {
@@ -150,6 +164,12 @@ class _TorrentResultState extends State<TorrentResult> {
         }
       },
     ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
   }
 
   void showFlushbar(BuildContext context) {

@@ -26,8 +26,10 @@ Color accentColor = Colors.deepPurpleAccent;
 
 TextStyle defaultTextStyle(Brightness brightness) {
   return TextStyle(
-      color: brightness == Brightness.dark ? Colors.white : Colors.black,
-      fontSize: 13);
+    color: brightness == Brightness.dark ? Colors.white : Colors.black,
+    fontSize: 13,
+    fontFamily: "OpenSans",
+  );
 }
 
 TextStyle defaultTextStyleBold(Brightness brightness) {
@@ -37,39 +39,40 @@ TextStyle defaultTextStyleBold(Brightness brightness) {
 }
 
 final ThemeData dark = ThemeData.dark().copyWith(
-    primaryColor: primaryColor,
-    accentColor: accentColor,
+  primaryColor: primaryColor,
+  accentColor: accentColor,
+  brightness: Brightness.dark,
+  backgroundColor: Colors.black,
+  buttonTheme: ThemeData.dark().buttonTheme.copyWith(
+        colorScheme: ColorScheme.dark(),
+        buttonColor: primaryColor,
+      ),
+  appBarTheme: AppBarTheme(
+    elevation: 0.0,
+    color: Colors.black,
     brightness: Brightness.dark,
-    backgroundColor: Colors.black,
-    buttonTheme: ThemeData.dark().buttonTheme.copyWith(
-          colorScheme: ColorScheme.dark(),
-          buttonColor: primaryColor,
-        ),
-    appBarTheme: AppBarTheme(
-      elevation: 0.0,
-      color: ThemeData.dark().primaryColor,
-      brightness: Brightness.dark,
-      iconTheme: IconThemeData(color: Colors.white),
-    ),
-    textTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'OpenSans',
-        ),
-    primaryTextTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'OpenSans',
-        ),
-    accentTextTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'OpenSans',
-        ),
-    tabBarTheme: TabBarTheme(
-      unselectedLabelColor: Colors.white,
-      indicatorSize: TabBarIndicatorSize.tab,
-      indicator: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-          color: Colors.white),
-    ),
-    scaffoldBackgroundColor: Colors.black,
-    textSelectionHandleColor: Colors.white);
+    iconTheme: IconThemeData(color: Colors.white),
+  ),
+  textTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'OpenSans',
+      ),
+  primaryTextTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'OpenSans',
+      ),
+  accentTextTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'OpenSans',
+      ),
+  tabBarTheme: TabBarTheme(
+    unselectedLabelColor: Colors.white,
+    indicatorSize: TabBarIndicatorSize.tab,
+    indicator: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        color: Colors.white),
+  ),
+  scaffoldBackgroundColor: Colors.black,
+  textSelectionHandleColor: Colors.white,
+);
 
 final ThemeData light = ThemeData.light().copyWith(
     primaryColor: primaryColor,
@@ -82,7 +85,7 @@ final ThemeData light = ThemeData.light().copyWith(
         ),
     appBarTheme: AppBarTheme(
       elevation: 0.0,
-      color: primaryColor,
+      color: Colors.white,
       brightness: Brightness.light,
       iconTheme: IconThemeData(color: Colors.black),
     ),

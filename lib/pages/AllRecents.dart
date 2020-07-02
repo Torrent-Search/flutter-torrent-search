@@ -15,20 +15,21 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
-import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/Torrenttab.dart';
+import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/Thumbnail.dart';
 
 class AllRecents extends StatefulWidget {
+  final bool movies;
+
+  const AllRecents(this.movies);
+
   @override
   _AllRecentsState createState() => _AllRecentsState();
 }
@@ -38,94 +39,54 @@ class _AllRecentsState extends State<AllRecents> {
   Widget build(BuildContext context) {
     final PreferenceProvider preferenceProvider =
         Provider.of<PreferenceProvider>(context);
-    final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
-    final BorderRadius borderRadius = BorderRadius.circular(5);
+    final MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final double width = mediaQueryData.size.width;
+    final double height = mediaQueryData.size.height;
     final Color accentColor = Theme.of(context).accentColor;
-    final Orientation orientation = MediaQuery.of(context).orientation;
-    bool movies = ModalRoute.of(context).settings.arguments;
+    final Orientation orientation = mediaQueryData.orientation;
     return Scaffold(
-      backgroundColor: preferenceProvider.darkTheme
-          ? Theme.of(context).backgroundColor
-          : Colors.white,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          movies ? "Recent Movies" : "Recent TV Shows",
-          style: TextStyle(letterSpacing: 3.0),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(
-            color: preferenceProvider.darkTheme ? Colors.white : Colors.black),
-      ),
       body: SafeArea(
         child: FutureBuilder(
-          future: movies
+          future: widget.movies
               ? getRecentMovies(preferenceProvider.baseUrl, longList: true)
               : getRecentSeries(preferenceProvider.baseUrl, longList: true),
           builder:
               (BuildContext ctx, AsyncSnapshot<List<RecentInfo>> snapshot) {
             if (snapshot.hasData) {
-              return Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Container(
-                  child: GridView.count(
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    crossAxisCount: Orientation.portrait == orientation ? 2 : 3,
-                    mainAxisSpacing: 5.0,
-                    crossAxisSpacing: 5.0,
-                    childAspectRatio:
-                        (((width) / 2) / ((height / 2) - height * 0.1)),
-                    children: snapshot.data.map((e) {
-                      return InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, "/recentinfo",
-                              arguments: {
-                                "imdbcode": e.imdbcode,
-                                "imgurl": e.imgUrl,
-                              });
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: borderRadius),
-                          child: ClipRRect(
-                            borderRadius: borderRadius,
-                            child: CachedNetworkImage(
-                              fit: BoxFit.fill,
-                              imageUrl: e.imgUrl,
-                              progressIndicatorBuilder: (ctx, url, progress) {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).accentColor),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+              return CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: <Widget>[
+                  SliverAppBar(
+                    title: Text(
+                      widget.movies ? "Recent Movies" : "Recent TV Shows",
+                      style: TextStyle(letterSpacing: 3.0),
+                    ),
+                    centerTitle: true,
+                    iconTheme: IconThemeData(
+                      color: preferenceProvider.darkTheme
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    floating: true,
                   ),
-                ),
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    sliver: SliverGrid.count(
+                      crossAxisCount:
+                          Orientation.portrait == orientation ? 2 : 3,
+                      mainAxisSpacing: 5.0,
+                      crossAxisSpacing: 5.0,
+                      childAspectRatio:
+                          (((width) / 2) / ((height / 2) - height * 0.1)),
+                      children: snapshot.data.map((e) {
+                        return Thumbnail(e);
+                      }).toList(),
+                    ),
+                  ),
+                ],
               );
             } else if (snapshot.hasError) {
-              switch (snapshot.error.runtimeType) {
-                case NoContentFoundException:
-                  return noContentFound();
-                  break;
-                case InternalServerError:
-                  return serverError();
-                  break;
-                case SocketException:
-                  return noInternet();
-                  break;
-                default:
-                  return unExpectedError();
-              }
+              return ExceptionWidget(snapshot.error);
             } else {
               return Center(
                   child: SpinKitThreeBounce(

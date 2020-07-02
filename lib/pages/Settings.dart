@@ -70,7 +70,10 @@ class _SettingState extends State<Settings> {
       appBar: AppBar(
         title: Text(
           'SETTINGS',
-          style: TextStyle(letterSpacing: 3.0),
+          style: TextStyle(
+            letterSpacing: 3.0,
+            fontFamily: "OpenSans",
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -90,7 +93,10 @@ class _SettingState extends State<Settings> {
               ExpansionTile(
                 title: Text(
                   "Indexers",
-                  style: TextStyle(letterSpacing: 2.0),
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    fontFamily: "OpenSans",
+                  ),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_down),
                 children: <Widget>[
@@ -99,7 +105,10 @@ class _SettingState extends State<Settings> {
               ),
               ListTile(
                 title: Text("Terms and Conditions",
-                    style: TextStyle(letterSpacing: 2.0)),
+                    style: TextStyle(
+                      letterSpacing: 2.0,
+                      fontFamily: "OpenSans",
+                    )),
                 trailing: Icon(Icons.description),
                 onTap: () {
                   Navigator.pushNamed(context, "/tac");
@@ -136,9 +145,11 @@ class _SettingState extends State<Settings> {
                                         child: Text(
                                           "New Update Available : ${snapshoti.data.version}",
                                           style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 2.0),
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 2.0,
+                                            fontFamily: "OpenSans",
+                                          ),
                                         ),
                                       ),
                                       IconButton(
@@ -179,7 +190,11 @@ class _SettingState extends State<Settings> {
                 },
               ),
               ListTile(
-                title: Text("About", style: TextStyle(letterSpacing: 2.0)),
+                title: Text("About",
+                    style: TextStyle(
+                      letterSpacing: 2.0,
+                      fontFamily: "OpenSans",
+                    )),
                 trailing: Icon(Icons.info_outline),
                 onTap: () {
                   Navigator.pushNamed(context, "/about");
@@ -194,6 +209,7 @@ class _SettingState extends State<Settings> {
                       letterSpacing: 2.0,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
+                      fontFamily: "OpenSans",
                     ),
                   ),
                 ),
