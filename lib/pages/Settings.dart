@@ -28,6 +28,7 @@ import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/Update.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/IndexersList.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -96,6 +97,26 @@ class _SettingState extends State<Settings> {
                 trailing: Icon(Icons.description),
                 onTap: () {
                   Navigator.pushNamed(context, "/tac");
+                },
+              ),
+              ListTile(
+                title: Text(
+                  "Join our Telegram Channel",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    fontFamily: "OpenSans",
+                  ),
+                ),
+                subtitle: Text(
+                  "Torrent Search",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    fontFamily: "OpenSans",
+                  ),
+                ),
+                trailing: Icon(Icons.send),
+                onTap: () {
+                  launch("https://t.me/torrentsearch_app");
                 },
               ),
               FutureBuilder(
