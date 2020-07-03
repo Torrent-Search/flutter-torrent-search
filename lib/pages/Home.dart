@@ -91,7 +91,7 @@ class _HomeState extends State<Home> {
                   _buildSearch(context),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 8.0),
+                        vertical: 8.0, horizontal: 15.0),
                     child: Row(
                       children: <Widget>[
                         Text(
@@ -104,7 +104,14 @@ class _HomeState extends State<Home> {
                         ),
                         Spacer(),
                         InkWell(
-                          child: Text("View all"),
+                          child: Text(
+                            "View all",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
                           onTap: () {
                             Navigator.pushNamed(context, "/allrecents",
                                 arguments: true);
@@ -116,20 +123,28 @@ class _HomeState extends State<Home> {
                   _buildRecent(context),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 8.0),
+                        vertical: 8.0, horizontal: 15.0),
                     child: Row(
                       children: <Widget>[
                         Text(
                           "TV Shows",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2.0,
-                              fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2.0,
+                            fontSize: 16,
+                          ),
                           textAlign: TextAlign.left,
                         ),
                         Spacer(),
                         InkWell(
-                          child: Text("View all"),
+                          child: Text(
+                            "View all",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
                           onTap: () {
                             Navigator.pushNamed(context, "/allrecents",
                                 arguments: false);

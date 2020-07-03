@@ -46,54 +46,58 @@ class _AllRecentsState extends State<AllRecents> {
     final Orientation orientation = mediaQueryData.orientation;
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder(
-          future: widget.movies
-              ? getRecentMovies(preferenceProvider.baseUrl, longList: true)
-              : getRecentSeries(preferenceProvider.baseUrl, longList: true),
-          builder:
-              (BuildContext ctx, AsyncSnapshot<List<RecentInfo>> snapshot) {
-            if (snapshot.hasData) {
-              return CustomScrollView(
-                physics: BouncingScrollPhysics(),
-                slivers: <Widget>[
-                  SliverAppBar(
-                    title: Text(
-                      widget.movies ? "Recent Movies" : "Recent TV Shows",
-                      style: TextStyle(letterSpacing: 3.0),
-                    ),
-                    centerTitle: true,
-                    iconTheme: IconThemeData(
-                      color: preferenceProvider.darkTheme
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                    floating: true,
-                  ),
-                  SliverPadding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    sliver: SliverGrid.count(
-                      crossAxisCount:
-                          Orientation.portrait == orientation ? 2 : 3,
-                      mainAxisSpacing: 5.0,
-                      crossAxisSpacing: 5.0,
-                      childAspectRatio:
-                          (((width) / 2) / ((height / 2) - height * 0.1)),
-                      children: snapshot.data.map((e) {
-                        return Thumbnail(e);
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return ExceptionWidget(snapshot.error);
-            } else {
-              return Center(
-                  child: SpinKitThreeBounce(
-                color: accentColor,
-              ));
-            }
-          },
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: <Widget>[
+            SliverAppBar(
+              title: Text(
+                widget.movies ? "Movies" : "TV Shows",
+                style: TextStyle(letterSpacing: 3.0),
+              ),
+              centerTitle: true,
+              iconTheme: IconThemeData(
+                color:
+                    preferenceProvider.darkTheme ? Colors.white : Colors.black,
+              ),
+              floating: true,
+            ),
+            FutureBuilder(
+                future: widget.movies
+                    ? getRecentMovies(preferenceProvider.baseUrl,
+                        longList: true)
+                    : getRecentSeries(preferenceProvider.baseUrl,
+                        longList: true),
+                builder: (BuildContext ctx,
+                    AsyncSnapshot<List<RecentInfo>> snapshot) {
+                  if (snapshot.hasData) {
+                    return SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      sliver: SliverGrid.count(
+                        crossAxisCount:
+                            Orientation.portrait == orientation ? 2 : 3,
+                        mainAxisSpacing: 5.0,
+                        crossAxisSpacing: 5.0,
+                        childAspectRatio:
+                            (((width) / 2) / ((height / 2) - height * 0.1)),
+                        children: snapshot.data.map((e) {
+                          return Thumbnail(e);
+                        }).toList(),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return SliverFillRemaining(
+                      child: ExceptionWidget(snapshot.error),
+                    );
+                  } else {
+                    return SliverFillRemaining(
+                      child: Center(
+                          child: SpinKitThreeBounce(
+                        color: accentColor,
+                      )),
+                    );
+                  }
+                }),
+          ],
         ),
       ),
     );

@@ -46,9 +46,6 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
         Provider.of<PreferenceProvider>(context);
 
     return Scaffold(
-      backgroundColor: preferenceProvider.darkTheme
-          ? Theme.of(context).backgroundColor
-          : Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
@@ -78,7 +75,7 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
             return _buildNoFavourite();
           }
           return SpinKitThreeBounce(
-            color: accentColor,
+            color: Theme.of(context).accentColor,
           );
         },
       ),
