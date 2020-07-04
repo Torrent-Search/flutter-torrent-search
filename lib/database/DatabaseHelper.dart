@@ -75,11 +75,11 @@ class DatabaseHelper {
     int result = 0;
     if (torrentinfo != null) {
       result = await dbClient.insert(tableTorrentInfo, torrentinfo.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: ConflictAlgorithm.abort);
     }
     if (history != null) {
       result = await dbClient.insert(tableHistory, history.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: ConflictAlgorithm.abort);
     }
     return result;
   }
