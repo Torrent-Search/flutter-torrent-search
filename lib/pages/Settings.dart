@@ -253,9 +253,9 @@ class _SettingState extends State<Settings> {
           value: provider.darkTheme,
           activeColor: Theme.of(context).accentColor,
           onChanged: (bool val) {
-            setState(() {
-              provider.darkTheme = val;
-            });
+            // setState(() {
+            provider.darkTheme = val;
+            // });
           },
         ),
         FutureBuilder(
