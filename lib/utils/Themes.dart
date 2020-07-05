@@ -35,6 +35,7 @@ TextStyle defaultTextStyle(Brightness brightness) {
 TextStyle defaultTextStyleBold(Brightness brightness) {
   return defaultTextStyle(brightness).copyWith(
     fontWeight: FontWeight.bold,
+    fontFamily: "OpenSans",
   );
 }
 
