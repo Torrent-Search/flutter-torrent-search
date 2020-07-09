@@ -21,11 +21,14 @@ import 'package:http/http.dart' as http;
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/Imdb.dart';
+import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
+import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/network/model/Magnet.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/network/model/TorrentRepo.dart';
 import 'package:torrentsearch/network/model/Update.dart';
+import 'package:torrentsearch/network/ApiConstants.dart';
 
 Future<List<TorrentInfo>> getApiResponse(
     String BASE_URL, String endpoint, String query) async {
@@ -98,12 +101,72 @@ Future<Imdb> getImdb(String BASE_URL, String id) async {
   }
 }
 
-Future<Update> getAppVersion(
-  String BASE_URL,
-) async {
+Future<Update> getAppVersion(String BASE_URL,) async {
   http.Response response = await http.get('${BASE_URL}api/appversion');
   if (response.statusCode == 200) {
     return Update.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
+  }
+}
+
+Future<JioSaavnRawQuery> getJioSaavnRawResponse(String BASE_URL,
+    String query) async {
+  http.Response response =
+  await http.get('${BASE_URL}${ApiConstants.JIOSAAVNRAW}?search=$query');
+  if (response.statusCode == 200) {
+    return JioSaavnRawQuery.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
+  }
+}
+
+Future<SongdataWithUrl> getJioSongdataWithUrl(String BASE_URL,
+    String query) async {
+  http.Response response =
+  await http.get('${BASE_URL}${ApiConstants.JIOSAAVSONG}?search=$query');
+  if (response.statusCode == 200) {
+    return SongdataWithUrl.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
+  }
+}
+
+Future<AlbumWithUrl> getJioAlbumWithUrl(String BASE_URL, String query) async {
+  http.Response response =
+  await http.get('${BASE_URL}${ApiConstants.JIOSAAVALBUM}?search=$query');
+  if (response.statusCode == 200) {
+    return AlbumWithUrl.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
+  }
+}
+
+Future<JioSaavnHome> getJioSaavnHome(String BASE_URL) async {
+  http.Response response =
+  await http.get('${BASE_URL}${ApiConstants.JIOSAAVHOME}');
+  if (response.statusCode == 200) {
+    return JioSaavnHome.fromJson(json.decode(response.body));
+  } else if (response.statusCode == 204) {
+    throw NoContentFoundException();
+  } else if (response.statusCode == 500) {
+    throw InternalServerError();
+  }
+}
+
+Future<Playlist> getPlaylist(String BASE_URL, String query) async {
+  http.Response response = await http
+      .get('${BASE_URL}${ApiConstants.JIOSAAVPLAYLIST}?search=$query');
+  if (response.statusCode == 200) {
+    return Playlist.fromJson(json.decode(response.body));
   } else if (response.statusCode == 204) {
     throw NoContentFoundException();
   } else if (response.statusCode == 500) {

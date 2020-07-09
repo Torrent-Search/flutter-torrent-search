@@ -32,6 +32,11 @@ class ApiConstants {
   static const String EZTV_TORRENT = "api/eztv";
   static const String NOTIFICATION = "api/notification";
   static const String ZOOQLE = "api/zooqle";
+  static const String JIOSAAVNRAW = "api/jiosaavnraw";
+  static const String JIOSAAVSONG = "api/jiosaavnsong";
+  static const String JIOSAAVALBUM = "api/jiosaavnalbum";
+  static const String JIOSAAVPLAYLIST = "api/jiosaavnplaylist";
+  static const String JIOSAAVHOME = "api/jiosaavnhome";
 
   static const List INDEXERS = [
     "1337x",

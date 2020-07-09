@@ -22,7 +22,7 @@ import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 
 class ExceptionWidget extends StatelessWidget {
-  final Exception _exception;
+  final Object _exception;
 
   ExceptionWidget(this._exception);
 

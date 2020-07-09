@@ -27,9 +27,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/pages/About.dart';
+import 'package:torrentsearch/pages/AlbumInformation.dart';
+import 'package:torrentsearch/pages/AllMusic.dart';
 import 'package:torrentsearch/pages/AllRecents.dart';
 import 'package:torrentsearch/pages/FavouriteTorrents.dart';
 import 'package:torrentsearch/pages/Home.dart';
+import 'package:torrentsearch/pages/Music.dart';
+import 'package:torrentsearch/pages/MusicInformation.dart';
+import 'package:torrentsearch/pages/MusicResult.dart';
+import 'package:torrentsearch/pages/PlaylistInformation.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
 import 'package:torrentsearch/pages/SearchHistory.dart';
 import 'package:torrentsearch/pages/Settings.dart';
@@ -119,7 +125,7 @@ class _MyAppState extends State<MyApp> {
       child: Consumer<PreferenceProvider>(
         builder: (BuildContext context, value, Widget child) {
           return MaterialApp(
-            home: SplashScreen(),
+            home: Home(),
             onGenerateRoute: (RouteSettings settings) {
               dynamic args = settings.arguments;
               switch (settings.name) {
@@ -149,6 +155,38 @@ class _MyAppState extends State<MyApp> {
                   break;
                 case '/about':
                   return FadeRouteBuilder(page: About());
+                  break;
+                case '/musicinfo':
+                  print(args.runtimeType);
+                  if (args.runtimeType == String) {
+                    return FadeRouteBuilder(
+                        page: MusicInformation(
+                      pid: args,
+                    ));
+                  }
+                  return FadeRouteBuilder(
+                      page: MusicInformation(
+                    songdata: args,
+                  ));
+                  break;
+                case '/albuminfo':
+                  return FadeRouteBuilder(
+                      page: AlbumInformation(
+                    id: args,
+                  ));
+                  break;
+                case '/playlistinfo':
+                  return FadeRouteBuilder(
+                      page: PlaylistInformation(
+                    id: args,
+                  ));
+                  break;
+                case '/allmusic':
+                  return FadeRouteBuilder(
+                      page: AllMusic(args['list'], args['type']));
+                  break;
+                case '/musicresult':
+                  return FadeRouteBuilder(page: MusicResult(args));
                   break;
               }
             },
