@@ -26,38 +26,38 @@ class _MusicInformationState extends State<MusicInformation> {
   @override
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
-    Provider.of<PreferenceProvider>(context);
+        Provider.of<PreferenceProvider>(context);
 
     return widget.songdata == null
         ? FutureBuilder(
-      future: getJioSongdataWithUrl(_provider.baseUrl, widget.pid),
-      builder: (BuildContext context,
-          AsyncSnapshot<SongdataWithUrl> snapshot) {
-        if (snapshot.hasData) {
-          try {
-            double minute = int.parse(snapshot.data.duration) / 60;
-            snapshot.data.duration = minute.toStringAsFixed(2);
-          } on Exception {}
-          return _buildBody(snapshot.data);
-        } else if (snapshot.hasError) {
-          Scaffold(
-            appBar: AppBar(),
-            body: SafeArea(
-              child: ExceptionWidget(snapshot.error),
-            ),
-          );
-        }
-        return Scaffold(
-          appBar: AppBar(),
-          body: SafeArea(
-            child: Center(
-                child: SpinKitThreeBounce(
-                  color: Theme.of(context).accentColor,
-                )),
-          ),
-        );
-      },
-    )
+            future: getJioSongdataWithUrl(_provider.baseUrl, widget.pid),
+            builder: (BuildContext context,
+                AsyncSnapshot<SongdataWithUrl> snapshot) {
+              if (snapshot.hasData) {
+                try {
+                  double minute = int.parse(snapshot.data.duration) / 60;
+                  snapshot.data.duration = minute.toStringAsFixed(2);
+                } on Exception {}
+                return _buildBody(snapshot.data);
+              } else if (snapshot.hasError) {
+                Scaffold(
+                  appBar: AppBar(),
+                  body: SafeArea(
+                    child: ExceptionWidget(snapshot.error),
+                  ),
+                );
+              }
+              return Scaffold(
+                appBar: AppBar(),
+                body: SafeArea(
+                  child: Center(
+                      child: SpinKitThreeBounce(
+                    color: Theme.of(context).accentColor,
+                  )),
+                ),
+              );
+            },
+          )
         : _buildBody(widget.songdata);
   }
 
@@ -197,7 +197,7 @@ class _MusicInformationState extends State<MusicInformation> {
                       ),
                       onPressed: () async {
                         final String fileName = getFileName(songdata.song);
-                        if (DownloadService.checkIfDownloading(songdata.song)) {
+                        if (!DownloadService.checkIfDownloading(fileName)) {
                           if (await DownloadService.requestDownload(TaskInfo(
                               name: fileName,
                               link: songdata.encryptedMediaUrl))) {

@@ -91,13 +91,13 @@ class DownloadService {
     return File(_localPath + "/" + filename).existsSync();
   }
 
-  static checkIfDownloading(String name) {
+  static bool checkIfDownloading(String name) {
     TaskInfo task =
-        _tasks?.firstWhere((task) => task.name == name, orElse: () {});
-
+        _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
     if (task == null) {
       return false;
     }
+
     if (task.status == DownloadTaskStatus.running ||
         task.status == DownloadTaskStatus.enqueued ||
         task.status == DownloadTaskStatus.paused) {

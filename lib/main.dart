@@ -56,7 +56,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'database/DatabaseHelper.dart';
 
 void main() async {
-  await FlutterDownloader.initialize(debug: true);
+  await FlutterDownloader.initialize(debug: false);
   runApp(MyApp());
 }
 
