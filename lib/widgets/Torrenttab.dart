@@ -16,12 +16,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/TorrentCard.dart';
 
 class Torrenttab extends StatefulWidget {
@@ -61,17 +61,15 @@ class _TorrenttabState extends State<Torrenttab>
                     physics: BouncingScrollPhysics(),
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext ctxt, int index) {
-                      return TorrentCard(snapshot.data[index] //[index]
+                      final TorrentInfo info = snapshot.data[index];
+                      return TorrentCard(info //[index]
                           );
                     },
                   );
                 } else if (snapshot.hasError) {
                   return ExceptionWidget(snapshot.error);
                 } else {
-                  return Center(
-                      child: SpinKitThreeBounce(
-                    color: accentColor,
-                  ));
+                  return LoadingWidget();
                 }
               }),
         ),

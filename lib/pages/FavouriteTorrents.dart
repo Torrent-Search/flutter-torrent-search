@@ -18,7 +18,6 @@
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intent/action.dart' as android_action;
 import 'package:intent/extra.dart' as android_extra;
 import 'package:intent/intent.dart' as android_intent;
@@ -29,6 +28,7 @@ import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Themes.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 
 class FavouriteTorrents extends StatefulWidget {
   bool isClicked = false;
@@ -74,9 +74,7 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
             }
             return _buildNoFavourite();
           }
-          return SpinKitThreeBounce(
-            color: Theme.of(context).accentColor,
-          );
+          return LoadingWidget();
         },
       ),
     );

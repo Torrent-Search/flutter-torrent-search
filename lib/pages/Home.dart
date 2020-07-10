@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
     final Color colorDisabled = themeData.disabledColor;
 
     return Scaffold(
-      appBar: appBar(themeData.accentColor),
+      appBar: _buildAppBar(themeData.accentColor),
       body: Container(
         width: width,
         height: height,
@@ -104,17 +104,17 @@ class _HomeState extends State<Home> {
         duration: Duration(milliseconds: 300), curve: Curves.ease);
   }
 
-  Widget appBar(Color accentColor) {
+  Widget _buildAppBar(Color accentColor) {
     return AppBar(
       leading: current_page == 0
           ? IconButton(
-              icon: Icon(
-                Icons.favorite,
-                color: accentColor,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, "/favourite");
-              },
+        icon: Icon(
+          Icons.favorite,
+          color: accentColor,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, "/favourite");
+        },
             )
           : IconButton(
               icon: Icon(
@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
               ),
       ],
       title: Text(
-        "Torrent Search",
+        current_page == 0 ? "Torrent Search" : "Music Search",
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 25.0, color: accentColor),
       ),

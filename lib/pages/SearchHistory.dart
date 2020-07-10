@@ -17,10 +17,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 
 class SearchHistory extends StatefulWidget {
   final int type;
@@ -98,9 +98,7 @@ class _SearchHistoryState extends State<SearchHistory> {
               }
               return _buildNoSearchHistory();
             }
-            return SpinKitThreeBounce(
-              color: accentColor,
-            );
+            return LoadingWidget();
           },
         ),
       ),

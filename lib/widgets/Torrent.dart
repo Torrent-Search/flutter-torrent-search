@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
@@ -7,6 +6,7 @@ import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/Thumbnail.dart';
 
 class Torrent extends StatefulWidget {
@@ -236,10 +236,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
             } else if (snapshot.hasError) {
               return ExceptionWidget(snapshot.error);
             } else {
-              return Center(
-                  child: SpinKitThreeBounce(
-                color: accentColor,
-              ));
+              return LoadingWidget();
             }
           }),
     );

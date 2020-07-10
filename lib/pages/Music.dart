@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
@@ -7,6 +6,7 @@ import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 
 class Music extends StatefulWidget {
@@ -376,7 +376,7 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                 if (_textEditingController.text != "") {
                   databaseHelper.insert(
                       history:
-                      History(_textEditingController.text, type: "music"));
+                          History(_textEditingController.text, type: "music"));
 
                   Navigator.pushNamed(
                     context,
@@ -418,16 +418,11 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
       {List<JioSaavnInfo> data, bool loading = false}) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double width = mediaQueryData.size.width;
-    final double height = MediaQuery.of(context).size.height;
-    final Color accentColor = Theme.of(context).accentColor;
     return loading
         ? Container(
-            height: width * 0.35,
-            width: width * 0.40,
-            child: Center(
-                child: SpinKitThreeBounce(
-              color: accentColor,
-            )),
+      height: width * 0.35,
+      width: width * 0.40,
+      child: LoadingWidget(),
           )
         : Container(
             height: width * 0.40,
@@ -439,23 +434,22 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
               itemCount: data.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext ctxt, int index) {
+                final JioSaavnInfo info = data[index];
                 return MusicThumbnail(
-                  url: data[index].image,
-                  // width: width * 0.40,
-                  // height: width * 0.40,
+                  url: info.image,
                   onpressed: () {
-                    switch (data[index].type) {
+                    switch (info.type) {
                       case "album":
                         Navigator.of(context)
-                            .pushNamed("/albuminfo", arguments: data[index].id);
+                            .pushNamed("/albuminfo", arguments: info.id);
                         break;
                       case "playlist":
-                        Navigator.of(context).pushNamed("/playlistinfo",
-                            arguments: data[index].id);
+                        Navigator.of(context)
+                            .pushNamed("/playlistinfo", arguments: info.id);
                         break;
                       case "song":
                         Navigator.of(context)
-                            .pushNamed("/musicinfo", arguments: data[index].id);
+                            .pushNamed("/musicinfo", arguments: info.id);
                         break;
                       default:
                     }

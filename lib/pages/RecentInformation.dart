@@ -18,7 +18,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
@@ -26,6 +25,7 @@ import 'package:torrentsearch/network/model/Imdb.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/TorrentCard.dart';
 
 class RecentInformation extends StatefulWidget {
@@ -178,10 +178,7 @@ class _RecentInformationState extends State<RecentInformation> {
                       } else if (snapshot.hasError) {
                         return ExceptionWidget(snapshot.error);
                       } else {
-                        return Center(
-                            child: SpinKitThreeBounce(
-                          color: accentColor,
-                        ));
+                        return LoadingWidget();
                       }
                     })
               ]),
@@ -264,10 +261,7 @@ class _RecentInformationState extends State<RecentInformation> {
           } else if (snapshot.hasError) {
             return ExceptionWidget(snapshot.error);
           } else {
-            return Center(
-                child: SpinKitThreeBounce(
-              color: accentColor,
-            ));
+            return LoadingWidget();
           }
         },
       ),

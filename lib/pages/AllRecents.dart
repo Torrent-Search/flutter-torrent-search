@@ -17,12 +17,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/Thumbnail.dart';
 
 class AllRecents extends StatefulWidget {
@@ -89,12 +89,7 @@ class _AllRecentsState extends State<AllRecents> {
                       child: ExceptionWidget(snapshot.error),
                     );
                   } else {
-                    return SliverFillRemaining(
-                      child: Center(
-                          child: SpinKitThreeBounce(
-                        color: accentColor,
-                      )),
-                    );
+                    return SliverFillRemaining(child: LoadingWidget());
                   }
                 }),
           ],

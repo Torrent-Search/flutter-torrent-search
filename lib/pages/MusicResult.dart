@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 
 class MusicResult extends StatefulWidget {
@@ -30,14 +30,13 @@ class _MusicResultState extends State<MusicResult> {
       appBar: AppBar(
         title: Text(
           'RESULTS',
-          style: TextStyle(color: Colors.white, letterSpacing: 3.0),
+          style: TextStyle(
+            letterSpacing: 3.0,
+            fontFamily: "OpenSans",
+          ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-          color: Colors.white,
-        ),
+        backgroundColor: Colors.transparent,
       ),
       extendBodyBehindAppBar: true,
       body: SafeArea(
@@ -69,12 +68,13 @@ class _MusicResultState extends State<MusicResult> {
                             itemCount: snapshot.data.albums.data.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (BuildContext context, int index) {
+                              final AlbumsData data =
+                                  snapshot.data.albums.data[index];
                               return MusicThumbnail(
-                                albumsData: snapshot.data.albums.data[index],
+                                albumsData: data,
                                 onpressed: () {
                                   Navigator.pushNamed(context, "/albuminfo",
-                                      arguments:
-                                          snapshot.data.albums.data[index].id);
+                                      arguments: data.id);
                                 },
                                 showProgress: true,
                               );
@@ -102,12 +102,13 @@ class _MusicResultState extends State<MusicResult> {
                             itemCount: snapshot.data.songs.data.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (BuildContext context, int index) {
+                              final SongData data =
+                              snapshot.data.songs.data[index];
                               return MusicThumbnail(
-                                songData: snapshot.data.songs.data[index],
+                                songData: data,
                                 onpressed: () {
                                   Navigator.pushNamed(context, "/musicinfo",
-                                      arguments:
-                                          snapshot.data.songs.data[index].id);
+                                      arguments: data.id);
                                 },
                                 showProgress: true,
                               );
@@ -120,11 +121,7 @@ class _MusicResultState extends State<MusicResult> {
             } else if (snapshot.hasError) {
               return ExceptionWidget(snapshot.error);
             }
-            return Center(
-                child: SpinKitThreeBounce(
-              color: accentColor,
-            ));
-            ;
+            return LoadingWidget();
           },
         ),
       ),

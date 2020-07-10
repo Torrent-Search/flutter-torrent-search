@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
+import 'package:torrentsearch/widgets/LoadingWidget.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 import 'package:torrentsearch/widgets/MusicTile.dart';
 
@@ -52,6 +52,7 @@ class _AlbumInformationState extends State<AlbumInformation> {
                         child: Center(
                           child: MusicThumbnail(
                             url: snapshot.data.image,
+                            showProgress: false,
                           ),
                         ),
                       ),
@@ -85,7 +86,8 @@ class _AlbumInformationState extends State<AlbumInformation> {
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
-                      return MusicTile(snapshot.data.songs[index]);
+                      final SongdataWithUrl data = snapshot.data.songs[index];
+                      return MusicTile(data);
                     }, childCount: snapshot.data.songs.length),
                   ),
                 ],
@@ -102,12 +104,7 @@ class _AlbumInformationState extends State<AlbumInformation> {
         }
         return Scaffold(
           appBar: AppBar(),
-          body: SafeArea(
-            child: Center(
-                child: SpinKitThreeBounce(
-              color: themeData.accentColor,
-            )),
-          ),
+          body: SafeArea(child: LoadingWidget()),
         );
       },
     );
