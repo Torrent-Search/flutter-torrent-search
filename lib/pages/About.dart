@@ -31,13 +31,11 @@ class About extends StatelessWidget {
     final Brightness br = Theme.of(context).brightness;
     final Color textColor = br == Brightness.dark ? Colors.white : Colors.black;
     final TextStyle textStyle = TextStyle(
-        fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
         fontSize: 17.0,
         fontFamily: "OpenSans",
         color: textColor);
-    final TextStyle textStyleWithUnderline = TextStyle(
-      fontWeight: FontWeight.bold,
+    final TextStyle textStyleWithColor = TextStyle(
       letterSpacing: 1.5,
       fontSize: 17.0,
       color: Colors.deepPurple,
@@ -62,9 +60,11 @@ class About extends StatelessWidget {
                 "Torrent Search",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25.0,
-                    letterSpacing: 1.5),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25.0,
+                  letterSpacing: 1.5,
+                  fontFamily: "OpenSans",
+                ),
               ),
               FutureBuilder(
                 future: PackageInfo.fromPlatform(),
@@ -75,9 +75,11 @@ class About extends StatelessWidget {
                       "V ${snapshot.data.version}",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                          fontSize: 17.0),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        fontSize: 17.0,
+                        fontFamily: "OpenSans",
+                      ),
                     );
                   }
                   return Container(
@@ -105,7 +107,7 @@ class About extends StatelessWidget {
                           launch(
                               "https://github.com/Tejasvp25/flutter-torrent-search");
                         },
-                      style: textStyleWithUnderline,
+                      style: textStyleWithColor,
                     ),
                     TextSpan(
                       text:
@@ -119,7 +121,7 @@ class About extends StatelessWidget {
                           launch(
                               "https://github.com/Tejasvp25/torr_scraper_golang");
                         },
-                      style: textStyleWithUnderline,
+                      style: textStyleWithColor,
                     ),
                     TextSpan(
                       text: ") written in Golang",
@@ -136,9 +138,11 @@ class About extends StatelessWidget {
                       .emojify("Made with :heart: in India\nBy Tejasvp25"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      fontSize: 17.0),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    fontSize: 17.0,
+                    fontFamily: "OpenSans",
+                  ),
                 ),
               ),
             ],
