@@ -106,25 +106,27 @@ class _HomeState extends State<Home> {
 
   Widget appBar(Color accentColor) {
     return AppBar(
-      leading: IconButton(
-        icon: Icon(
-          Icons.favorite,
-          color: accentColor,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, "/favourite");
-        },
-      ),
+      leading: current_page == 0
+          ? IconButton(
+              icon: Icon(
+                Icons.favorite,
+                color: accentColor,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, "/favourite");
+              },
+            )
+          : IconButton(
+              icon: Icon(
+                Icons.history,
+                color: accentColor,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, "/history",
+                    arguments: current_page);
+              },
+            ),
       actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.history,
-            color: accentColor,
-          ),
-          onPressed: () {
-            Navigator.pushNamed(context, "/history");
-          },
-        ),
         current_page == 1
             ? IconButton(
                 icon: Icon(
@@ -135,7 +137,16 @@ class _HomeState extends State<Home> {
                   Navigator.pushNamed(context, "/downloads");
                 },
               )
-            : Container(width: 0.0, height: 0.0),
+            : IconButton(
+                icon: Icon(
+                  Icons.history,
+                  color: accentColor,
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/history",
+                      arguments: current_page);
+                },
+              ),
       ],
       title: Text(
         "Torrent Search",

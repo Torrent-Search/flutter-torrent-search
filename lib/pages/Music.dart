@@ -346,7 +346,8 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
             onSubmitted: (term) {
               if (_textEditingController.text != "") {
                 databaseHelper.insert(
-                    history: History(_textEditingController.text));
+                    history:
+                        History(_textEditingController.text, type: "music"));
                 Navigator.pushNamed(context, "/musicresult",
                     arguments: _textEditingController.text);
               }
@@ -374,10 +375,14 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
               onPressed: () {
                 if (_textEditingController.text != "") {
                   databaseHelper.insert(
-                      history: History(_textEditingController.text));
+                      history:
+                      History(_textEditingController.text, type: "music"));
 
-                  Navigator.pushNamed(context, "/musicresult",
-                      arguments: _textEditingController.text);
+                  Navigator.pushNamed(
+                    context,
+                    "/musicresult",
+                    arguments: _textEditingController.text,
+                  );
                 }
               },
               shape: RoundedRectangleBorder(

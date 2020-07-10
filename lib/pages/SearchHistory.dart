@@ -23,6 +23,10 @@ import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 
 class SearchHistory extends StatefulWidget {
+  final int type;
+
+  const SearchHistory({this.type = 0});
+
   @override
   _SearchHistoryState createState() => _SearchHistoryState();
 }
@@ -50,7 +54,8 @@ class _SearchHistoryState extends State<SearchHistory> {
       ),
       body: SafeArea(
         child: FutureBuilder(
-          future: _databaseHelper.queryAll(history: true),
+          future: _databaseHelper.queryAll(
+              history: true, type: widget.type == 0 ? "torrent" : "music"),
           builder: (ctx, snapshot) {
             if (snapshot.hasData) {
               if (snapshot.data.length != 0) {
@@ -77,8 +82,12 @@ class _SearchHistoryState extends State<SearchHistory> {
                               IconButton(
                                 icon: Icon(Icons.search),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, "/result",
-                                      arguments: history.searchHistory);
+                                  widget.type == 0
+                                      ? Navigator.pushNamed(context, "/result",
+                                          arguments: history.searchHistory)
+                                      : Navigator.pushNamed(
+                                          context, "/musicresult",
+                                          arguments: history.searchHistory);
                                 },
                               ),
                             ],

@@ -17,7 +17,9 @@
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_migration/sqflite_migration.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
+import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
@@ -37,10 +39,17 @@ class DatabaseHelper {
 
   String tableHistory = "history";
   String columnSearchHistory = "search";
+  String columnTypeHistory = "type";
+
+  String tableSongs = "songs";
+  String columnimage_url = "image";
+  String columnsong_url = "song_url";
+  String columnsong = "song";
 
   static Database _db;
 
   DatabaseHelper.internal();
+
   Future<Database> get db async {
     if (_db != null) {
       return _db;
@@ -50,11 +59,24 @@ class DatabaseHelper {
     return _db;
   }
 
+  get initialScript => [
+        'CREATE TABLE IF NOT EXISTS $tableTorrentInfo($columnName TEXT UNIQUE, $columnUrl TEXT'
+            ', $columnSeeders TEXT, $columnLeechers TEXT'
+            ', $columnUploadDate TEXT, $columnSize TEXT'
+            ', $columnUploader TEXT, $columnMagnet TEXT'
+            ', $columnWebsite TEXT, $columnTorrentFile TEXT)',
+        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)'
+      ];
+
+  get migrations =>
+      ['ALTER TABLE $tableHistory ADD COLUMN $columnTypeHistory TEXT'];
+
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'torrent.db');
-
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    final config = MigrationConfig(
+        initializationScript: initialScript, migrationScripts: migrations);
+    Database db = await openDatabaseWithMigration(path, config);
     return db;
   }
 
@@ -69,8 +91,9 @@ class DatabaseHelper {
         'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)');
   }
 
-  Future<int> insert(
-      {TorrentInfo torrentinfo = null, History history = null}) async {
+  Future<int> insert({TorrentInfo torrentinfo = null,
+    History history = null,
+    SongdataWithUrl songdata = null}) async {
     Database dbClient = await db;
     int result = 0;
     if (torrentinfo != null) {
@@ -84,15 +107,17 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<List> queryAll(
-      {bool torrentinfo = false, bool history = false}) async {
+  Future<List> queryAll({bool torrentinfo = false,
+    bool history = false,
+    String type = "torrent"}) async {
     Database dbClient = await db;
     var result;
     if (torrentinfo) {
       result = await dbClient.query(tableTorrentInfo);
     }
     if (history) {
-      result = await dbClient.query(tableHistory);
+      result = await dbClient.query(tableHistory,
+          where: "$columnTypeHistory = ?", whereArgs: [type]);
     }
     return result.toList();
   }
@@ -144,8 +169,10 @@ class DatabaseHelper {
     return 0;
   }
 
-  Future<int> delete(String name,
-      {bool torrentinfo = false, bool history = false}) async {
+  Future<int> delete(String name, {
+    bool torrentinfo = false,
+    bool history = false,
+  }) async {
     Database dbClient = await db;
     int count = 0;
     if (torrentinfo) {
@@ -166,18 +193,20 @@ class DatabaseHelper {
 }
 
 class History {
-  String _searchHistory;
-  History(String searchHistory) {
-    this._searchHistory = searchHistory;
+  String searchHistory;
+  String type;
+
+  History(String searchHistory, {this.type = "torrent"}) {
+    this.searchHistory = searchHistory;
   }
 
-  String get searchHistory => _searchHistory;
-  Map<String, dynamic> toMap() => <String, dynamic>{
-        'search': this.searchHistory,
-      };
+  Map<String, dynamic> toMap() =>
+      <String, dynamic>{'search': this.searchHistory, 'type': this.type};
+
   factory History.fromMap(Map<String, dynamic> json) {
     return History(
       json['search'] as String,
+      type: json['type'] as String,
     );
   }
 }
