@@ -33,6 +33,12 @@ class _DownloadInfoState extends State<DownloadInfo> {
                 final TaskInfo taskInfo = DownloadService.tasks[index];
                 final String statusString = getDownloadStatus(taskInfo.status);
                 return ListTile(
+                  onTap: () {
+                    if (taskInfo.progress == 100 &&
+                        DownloadService.isExist(taskInfo.name)) {
+                      DownloadService.openDownloadedFile(taskInfo);
+                    }
+                  },
                   title: Text(
                     taskInfo.name,
                   ),
@@ -44,28 +50,33 @@ class _DownloadInfoState extends State<DownloadInfo> {
                               statusString,
                             )),
                   trailing: taskInfo.progress == 100 && statusString != "Failed"
-                      ? null
+                      ? IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      DownloadService.delete(taskInfo);
+                    },
+                  )
                       : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            statusString == "Paused"
-                                ? IconButton(
-                                    icon: Icon(Icons.play_arrow),
-                                    onPressed: () {
-                                      if (taskInfo.progress != 100)
-                                        DownloadService.resumeDownload(
-                                            taskInfo);
-                                    },
-                                  )
-                                : IconButton(
-                                    icon: Icon(Icons.pause),
-                                    onPressed: () {
-                                      if (taskInfo.progress != 100)
-                                        DownloadService.pauseDownload(taskInfo);
-                                    },
-                                  ),
-                          ],
-                        ),
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      statusString == "Paused"
+                          ? IconButton(
+                        icon: Icon(Icons.play_arrow),
+                        onPressed: () {
+                          if (taskInfo.progress != 100)
+                            DownloadService.resumeDownload(
+                                taskInfo);
+                        },
+                      )
+                          : IconButton(
+                        icon: Icon(Icons.pause),
+                        onPressed: () {
+                          if (taskInfo.progress != 100)
+                            DownloadService.pauseDownload(taskInfo);
+                        },
+                      ),
+                    ],
+                  ),
                 );
               },
             );

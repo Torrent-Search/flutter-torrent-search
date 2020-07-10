@@ -208,6 +208,7 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
     dbhelper.close();
     _unbindBackgroundIsolate();
+    DownloadService.dispose();
   }
 
   void _saveDeviceToken() async {

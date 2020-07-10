@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -25,38 +26,38 @@ class _MusicInformationState extends State<MusicInformation> {
   @override
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
-        Provider.of<PreferenceProvider>(context);
+    Provider.of<PreferenceProvider>(context);
 
     return widget.songdata == null
         ? FutureBuilder(
-            future: getJioSongdataWithUrl(_provider.baseUrl, widget.pid),
-            builder: (BuildContext context,
-                AsyncSnapshot<SongdataWithUrl> snapshot) {
-              if (snapshot.hasData) {
-                try {
-                  double minute = int.parse(snapshot.data.duration) / 60;
-                  snapshot.data.duration = minute.toStringAsFixed(2);
-                } on Exception {}
-                return _buildBody(snapshot.data);
-              } else if (snapshot.hasError) {
-                Scaffold(
-                  appBar: AppBar(),
-                  body: SafeArea(
-                    child: ExceptionWidget(snapshot.error),
-                  ),
-                );
-              }
-              return Scaffold(
-                appBar: AppBar(),
-                body: SafeArea(
-                  child: Center(
-                      child: SpinKitThreeBounce(
-                    color: Theme.of(context).accentColor,
-                  )),
-                ),
-              );
-            },
-          )
+      future: getJioSongdataWithUrl(_provider.baseUrl, widget.pid),
+      builder: (BuildContext context,
+          AsyncSnapshot<SongdataWithUrl> snapshot) {
+        if (snapshot.hasData) {
+          try {
+            double minute = int.parse(snapshot.data.duration) / 60;
+            snapshot.data.duration = minute.toStringAsFixed(2);
+          } on Exception {}
+          return _buildBody(snapshot.data);
+        } else if (snapshot.hasError) {
+          Scaffold(
+            appBar: AppBar(),
+            body: SafeArea(
+              child: ExceptionWidget(snapshot.error),
+            ),
+          );
+        }
+        return Scaffold(
+          appBar: AppBar(),
+          body: SafeArea(
+            child: Center(
+                child: SpinKitThreeBounce(
+                  color: Theme.of(context).accentColor,
+                )),
+          ),
+        );
+      },
+    )
         : _buildBody(widget.songdata);
   }
 
@@ -194,10 +195,20 @@ class _MusicInformationState extends State<MusicInformation> {
                         Icons.file_download,
                         color: Colors.white,
                       ),
-                      onPressed: () {
-                        DownloadService.requestDownload(TaskInfo(
-                            name: getFileName(songdata.song),
-                            link: songdata.encryptedMediaUrl));
+                      onPressed: () async {
+                        final String fileName = getFileName(songdata.song);
+                        if (DownloadService.checkIfDownloading(songdata.song)) {
+                          if (await DownloadService.requestDownload(TaskInfo(
+                              name: fileName,
+                              link: songdata.encryptedMediaUrl))) {
+                            showFlushbar(
+                                context, "Downloading to Internal/Downloads");
+                          } else {
+                            showFlushbar(context, "Already downloaded");
+                          }
+                        } else {
+                          showFlushbar(context, "Already Downloading/Paused");
+                        }
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0)),
@@ -211,5 +222,13 @@ class _MusicInformationState extends State<MusicInformation> {
         ),
       ),
     );
+  }
+
+  void showFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      message: msg,
+      duration: Duration(seconds: 2),
+      flushbarStyle: FlushbarStyle.FLOATING,
+    ).show(context);
   }
 }

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +7,6 @@ import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 import 'package:torrentsearch/widgets/MusicTile.dart';
-import 'package:torrentsearch/widgets/PlaylistHeaderDeligate.dart';
 
 class PlaylistInformation extends StatefulWidget {
   String id;

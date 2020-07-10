@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/utils/DownloadService.dart';
@@ -16,12 +17,18 @@ class MusicTile extends StatelessWidget {
       subtitle: Text(data.year),
       trailing: IconButton(
         icon: Icon(Icons.file_download),
-        onPressed: () {
-          DownloadService.requestDownload(
-            TaskInfo(
-                name: getFileName(data.song), link: data.encryptedMediaUrl),
-          );
-//          Downloader.download(data.encryptedMediaUrl, data.song, "mp3");
+        onPressed: () async {
+          final String fileName = getFileName(data.song);
+          if (DownloadService.checkIfDownloading(data.song)) {
+            if (await DownloadService.requestDownload(
+                TaskInfo(name: fileName, link: data.encryptedMediaUrl))) {
+              showFlushbar(context, "Downloading to Internal/Downloads");
+            } else {
+              showFlushbar(context, "Already downloaded");
+            }
+          } else {
+            showFlushbar(context, "Already Downloading/Paused");
+          }
         },
       ),
       leading: MusicThumbnail(
@@ -29,5 +36,13 @@ class MusicTile extends StatelessWidget {
         showProgress: false,
       ),
     );
+  }
+
+  void showFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      message: msg,
+      duration: Duration(seconds: 2),
+      flushbarStyle: FlushbarStyle.FLOATING,
+    ).show(context);
   }
 }

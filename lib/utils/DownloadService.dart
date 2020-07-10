@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:torrentsearch/utils/UrlUtils.dart';
 
 class DownloadService {
   static List<TaskInfo> _tasks = [];
@@ -23,6 +25,9 @@ class DownloadService {
       task.status = status;
       task.progress = progress;
     }
+    if (task.status == DownloadTaskStatus.failed) {
+      delete(task, shouldDeleteContent: true);
+    }
     _streamController.add(task);
   }
 
@@ -32,7 +37,10 @@ class DownloadService {
 
   static String get localPath => _localPath;
 
-  static void requestDownload(TaskInfo task) async {
+  static Future<bool> requestDownload(TaskInfo task) async {
+    if (isExist(getFileName(task.name))) {
+      return false;
+    }
     task.taskId = await FlutterDownloader.enqueue(
         url: task.link,
         headers: {"auth": "test"},
@@ -41,6 +49,7 @@ class DownloadService {
         fileName: task.name,
         openFileFromNotification: true);
     _tasks.add(task);
+    return true;
   }
 
   static void cancelDownload(TaskInfo task) async {
@@ -70,9 +79,35 @@ class DownloadService {
     return FlutterDownloader.open(taskId: task.taskId);
   }
 
-  static void delete(TaskInfo task) async {
+  static void delete(TaskInfo task, {shouldDeleteContent = false}) async {
     await FlutterDownloader.remove(
-        taskId: task.taskId, shouldDeleteContent: true);
+        taskId: task.taskId, shouldDeleteContent: shouldDeleteContent);
+    _tasks.remove(task);
+    _streamController.add(task);
+  }
+
+  static bool isExist(String filename) {
+    print(_localPath);
+    return File(_localPath + "/" + filename).existsSync();
+  }
+
+  static checkIfDownloading(String name) {
+    TaskInfo task =
+        _tasks?.firstWhere((task) => task.name == name, orElse: () {});
+
+    if (task == null) {
+      return false;
+    }
+    if (task.status == DownloadTaskStatus.running ||
+        task.status == DownloadTaskStatus.enqueued ||
+        task.status == DownloadTaskStatus.paused) {
+      return true;
+    }
+    return false;
+  }
+
+  static void dispose() {
+    _streamController.close();
   }
 }
 
