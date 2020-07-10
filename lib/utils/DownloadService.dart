@@ -55,10 +55,12 @@ class DownloadService {
   static void cancelDownload(TaskInfo task) async {
     await FlutterDownloader.cancel(taskId: task.taskId);
     _tasks.remove(task);
+    _streamController.add(task);
   }
 
   static void pauseDownload(TaskInfo task) async {
     await FlutterDownloader.pause(taskId: task.taskId);
+    _streamController.add(task);
   }
 
   static void resumeDownload(TaskInfo task) async {
