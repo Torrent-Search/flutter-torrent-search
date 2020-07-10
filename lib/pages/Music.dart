@@ -199,8 +199,6 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                             ),
                           ),
                           onTap: () {
-                            print("Tapped");
-
                             Navigator.pushNamed(
                               context,
                               "/allmusic",
@@ -240,8 +238,6 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                             ),
                           ),
                           onTap: () {
-                            print("Tapped");
-
                             Navigator.pushNamed(
                               context,
                               "/allmusic",
@@ -379,7 +375,7 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                 if (_textEditingController.text != "") {
                   databaseHelper.insert(
                       history: History(_textEditingController.text));
-                  print(_textEditingController.text);
+
                   Navigator.pushNamed(context, "/musicresult",
                       arguments: _textEditingController.text);
                 }
@@ -401,7 +397,8 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                 ),
               ),
               onPressed: () async {
-                Navigator.pushNamed(context, "/settings");
+//                Navigator.pushNamed(context, "/settings");
+                Navigator.pushNamed(context, "/test");
               },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),

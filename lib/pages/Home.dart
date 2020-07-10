@@ -17,9 +17,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:torrentsearch/pages/Music.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/Torrent.dart';
 
 class Home extends StatefulWidget {
@@ -41,8 +39,6 @@ class _HomeState extends State<Home> {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double height = mediaQueryData.size.height;
     final double width = mediaQueryData.size.width;
-    final PreferenceProvider provider =
-        Provider.of<PreferenceProvider>(context);
     final ThemeData themeData = Theme.of(context);
     final Color colorEnabled = themeData.accentColor;
     final Color colorDisabled = themeData.disabledColor;
@@ -129,6 +125,17 @@ class _HomeState extends State<Home> {
             Navigator.pushNamed(context, "/history");
           },
         ),
+        current_page == 1
+            ? IconButton(
+                icon: Icon(
+                  Icons.cloud_download,
+                  color: accentColor,
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/downloads");
+                },
+              )
+            : Container(width: 0.0, height: 0.0),
       ],
       title: Text(
         "Torrent Search",

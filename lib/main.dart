@@ -16,6 +16,8 @@
  */
 
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
@@ -25,23 +27,25 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/pages/About.dart';
 import 'package:torrentsearch/pages/AlbumInformation.dart';
 import 'package:torrentsearch/pages/AllMusic.dart';
 import 'package:torrentsearch/pages/AllRecents.dart';
+import 'package:torrentsearch/pages/DownloadInfo.dart';
 import 'package:torrentsearch/pages/FavouriteTorrents.dart';
 import 'package:torrentsearch/pages/Home.dart';
-import 'package:torrentsearch/pages/Music.dart';
 import 'package:torrentsearch/pages/MusicInformation.dart';
 import 'package:torrentsearch/pages/MusicResult.dart';
 import 'package:torrentsearch/pages/PlaylistInformation.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
 import 'package:torrentsearch/pages/SearchHistory.dart';
 import 'package:torrentsearch/pages/Settings.dart';
-import 'package:torrentsearch/pages/SplashScreen.dart';
 import 'package:torrentsearch/pages/TermsandConditions.dart';
 import 'package:torrentsearch/pages/TorrentResult.dart';
+import 'package:torrentsearch/utils/DownloadService.dart';
 import 'package:torrentsearch/utils/FadeRouteBuilder.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
@@ -51,6 +55,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'database/DatabaseHelper.dart';
 
 void main() async {
+  await FlutterDownloader.initialize(debug: true);
   runApp(MyApp());
 }
 
@@ -74,8 +79,17 @@ class _MyAppState extends State<MyApp> {
 
   final DatabaseHelper dbhelper = DatabaseHelper();
   static const platform = const MethodChannel('flutter.native/helper');
-
+  bool _permissionReady;
   int accent;
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -93,37 +107,19 @@ class _MyAppState extends State<MyApp> {
         onBackgroundMessage: myBackgroundMessageHandler);
     _saveDeviceToken();
     _initializeRemoteConfig();
-  }
-
-  void openTgChannel(String url) async {
-    if (await canLaunch(url)) {
-      launch(url);
-    }
-  }
-
-  void getCurrentAppTheme() async {
-    preferenceProvider.tacaccepted =
-        await preferenceProvider.preferences.getTacAccepted();
-    preferenceProvider.darkTheme =
-        await preferenceProvider.preferences.getTheme();
-    preferenceProvider.useSystemAccent =
-        await preferenceProvider.preferences.UseSystemAccent();
-    Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
-    Color compatilbleToFlutter = Color.fromRGBO(
-        fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
-    preferenceProvider.systemaccent = compatilbleToFlutter.value;
-    preferenceProvider.accent =
-        await preferenceProvider.preferences.getAccent();
+    _bindBackgroundIsolate();
+    _permissionReady = false;
+    _init();
+    FlutterDownloader.registerCallback(downloadCallback);
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) {
-        return preferenceProvider;
-      },
+      create: (_) => preferenceProvider,
       child: Consumer<PreferenceProvider>(
-        builder: (BuildContext context, value, Widget child) {
+        builder:
+            (BuildContext context, PreferenceProvider value, Widget child) {
           return MaterialApp(
             home: Home(),
             onGenerateRoute: (RouteSettings settings) {
@@ -157,7 +153,6 @@ class _MyAppState extends State<MyApp> {
                   return FadeRouteBuilder(page: About());
                   break;
                 case '/musicinfo':
-                  print(args.runtimeType);
                   if (args.runtimeType == String) {
                     return FadeRouteBuilder(
                         page: MusicInformation(
@@ -178,8 +173,8 @@ class _MyAppState extends State<MyApp> {
                 case '/playlistinfo':
                   return FadeRouteBuilder(
                       page: PlaylistInformation(
-                    id: args,
-                  ));
+                        id: args,
+                      ));
                   break;
                 case '/allmusic':
                   return FadeRouteBuilder(
@@ -187,6 +182,9 @@ class _MyAppState extends State<MyApp> {
                   break;
                 case '/musicresult':
                   return FadeRouteBuilder(page: MusicResult(args));
+                  break;
+                case '/downloads':
+                  return FadeRouteBuilder(page: DownloadInfo());
                   break;
               }
             },
@@ -208,6 +206,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     super.dispose();
     dbhelper.close();
+    _unbindBackgroundIsolate();
   }
 
   void _saveDeviceToken() async {
@@ -250,5 +249,70 @@ class _MyAppState extends State<MyApp> {
       _remoteConfig.activateFetched();
       preferenceProvider.remoteconfig = _remoteConfig;
     } on FetchThrottledException catch (_) {}
+  }
+
+  Future<bool> _checkPermission() async {
+    PermissionStatus permission = await Permission.storage.status;
+    if (permission != PermissionStatus.granted) {
+      permission = await Permission.storage.request();
+      if (permission.isGranted == PermissionStatus.granted) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+    return false;
+  }
+
+  void openTgChannel(String url) async {
+    if (await canLaunch(url)) {
+      launch(url);
+    }
+  }
+
+  void _bindBackgroundIsolate() {
+    bool isSuccess = IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    if (!isSuccess) {
+      _unbindBackgroundIsolate();
+      _bindBackgroundIsolate();
+      return;
+    }
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+
+      DownloadService.updateData(id, status, progress);
+    });
+  }
+
+  void _unbindBackgroundIsolate() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+  }
+
+  void getCurrentAppTheme() async {
+    preferenceProvider.tacaccepted =
+    await preferenceProvider.preferences.getTacAccepted();
+    preferenceProvider.darkTheme =
+    await preferenceProvider.preferences.getTheme();
+    preferenceProvider.useSystemAccent =
+    await preferenceProvider.preferences.UseSystemAccent();
+    Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
+    Color compatilbleToFlutter = Color.fromRGBO(
+        fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
+    preferenceProvider.systemaccent = compatilbleToFlutter.value;
+    preferenceProvider.accent =
+    await preferenceProvider.preferences.getAccent();
+  }
+
+  Future<void> _init() async {
+    _permissionReady = await _checkPermission();
+    if (_permissionReady) {
+      DownloadService.localPath =
+      await platform.invokeMethod("getDownloadDirectory");
+    } else {
+      _permissionReady = await _checkPermission();
+    }
   }
 }

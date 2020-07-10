@@ -1,0 +1,88 @@
+import 'dart:async';
+
+import 'package:flutter_downloader/flutter_downloader.dart';
+
+class DownloadService {
+  static List<TaskInfo> _tasks = [];
+  static String _localPath = "";
+  static StreamController _streamController =
+      StreamController<TaskInfo>.broadcast();
+
+  static void addTask(TaskInfo task) {
+    _tasks.add(task);
+  }
+
+  static List<TaskInfo> get tasks => _tasks;
+
+  static Stream get stream => _streamController.stream;
+
+  static Stream<TaskInfo> updateData(
+      String id, DownloadTaskStatus status, int progress) {
+    var task = _tasks?.firstWhere((task) => task.taskId == id);
+    if (task != null) {
+      task.status = status;
+      task.progress = progress;
+    }
+    _streamController.add(task);
+  }
+
+  static set localPath(String path) {
+    _localPath = path;
+  }
+
+  static String get localPath => _localPath;
+
+  static void requestDownload(TaskInfo task) async {
+    task.taskId = await FlutterDownloader.enqueue(
+        url: task.link,
+        headers: {"auth": "test"},
+        savedDir: _localPath,
+        showNotification: true,
+        fileName: task.name,
+        openFileFromNotification: true);
+    _tasks.add(task);
+  }
+
+  static void cancelDownload(TaskInfo task) async {
+    await FlutterDownloader.cancel(taskId: task.taskId);
+    _tasks.remove(task);
+  }
+
+  static void pauseDownload(TaskInfo task) async {
+    await FlutterDownloader.pause(taskId: task.taskId);
+  }
+
+  static void resumeDownload(TaskInfo task) async {
+    String newTaskId = await FlutterDownloader.resume(taskId: task.taskId);
+    task.taskId = newTaskId;
+    _tasks.remove(task);
+    _tasks.add(task);
+  }
+
+  static void retryDownload(TaskInfo task) async {
+    String newTaskId = await FlutterDownloader.retry(taskId: task.taskId);
+    task.taskId = newTaskId;
+    _tasks.remove(task);
+    _tasks.add(task);
+  }
+
+  static Future<bool> openDownloadedFile(TaskInfo task) {
+    return FlutterDownloader.open(taskId: task.taskId);
+  }
+
+  static void delete(TaskInfo task) async {
+    await FlutterDownloader.remove(
+        taskId: task.taskId, shouldDeleteContent: true);
+  }
+}
+
+class TaskInfo {
+  final String name;
+  final String link;
+
+  String taskId;
+  int progress = 0;
+  DownloadTaskStatus status = DownloadTaskStatus.undefined;
+
+  TaskInfo({this.name, this.link});
+}
