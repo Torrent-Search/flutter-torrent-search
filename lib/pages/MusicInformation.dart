@@ -196,8 +196,8 @@ class _MusicInformationState extends State<MusicInformation> {
                       ),
                       onPressed: () {
                         DownloadService.requestDownload(TaskInfo(
-                            name: songdata.song,
-                            link: getFileName(songdata.encryptedMediaUrl)));
+                            name: getFileName(songdata.song),
+                            link: songdata.encryptedMediaUrl));
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0)),
