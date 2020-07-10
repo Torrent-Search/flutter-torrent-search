@@ -310,7 +310,7 @@ class _MyAppState extends State<MyApp> {
     _permissionReady = await _checkPermission();
     if (_permissionReady) {
       DownloadService.localPath =
-      await platform.invokeMethod("getDownloadDirectory");
+          await platform.invokeMethod("getDownloadDirectory");
     } else {
       _permissionReady = await _checkPermission();
     }
