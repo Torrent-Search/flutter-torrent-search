@@ -18,7 +18,7 @@
 package com.tejas.torrentsearch;
 
 import android.os.Bundle;
-
+import android.os.Environment;
 import androidx.annotation.NonNull;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -45,6 +45,9 @@ public class MainActivity extends FlutterActivity {
                         color = 8146431;
                     }
                     result.success(color);
+                }
+                if(call.method.equals("getDownloadDirectory")){
+                    result.success(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
                 }
               }});
   }

@@ -1,6 +1,7 @@
-import 'package:downloader/downloader.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
+import 'package:torrentsearch/utils/DownloadService.dart';
+import 'package:torrentsearch/utils/UrlUtils.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 
 class MusicTile extends StatelessWidget {
@@ -16,7 +17,11 @@ class MusicTile extends StatelessWidget {
       trailing: IconButton(
         icon: Icon(Icons.file_download),
         onPressed: () {
-          Downloader.download(data.encryptedMediaUrl, data.song, "mp3");
+          DownloadService.requestDownload(
+            TaskInfo(
+                name: getFileName(data.song), link: data.encryptedMediaUrl),
+          );
+//          Downloader.download(data.encryptedMediaUrl, data.song, "mp3");
         },
       ),
       leading: MusicThumbnail(

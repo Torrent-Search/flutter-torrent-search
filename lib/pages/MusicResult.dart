@@ -118,7 +118,6 @@ class _MusicResultState extends State<MusicResult> {
                 ],
               );
             } else if (snapshot.hasError) {
-              print(snapshot.error.toString());
               return ExceptionWidget(snapshot.error);
             }
             return Center(

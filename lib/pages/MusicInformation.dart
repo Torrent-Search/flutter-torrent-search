@@ -3,7 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
+import 'package:torrentsearch/utils/DownloadService.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
+import 'package:torrentsearch/utils/UrlUtils.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
 import 'package:torrentsearch/widgets/MusicThumbnail.dart';
 
@@ -192,7 +194,11 @@ class _MusicInformationState extends State<MusicInformation> {
                         Icons.file_download,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        DownloadService.requestDownload(TaskInfo(
+                            name: songdata.song,
+                            link: getFileName(songdata.encryptedMediaUrl)));
+                      },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0)),
                       color: themeData.accentColor,
