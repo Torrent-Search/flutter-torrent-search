@@ -111,6 +111,12 @@ class TermsandConditions extends StatelessWidget {
                       _buildMultiplineText(context,
                           "All links(Magnet links) of this application are collected from network, no resources files are stored, no resources are downloaded. If the internet infringment issues are involved, please contact the source website and the developer does not assume any legal responsibility",
                           color: Colors.red),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      _buildMultiplineText(context,
+                          "All the Music related stuff are collected from network, User is responsible for any Copyright infringement issue,The developer does not assume any legal responsibility",
+                          color: Colors.red),
                     ],
                   ),
                 ),
