@@ -397,8 +397,7 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                 ),
               ),
               onPressed: () async {
-//                Navigator.pushNamed(context, "/settings");
-                Navigator.pushNamed(context, "/test");
+                Navigator.pushNamed(context, "/settings");
               },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),

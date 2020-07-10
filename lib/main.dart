@@ -43,6 +43,7 @@ import 'package:torrentsearch/pages/PlaylistInformation.dart';
 import 'package:torrentsearch/pages/RecentInformation.dart';
 import 'package:torrentsearch/pages/SearchHistory.dart';
 import 'package:torrentsearch/pages/Settings.dart';
+import 'package:torrentsearch/pages/SplashScreen.dart';
 import 'package:torrentsearch/pages/TermsandConditions.dart';
 import 'package:torrentsearch/pages/TorrentResult.dart';
 import 'package:torrentsearch/utils/DownloadService.dart';
@@ -121,7 +122,7 @@ class _MyAppState extends State<MyApp> {
         builder:
             (BuildContext context, PreferenceProvider value, Widget child) {
           return MaterialApp(
-            home: Home(),
+            home: SplashScreen(),
             onGenerateRoute: (RouteSettings settings) {
               dynamic args = settings.arguments;
               switch (settings.name) {
