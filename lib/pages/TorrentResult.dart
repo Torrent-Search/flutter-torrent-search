@@ -16,7 +16,6 @@
  */
 
 import 'package:extended_tabs/extended_tabs.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/network/ApiConstants.dart';
@@ -170,13 +169,5 @@ class _TorrentResultState extends State<TorrentResult>
   void dispose() {
     super.dispose();
     _tabController.dispose();
-  }
-
-  void showFlushbar(BuildContext context) {
-    Flushbar(
-      message: "Tap on List Item to Copy/Share Magnet Link",
-      duration: Duration(seconds: 4),
-      flushbarStyle: FlushbarStyle.FLOATING,
-    ).show(context);
   }
 }

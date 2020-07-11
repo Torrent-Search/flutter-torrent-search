@@ -23,12 +23,9 @@ import 'package:intent/extra.dart' as android_extra;
 import 'package:intent/intent.dart' as android_intent;
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
-import 'package:torrentsearch/network/ApiConstants.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/TorrentInfo.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/utils/Themes.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class FavouriteTorrents extends StatefulWidget {
   bool isClicked = false;

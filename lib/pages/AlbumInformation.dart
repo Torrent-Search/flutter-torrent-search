@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
-import 'package:torrentsearch/widgets/MusicTile.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class AlbumInformation extends StatefulWidget {
   String id;
@@ -22,7 +18,6 @@ class _AlbumInformationState extends State<AlbumInformation> {
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
         Provider.of<PreferenceProvider>(context);
-    final ThemeData themeData = Theme.of(context);
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double height = mediaQueryData.size.height;
     final double width = mediaQueryData.size.width;

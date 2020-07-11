@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:torrentsearch/utils/DownloadService.dart';
+import 'package:torrentsearch/utils/Utils.dart';
 
 class DownloadInfo extends StatefulWidget {
   @override

@@ -41,6 +41,7 @@ class _RecentInformationState extends State<RecentInformation> {
   Future<Imdb> _imdb;
   bool isClicked = false;
   String plot = "Loading...";
+
   @override
   void initState() {
     super.initState();
@@ -190,7 +191,6 @@ class _RecentInformationState extends State<RecentInformation> {
   }
 
   Widget buildInfo(String imdbid, double width, double height) {
-    final Color accentColor = Theme.of(context).accentColor;
     final Brightness br = Theme.of(context).brightness;
     final TextStyle textStyle = TextStyle(
         color: br == Brightness.dark ? Colors.white : Colors.black,

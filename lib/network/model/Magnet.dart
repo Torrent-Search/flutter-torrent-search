@@ -27,5 +27,6 @@ class Magnet {
   Magnet(this.magnet);
 
   factory Magnet.fromJson(Map<String, dynamic> json) => _$MagnetFromJson(json);
+
   Map<String, dynamic> toJson() => _$MagnetToJson(this);
 }

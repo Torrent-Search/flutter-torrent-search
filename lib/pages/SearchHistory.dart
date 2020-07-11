@@ -33,9 +33,9 @@ class SearchHistory extends StatefulWidget {
 
 class _SearchHistoryState extends State<SearchHistory> {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = Theme.of(context).accentColor;
     final themeProvider = Provider.of<PreferenceProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.darkTheme

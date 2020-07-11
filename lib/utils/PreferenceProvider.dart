@@ -32,6 +32,7 @@ class PreferenceProvider with ChangeNotifier {
   String _base_url = "https://torr-scraper.herokuapp.com/";
 
   bool get darkTheme => _darkTheme;
+
   set darkTheme(bool value) {
     _darkTheme = value;
     preferences.setDarkTheme(value);
@@ -39,6 +40,7 @@ class PreferenceProvider with ChangeNotifier {
   }
 
   int get accent => _accent;
+
   set accent(int value) {
     _accent = value;
     preferences.setAccent(value);
@@ -46,18 +48,21 @@ class PreferenceProvider with ChangeNotifier {
   }
 
   bool get useSystemAccent => _useSystemAccent;
+
   set useSystemAccent(bool value) {
     _useSystemAccent = value;
     notifyListeners();
   }
 
   int get systemaccent => _systemaccent;
+
   set systemaccent(int value) {
     _systemaccent = value;
     notifyListeners();
   }
 
   bool get tacaccepted => _tacaccepted;
+
   set tacaccepted(bool value) {
     _tacaccepted = value;
     preferences.setTacAccepted(_tacaccepted);
@@ -67,6 +72,7 @@ class PreferenceProvider with ChangeNotifier {
   String get baseUrl => _base_url;
 
   RemoteConfig get remoteconfig => _remoteConfig;
+
   set remoteconfig(RemoteConfig config) {
     _remoteConfig = config;
     _base_url = _remoteConfig.getString("baseUrl");

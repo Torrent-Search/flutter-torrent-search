@@ -30,5 +30,6 @@ class Update {
   Update({this.version, this.link});
 
   factory Update.fromJson(Map<String, dynamic> json) => _$UpdateFromJson(json);
+
   Map<String, dynamic> toJson() => _$UpdateToJson(this);
 }

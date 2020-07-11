@@ -15,15 +15,11 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/RecentResponse.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/Thumbnail.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class AllRecents extends StatefulWidget {
   final bool movies;
@@ -42,7 +38,6 @@ class _AllRecentsState extends State<AllRecents> {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double width = mediaQueryData.size.width;
     final double height = mediaQueryData.size.height;
-    final Color accentColor = Theme.of(context).accentColor;
     final Orientation orientation = mediaQueryData.orientation;
     return Scaffold(
       body: SafeArea(

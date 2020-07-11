@@ -29,5 +29,6 @@ class TorrentRepo {
 
   factory TorrentRepo.fromJSON(Map<String, dynamic> json) =>
       _$TorrentRepoFromJson(json);
+
   Map<String, dynamic> toJson() => _$TorrentRepoToJson(this);
 }

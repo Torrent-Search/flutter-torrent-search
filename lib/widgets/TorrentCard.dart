@@ -16,7 +16,6 @@
  */
 
 import 'package:clipboard_manager/clipboard_manager.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intent/action.dart' as android_action;
@@ -25,20 +24,19 @@ import 'package:intent/intent.dart' as android_intent;
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
-import 'package:torrentsearch/network/ApiConstants.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/TorrentInfo.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/utils/Themes.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
 
 class TorrentCard extends StatefulWidget {
   TorrentInfo info;
   bool isClicked = false;
   bool useLikeIcon;
+
   TorrentCard(TorrentInfo list, {bool useLikeIcon = true}) {
     this.info = list;
     this.useLikeIcon = useLikeIcon;
   }
+
   @override
   _TorrentCardState createState() => _TorrentCardState();
 }
@@ -229,13 +227,5 @@ class _TorrentCardState extends State<TorrentCard> {
           await getMagnetResponse(baseUrl, endpoint, widget.info.url);
     }
     return;
-  }
-
-  void showFlushBar(BuildContext ctx, String msg) {
-    Flushbar(
-      message: msg,
-      duration: Duration(seconds: 1),
-      flushbarStyle: FlushbarStyle.FLOATING,
-    ).show(ctx);
   }
 }

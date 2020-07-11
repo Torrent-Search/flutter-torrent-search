@@ -22,7 +22,6 @@ class PlaylistInformationState extends State<PlaylistInformation> {
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
         Provider.of<PreferenceProvider>(context);
-    final ThemeData themeData = Theme.of(context);
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double height = mediaQueryData.size.height;
     final double width = mediaQueryData.size.width;
@@ -98,42 +97,6 @@ class PlaylistInformationState extends State<PlaylistInformation> {
           body: SafeArea(child: LoadingWidget()),
         );
       },
-    );
-  }
-
-  Widget _buildText(BuildContext ctx, String header, String info) {
-    final ThemeData themeData = Theme.of(ctx);
-    final TextStyle textStyle = themeData.textTheme.bodyText2
-        .copyWith(fontWeight: FontWeight.normal, fontSize: 13.0);
-    final TextStyle textStyleWithSize = themeData.textTheme.bodyText2.copyWith(
-      fontSize: 15,
-      fontWeight: FontWeight.bold,
-    );
-    if (info.split(",").length > 1) {
-      List<String> strings = info.split(",");
-      info = "";
-      strings.forEach((element) {
-        info += (element.trim() + "\n");
-      });
-    }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          header,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textStyleWithSize,
-        ),
-        Text(
-          info,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textStyle,
-        ),
-      ],
     );
   }
 }

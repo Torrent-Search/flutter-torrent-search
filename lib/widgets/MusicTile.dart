@@ -1,9 +1,7 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
-import 'package:torrentsearch/utils/DownloadService.dart';
-import 'package:torrentsearch/utils/UrlUtils.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class MusicTile extends StatelessWidget {
   final SongdataWithUrl data;
@@ -19,7 +17,7 @@ class MusicTile extends StatelessWidget {
         icon: Icon(Icons.file_download),
         onPressed: () async {
           final String fileName = getFileName(data.song);
-          showFlushbar(
+          showFlushBar(
               context,
               await DownloadService.requestDownload(
                   TaskInfo(name: fileName, link: data.encryptedMediaUrl)));
@@ -30,13 +28,5 @@ class MusicTile extends StatelessWidget {
         showProgress: false,
       ),
     );
-  }
-
-  void showFlushbar(BuildContext context, String msg) {
-    Flushbar(
-      message: msg,
-      duration: Duration(seconds: 2),
-      flushbarStyle: FlushbarStyle.FLOATING,
-    ).show(context);
   }
 }

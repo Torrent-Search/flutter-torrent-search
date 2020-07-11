@@ -18,7 +18,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/pages/Music.dart';
-import 'package:torrentsearch/widgets/Torrent.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -108,13 +108,13 @@ class _HomeState extends State<Home> {
     return AppBar(
       leading: current_page == 0
           ? IconButton(
-        icon: Icon(
-          Icons.favorite,
-          color: accentColor,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, "/favourite");
-        },
+              icon: Icon(
+                Icons.favorite,
+                color: accentColor,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, "/favourite");
+              },
             )
           : IconButton(
               icon: Icon(

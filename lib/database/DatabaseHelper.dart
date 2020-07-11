@@ -91,9 +91,10 @@ class DatabaseHelper {
         'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)');
   }
 
-  Future<int> insert({TorrentInfo torrentinfo = null,
-    History history = null,
-    SongdataWithUrl songdata = null}) async {
+  Future<int> insert(
+      {TorrentInfo torrentinfo = null,
+      History history = null,
+      SongdataWithUrl songdata = null}) async {
     Database dbClient = await db;
     int result = 0;
     if (torrentinfo != null) {
@@ -107,9 +108,10 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<List> queryAll({bool torrentinfo = false,
-    bool history = false,
-    String type = "torrent"}) async {
+  Future<List> queryAll(
+      {bool torrentinfo = false,
+      bool history = false,
+      String type = "torrent"}) async {
     Database dbClient = await db;
     var result;
     if (torrentinfo) {

@@ -1,14 +1,8 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
-import 'package:torrentsearch/utils/DownloadService.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/utils/UrlUtils.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class MusicInformation extends StatefulWidget {
   final String pid;
@@ -194,7 +188,7 @@ class _MusicInformationState extends State<MusicInformation> {
                       ),
                       onPressed: () async {
                         final String fileName = getFileName(songdata.song);
-                        showFlushbar(
+                        showFlushBar(
                             context,
                             await DownloadService.requestDownload(TaskInfo(
                                 name: fileName,
@@ -212,13 +206,5 @@ class _MusicInformationState extends State<MusicInformation> {
         ),
       ),
     );
-  }
-
-  void showFlushbar(BuildContext context, String msg) {
-    Flushbar(
-      message: msg,
-      duration: Duration(seconds: 2),
-      flushbarStyle: FlushbarStyle.FLOATING,
-    ).show(context);
   }
 }

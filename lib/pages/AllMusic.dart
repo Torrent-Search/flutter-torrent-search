@@ -15,17 +15,11 @@
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/RecentResponse.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
-import 'package:torrentsearch/widgets/Thumbnail.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class AllMusic extends StatefulWidget {
   final String type;
@@ -43,9 +37,6 @@ class _AllRecentsState extends State<AllMusic> {
     final PreferenceProvider preferenceProvider =
         Provider.of<PreferenceProvider>(context);
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
-    final double width = mediaQueryData.size.width;
-    final double height = mediaQueryData.size.height;
-    final Color accentColor = Theme.of(context).accentColor;
     final Orientation orientation = mediaQueryData.orientation;
     return Scaffold(
       body: SafeArea(

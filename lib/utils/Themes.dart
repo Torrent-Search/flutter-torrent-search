@@ -112,6 +112,7 @@ final ThemeData light = ThemeData.light().copyWith(
 
 abstract class Themes {
   static Preferences prefernces = Preferences();
+
   static ThemeData themeData(bool isDarkTheme, BuildContext context,
       {int color = 0}) {
     if (color == 0) {

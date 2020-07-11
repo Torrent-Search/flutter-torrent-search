@@ -17,7 +17,6 @@
 
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
@@ -50,6 +49,9 @@ class About extends StatelessWidget {
             physics: BouncingScrollPhysics(),
             shrinkWrap: true,
             children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
               Container(
                   height: height * 0.20,
                   child: Image.asset("assets/app_logo.png")),

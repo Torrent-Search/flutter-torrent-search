@@ -22,6 +22,7 @@ import 'package:torrentsearch/network/model/RecentResponse.dart';
 class Thumbnail extends StatelessWidget {
   final RecentInfo _recentInfo;
   final double width, height;
+
   const Thumbnail(this._recentInfo, {this.width, this.height});
 
   @override

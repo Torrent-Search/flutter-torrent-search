@@ -22,10 +22,7 @@ class _MusicResultState extends State<MusicResult> {
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
         Provider.of<PreferenceProvider>(context);
-    final MediaQueryData mediaQueryData = MediaQuery.of(context);
-    final double width = mediaQueryData.size.width;
-    final double height = MediaQuery.of(context).size.height;
-    final Color accentColor = Theme.of(context).accentColor;
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(

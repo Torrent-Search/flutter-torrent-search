@@ -18,17 +18,17 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/exceptions/InternalServerError.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/Imdb.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/network/model/Magnet.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/network/model/TorrentRepo.dart';
 import 'package:torrentsearch/network/model/Update.dart';
-import 'package:torrentsearch/network/ApiConstants.dart';
+import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
+import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 
 Future<List<TorrentInfo>> getApiResponse(
     String BASE_URL, String endpoint, String query) async {

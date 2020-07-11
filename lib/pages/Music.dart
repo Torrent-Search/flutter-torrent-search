@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/utils/Preferences.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
+import 'package:torrentsearch/network/Network.dart';
+import 'package:torrentsearch/utils/Utils.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class Music extends StatefulWidget {
   @override
@@ -31,7 +27,6 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = Theme.of(context).accentColor;
     final PreferenceProvider provider =
         Provider.of<PreferenceProvider>(context);
     return ListView(
@@ -420,9 +415,9 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
     final double width = mediaQueryData.size.width;
     return loading
         ? Container(
-      height: width * 0.35,
-      width: width * 0.40,
-      child: LoadingWidget(),
+            height: width * 0.35,
+            width: width * 0.40,
+            child: LoadingWidget(),
           )
         : Container(
             height: width * 0.40,
