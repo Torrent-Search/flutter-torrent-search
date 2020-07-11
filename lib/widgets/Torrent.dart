@@ -123,7 +123,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
             decoration: InputDecoration(
               filled: true,
               fillColor: fillColor,
-              hintText: "Search Here",
+              hintText: "Search Torrent Here",
               prefixIcon: Icon(
                 Icons.search,
                 color: accentColor,
@@ -169,7 +169,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
                 ),
               ),
               icon: Icon(
-                Icons.search,
+                Icons.public,
                 color: Colors.white,
               ),
               onPressed: () {

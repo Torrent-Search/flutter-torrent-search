@@ -26,7 +26,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final PageController _pageController = PageController(keepPage: true);
+  final PageController _pageController = PageController();
   int current_page = 0;
 
   @override
@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
 
   void goToNextPage() {
     _pageController.animateToPage(current_page == 1 ? 0 : 1,
-        duration: Duration(milliseconds: 300), curve: Curves.ease);
+        duration: Duration(milliseconds: 500), curve: Curves.linear);
   }
 
   Widget _buildAppBar(Color accentColor) {

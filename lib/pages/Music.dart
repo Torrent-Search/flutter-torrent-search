@@ -317,7 +317,7 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
             decoration: InputDecoration(
               filled: true,
               fillColor: fillColor,
-              hintText: "Search Here",
+              hintText: "Search Music Here",
               prefixIcon: Icon(
                 Icons.search,
                 color: accentColor,
@@ -364,7 +364,7 @@ class MusicState extends State<Music> with AutomaticKeepAliveClientMixin {
                 ),
               ),
               icon: Icon(
-                Icons.search,
+                Icons.music_note,
                 color: Colors.white,
               ),
               onPressed: () {
