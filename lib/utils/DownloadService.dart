@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DownloadService {
   static List<TaskInfo> _tasks = [];
@@ -37,6 +38,9 @@ class DownloadService {
   static String get localPath => _localPath;
 
   static Future<String> requestDownload(TaskInfo task) async {
+    if (!await Permission.storage.isGranted) {
+      return "Give Storage permission to Download Song";
+    }
     if (checkIfDownloading(task.name)) {
       return "Already Downloading/Paused";
     }
