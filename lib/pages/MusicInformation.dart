@@ -194,18 +194,11 @@ class _MusicInformationState extends State<MusicInformation> {
                       ),
                       onPressed: () async {
                         final String fileName = getFileName(songdata.song);
-                        if (!DownloadService.checkIfDownloading(fileName)) {
-                          if (await DownloadService.requestDownload(TaskInfo(
-                              name: fileName,
-                              link: songdata.encryptedMediaUrl))) {
-                            showFlushbar(
-                                context, "Downloading to Internal/Downloads");
-                          } else {
-                            showFlushbar(context, "Already downloaded");
-                          }
-                        } else {
-                          showFlushbar(context, "Already Downloading/Paused");
-                        }
+                        showFlushbar(
+                            context,
+                            await DownloadService.requestDownload(TaskInfo(
+                                name: fileName,
+                                link: songdata.encryptedMediaUrl)));
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0)),

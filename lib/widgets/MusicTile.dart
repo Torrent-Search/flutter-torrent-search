@@ -19,16 +19,10 @@ class MusicTile extends StatelessWidget {
         icon: Icon(Icons.file_download),
         onPressed: () async {
           final String fileName = getFileName(data.song);
-          if (!DownloadService.checkIfDownloading(fileName)) {
-            if (await DownloadService.requestDownload(
-                TaskInfo(name: fileName, link: data.encryptedMediaUrl))) {
-              showFlushbar(context, "Downloading to Internal/Downloads");
-            } else {
-              showFlushbar(context, "Already downloaded");
-            }
-          } else {
-            showFlushbar(context, "Already Downloading/Paused");
-          }
+          showFlushbar(
+              context,
+              await DownloadService.requestDownload(
+                  TaskInfo(name: fileName, link: data.encryptedMediaUrl)));
         },
       ),
       leading: MusicThumbnail(

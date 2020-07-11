@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:torrentsearch/utils/UrlUtils.dart';
 
 class DownloadService {
   static List<TaskInfo> _tasks = [];
@@ -37,10 +36,14 @@ class DownloadService {
 
   static String get localPath => _localPath;
 
-  static Future<bool> requestDownload(TaskInfo task) async {
-    if (isExist(getFileName(task.name))) {
-      return false;
+  static Future<String> requestDownload(TaskInfo task) async {
+    if (checkIfDownloading(task.name)) {
+      return "Already Downloading/Paused";
     }
+    if (isExist(task.name)) {
+      return "Already Downloaded to Internal/Download";
+    }
+
     task.taskId = await FlutterDownloader.enqueue(
         url: task.link,
         headers: {"auth": "test"},
@@ -49,7 +52,7 @@ class DownloadService {
         fileName: task.name,
         openFileFromNotification: true);
     _tasks.add(task);
-    return true;
+    return "Downloading to Internal/Download";
   }
 
   static void cancelDownload(TaskInfo task) async {
@@ -89,7 +92,6 @@ class DownloadService {
   }
 
   static bool isExist(String filename) {
-    print(_localPath);
     return File(_localPath + "/" + filename).existsSync();
   }
 
