@@ -31,12 +31,12 @@ class About extends StatelessWidget {
     final Color textColor = br == Brightness.dark ? Colors.white : Colors.black;
     final TextStyle textStyle = TextStyle(
         letterSpacing: 1.5,
-        fontSize: 17.0,
+        fontSize: 15.0,
         fontFamily: "OpenSans",
         color: textColor);
     final TextStyle textStyleWithColor = TextStyle(
       letterSpacing: 1.5,
-      fontSize: 17.0,
+      fontSize: 15.0,
       color: Colors.deepPurple,
       fontFamily: "OpenSans",
     );
@@ -53,13 +53,13 @@ class About extends StatelessWidget {
                 height: 10.0,
               ),
               Container(
-                  height: height * 0.20,
+                  height: height * 0.15,
                   child: Image.asset("assets/app_logo.png")),
               SizedBox(
                 height: 15.0,
               ),
               Text(
-                "Torrent Search",
+                "Torrent Search and Music Search/Download",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class About extends StatelessWidget {
                     ),
                     TextSpan(
                       text:
-                          "), It uses Crawler technology to scrap multiple Torrent Websites, Working principle similar to browser, content parsing from DHT(Distributed Hash Table) protocol based Bittorrent resource search engine website. All the resources are scraped by RESTful Crawler API (",
+                          "), It uses Crawler technology to scrap multiple Torrent Websites for Torrents, Working principle similar to browser, content parsing from DHT(Distributed Hash Table) protocol based Bittorrent resource search engine website. App uses JioSaavn open API to scrap Music related stuff. All the resources are scraped by RESTful Crawler API (",
                       style: textStyle,
                     ),
                     TextSpan(

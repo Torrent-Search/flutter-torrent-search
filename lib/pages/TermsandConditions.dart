@@ -104,7 +104,7 @@ class TermsandConditions extends StatelessWidget {
                         height: 10.0,
                       ),
                       _buildMultiplineText(context,
-                          "This application uses Crawler technology to integrate resources from internet, into the App. Convenient search and find, Only for learning materials, films and television entertainment, Pleas use it reasonably. It's forbidden to use P2P technology in some countries and regions. Do not use this application."),
+                          "This application uses Crawler technology to integrate resources from internet, into the App. Convenient search and find, Only for learning materials, films and television entertainment, Please use it reasonably. It's forbidden to use P2P technology in some countries and regions. Do not use this application."),
                       SizedBox(
                         height: 10.0,
                       ),
@@ -115,7 +115,7 @@ class TermsandConditions extends StatelessWidget {
                         height: 10.0,
                       ),
                       _buildMultiplineText(context,
-                          "All the Music related stuff are collected from network, User is responsible for any Copyright infringement issue,The developer does not assume any legal responsibility",
+                          "All the Music related stuff is collected from network, User is responsible for any Copyright infringement issue, The developer does not assume any legal responsibility.",
                           color: Colors.red),
                     ],
                   ),
