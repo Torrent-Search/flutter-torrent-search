@@ -87,9 +87,7 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
   }
 
   Widget _buildTorrentCard(TorrentInfo info, String baseurl) {
-    final Brightness br = Theme
-        .of(context)
-        .brightness;
+    final Brightness br = Theme.of(context).brightness;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
       child: Card(
@@ -282,6 +280,12 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
               dbhelper.delete(data.id, song: true);
               setState(() {});
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.pushNamed(context, "/musicinfo", arguments: data.id);
+            },
           )
         ],
       ),
@@ -298,16 +302,16 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(
-          Icons.favorite,
-          size: 50.0,
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Text(
-          "No Favourites added",
-          style: TextStyle(
-            fontSize: 20.0,
+              Icons.favorite,
+              size: 50.0,
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              "No Favourites added",
+              style: TextStyle(
+                fontSize: 20.0,
           ),
         )
       ],

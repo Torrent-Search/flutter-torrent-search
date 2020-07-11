@@ -56,7 +56,14 @@ class _MusicTileState extends State<MusicTile> {
                     dbhelper.delete(widget.data.id, song: true);
                     setState(() {});
                   },
-                )
+                ),
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.pushNamed(context, "/musicinfo",
+                  arguments: widget.data.id);
+            },
+          )
         ],
       ),
       leading: MusicThumbnail(
