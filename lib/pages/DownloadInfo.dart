@@ -54,14 +54,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
                                   )),
                         trailing:
                             taskInfo.progress == 100 && statusString != "Failed"
-                                ? IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      DownloadService.delete(
-                                        taskInfo,
-                                      );
-                                    },
-                                  )
+                                ? _buildDeletButton(taskInfo)
                                 : statusString == "Paused"
                                     ? Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -74,13 +67,7 @@ class _DownloadInfoState extends State<DownloadInfo> {
                                                     taskInfo);
                                             },
                                           ),
-                                          IconButton(
-                                            icon: Icon(Icons.delete),
-                                            onPressed: () {
-                                              DownloadService.delete(taskInfo,
-                                                  shouldDeleteContent: true);
-                                            },
-                                          )
+                                          _buildDeletButton(taskInfo),
                                         ],
                                       )
                                     : Row(
@@ -151,5 +138,36 @@ class _DownloadInfoState extends State<DownloadInfo> {
       case "DownloadTaskStatus(6)":
         return "Paused";
     }
+  }
+
+  Widget _buildDeletButton(TaskInfo info) {
+    return IconButton(
+      icon: Icon(Icons.delete),
+      onPressed: () {
+        showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text("Delete"),
+            content: Text("Delete File too ?"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  DownloadService.delete(info, shouldDeleteContent: true);
+                  Navigator.pop(context);
+                },
+                child: Text("Yes"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  DownloadService.delete(info);
+                  Navigator.pop(context);
+                },
+                child: Text("No"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
