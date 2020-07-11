@@ -294,6 +294,30 @@ class SongdataWithUrl {
         "duration": duration,
         "singers": singers,
       };
+
+  factory SongdataWithUrl.fromMap(Map<String, dynamic> json) => SongdataWithUrl(
+        id: json["id"],
+        song: json["song"].toString().replaceAll("&quot;", ""),
+        image: json["image"],
+        album: json["album"],
+        albumid: json["albumid"],
+        encryptedMediaUrl: json["encrypted_media_url"],
+        year: json["year"],
+        duration: json["duration"],
+        singers: json["singers"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "id": id,
+        "song": song,
+        "image": image,
+        "album": album,
+        "albumid": albumid,
+        "encrypted_media_url": encryptedMediaUrl,
+        "year": year,
+        "duration": duration,
+        "singers": singers,
+      };
 }
 
 class AlbumWithUrl {

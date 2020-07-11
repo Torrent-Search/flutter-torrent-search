@@ -142,7 +142,7 @@ class _MyAppState extends State<MyApp> {
                   return FadeRouteBuilder(page: Settings());
                   break;
                 case '/favourite':
-                  return FadeRouteBuilder(page: FavouriteTorrents());
+                  return FadeRouteBuilder(page: FavouriteTorrents(type: args));
                   break;
                 case '/history':
                   return FadeRouteBuilder(page: SearchHistory(type: args));

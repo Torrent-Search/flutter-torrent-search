@@ -17,9 +17,7 @@
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_migration/sqflite_migration.dart';
-import 'package:torrentsearch/network/model/TorrentInfo.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
+import 'package:torrentsearch/network/Network.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
@@ -42,9 +40,15 @@ class DatabaseHelper {
   String columnTypeHistory = "type";
 
   String tableSongs = "songs";
-  String columnimage_url = "image";
-  String columnsong_url = "song_url";
+  String columnsongid = "id";
   String columnsong = "song";
+  String columnImage = "image";
+  String columnsongalbum = "album";
+  String columnsongalbumid = "albumid";
+  String columnsongMediaurl = "encrypted_media_url";
+  String columnsongyear = "year";
+  String columnsongdusration = "duration";
+  String columnsongsingers = "singers";
 
   static Database _db;
 
@@ -59,24 +63,11 @@ class DatabaseHelper {
     return _db;
   }
 
-  get initialScript => [
-        'CREATE TABLE IF NOT EXISTS $tableTorrentInfo($columnName TEXT UNIQUE, $columnUrl TEXT'
-            ', $columnSeeders TEXT, $columnLeechers TEXT'
-            ', $columnUploadDate TEXT, $columnSize TEXT'
-            ', $columnUploader TEXT, $columnMagnet TEXT'
-            ', $columnWebsite TEXT, $columnTorrentFile TEXT)',
-        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)'
-      ];
-
-  get migrations =>
-      ['ALTER TABLE $tableHistory ADD COLUMN $columnTypeHistory TEXT'];
-
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'torrent.db');
-    final config = MigrationConfig(
-        initializationScript: initialScript, migrationScripts: migrations);
-    Database db = await openDatabaseWithMigration(path, config);
+    Database db = await openDatabase(path,
+        version: 2, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return db;
   }
 
@@ -87,8 +78,32 @@ class DatabaseHelper {
         ', $columnUploadDate TEXT, $columnSize TEXT'
         ', $columnUploader TEXT, $columnMagnet TEXT'
         ', $columnWebsite TEXT, $columnTorrentFile TEXT)');
+
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)');
+        'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE,$columnTypeHistory TEXT)');
+    await db.execute(
+        'CREATE TABLE IF NOT EXISTS $tableSongs($columnsongid TEXT UNIQUE, $columnsong TEXT'
+        ', $columnImage TEXT, $columnsongalbum TEXT'
+        ', $columnsongalbumid TEXT, $columnsongMediaurl TEXT'
+        ', $columnsongyear TEXT, $columnsongdusration TEXT'
+        ', $columnsongsingers TEXT)');
+  }
+
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await db.execute(
+        'CREATE TABLE IF NOT EXISTS $tableSongs($columnsongid TEXT UNIQUE, $columnsong TEXT'
+        ', $columnImage TEXT, $columnsongalbum TEXT'
+        ', $columnsongalbumid TEXT, $columnsongMediaurl TEXT'
+        ', $columnsongyear TEXT, $columnsongdusration TEXT'
+        ', $columnsongsingers TEXT)');
+    try {
+      await db.execute("SELECT $columnTypeHistory from $tableHistory");
+    } on DatabaseException {
+      await db
+          .execute('ALTER $tableHistory ADD COLUMN $columnTypeHistory TEXT');
+      await db.execute(
+          'UPDATE TABLE $tableHistory SET $columnTypeHistory="torrent"');
+    }
   }
 
   Future<int> insert(
@@ -101,90 +116,61 @@ class DatabaseHelper {
       result = await dbClient.insert(tableTorrentInfo, torrentinfo.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
-    if (history != null) {
-      result = await dbClient.insert(tableHistory, history.toMap(),
+    try {
+      if (history != null) {
+        result = await dbClient.insert(tableHistory, history.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    } on DatabaseException {
+      _onUpgrade(dbClient, 2, 3);
+    }
+
+    if (songdata != null) {
+      result = await dbClient.insert(tableSongs, songdata.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
     return result;
   }
 
-  Future<List> queryAll(
-      {bool torrentinfo = false,
-      bool history = false,
-      String type = "torrent"}) async {
+  Future<List> queryAll({bool torrentinfo = false,
+    bool history = false,
+    bool song = false,
+    String type = "torrent"}) async {
     Database dbClient = await db;
     var result;
     if (torrentinfo) {
       result = await dbClient.query(tableTorrentInfo);
     }
     if (history) {
-      result = await dbClient.query(tableHistory,
-          where: "$columnTypeHistory = ?", whereArgs: [type]);
+      result = await dbClient
+          .query(tableHistory, where: "type = ?", whereArgs: [type]);
+    }
+    if (song) {
+      result = await dbClient.query(tableSongs);
     }
     return result.toList();
   }
 
-  Future<int> getCount({bool torrentinfo = false, bool history = false}) async {
-    Database dbClient = await db;
-    int count;
-    if (torrentinfo) {
-      count = Sqflite.firstIntValue(
-          await dbClient.rawQuery('SELECT COUNT(*) FROM $tableTorrentInfo'));
-    }
-    if (history) {
-      count = Sqflite.firstIntValue(
-          await dbClient.rawQuery('SELECT COUNT(*) FROM $tableHistory'));
-    }
-    return count;
-  }
-
-  Future<TorrentInfo> getTorrentInfo(String name) async {
-    Database dbClient = await db;
-    List<Map> result = await dbClient
-        .query(tableTorrentInfo, where: '$columnName = ?', whereArgs: [name]);
-
-    if (result.length > 0) {
-      return TorrentInfo.fromMap(result.first);
-    }
-    return null;
-  }
-
-  Future<int> getHistoyCount(String name) async {
-    Database dbClient = await db;
-    List<Map> result = await dbClient.query(tableHistory,
-        where: '$columnSearchHistory = ?', whereArgs: [name]);
-
-    if (result.length > 0) {
-      return result.length;
-    }
-    return 0;
-  }
-
-  Future<int> getTorrentInfoCount(String name) async {
-    Database dbClient = await db;
-    List<Map> result = await dbClient
-        .query(tableTorrentInfo, where: '$columnName = ?', whereArgs: [name]);
-
-    if (result.length > 0) {
-      return result.length;
-    }
-    return 0;
-  }
-
-  Future<int> delete(String name, {
-    bool torrentinfo = false,
-    bool history = false,
-  }) async {
+  Future<int> delete(String name,
+      {bool torrentinfo = false,
+        bool history = false,
+        bool song = false}) async {
     Database dbClient = await db;
     int count = 0;
     if (torrentinfo) {
       count = await dbClient.delete(tableTorrentInfo,
           where: '$columnName = ?', whereArgs: [name]);
     }
+
     if (history) {
       count = await dbClient.delete(tableHistory,
           where: '$columnSearchHistory = ?', whereArgs: [name]);
     }
+    if (song) {
+      count = await dbClient
+          .delete(tableSongs, where: '$columnsongid = ?', whereArgs: [name]);
+    }
+
     return count;
   }
 

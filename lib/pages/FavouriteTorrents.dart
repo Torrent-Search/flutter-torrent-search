@@ -30,6 +30,10 @@ import 'package:torrentsearch/widgets/CustomWidgets.dart';
 class FavouriteTorrents extends StatefulWidget {
   bool isClicked = false;
 
+  final int type;
+
+  FavouriteTorrents({this.type = 0});
+
   @override
   _FavouriteTorrentsState createState() => _FavouriteTorrentsState();
 }
@@ -55,17 +59,22 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
             color: preferenceProvider.darkTheme ? Colors.white : Colors.black),
       ),
       body: FutureBuilder(
-        future: _databaseHelper.queryAll(torrentinfo: true),
+        future: widget.type == 0
+            ? _databaseHelper.queryAll(torrentinfo: true)
+            : _databaseHelper.queryAll(song: true),
         builder: (ctx, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.length != 0) {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (ctx, index) {
-                  return _buildCard(
-                      context,
-                      TorrentInfo.fromMap(snapshot.data[index]),
-                      preferenceProvider.baseUrl);
+                  return widget.type == 0
+                      ? _buildTorrentCard(
+                          TorrentInfo.fromMap(snapshot.data[index]),
+                          preferenceProvider.baseUrl)
+                      : _buildSongCard(
+                          SongdataWithUrl.fromMap(snapshot.data[index]),
+                        );
                 },
               );
             }
@@ -77,8 +86,10 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
     );
   }
 
-  Widget _buildCard(BuildContext ctx, TorrentInfo info, String baseurl) {
-    final Brightness br = Theme.of(context).brightness;
+  Widget _buildTorrentCard(TorrentInfo info, String baseurl) {
+    final Brightness br = Theme
+        .of(context)
+        .brightness;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
       child: Card(
@@ -247,12 +258,46 @@ class _FavouriteTorrentsState extends State<FavouriteTorrents> {
     );
   }
 
+  Widget _buildSongCard(SongdataWithUrl data) {
+    return ListTile(
+      title: Text(data.song),
+      subtitle: Text(data.year),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.file_download),
+            onPressed: () async {
+              final String fileName = getFileName(data.song);
+              showFlushBar(
+                  context,
+                  await DownloadService.requestDownload(
+                      TaskInfo(name: fileName, link: data.encryptedMediaUrl)));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () async {
+              final DatabaseHelper dbhelper = DatabaseHelper();
+              dbhelper.delete(data.id, song: true);
+              setState(() {});
+            },
+          )
+        ],
+      ),
+      leading: MusicThumbnail(
+        url: data.image,
+        showProgress: false,
+      ),
+    );
+  }
+
   Widget _buildNoFavourite() {
     return Center(
         child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
           Icons.favorite,
           size: 50.0,
         ),

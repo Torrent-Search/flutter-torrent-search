@@ -106,36 +106,40 @@ class _HomeState extends State<Home> {
 
   Widget _buildAppBar(Color accentColor) {
     return AppBar(
-      leading: current_page == 0
-          ? IconButton(
-              icon: Icon(
-                Icons.favorite,
-                color: accentColor,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, "/favourite");
-              },
-            )
-          : IconButton(
-              icon: Icon(
-                Icons.history,
-                color: accentColor,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, "/history",
-                    arguments: current_page);
-              },
-            ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.favorite,
+          color: accentColor,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, "/favourite", arguments: current_page);
+        },
+      ),
       actions: <Widget>[
         current_page == 1
-            ? IconButton(
-                icon: Icon(
-                  Icons.cloud_download,
-                  color: accentColor,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/downloads");
-                },
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.cloud_download,
+                      color: accentColor,
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/downloads");
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.history,
+                      color: accentColor,
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/history",
+                          arguments: current_page);
+                    },
+                  ),
+                ],
               )
             : IconButton(
                 icon: Icon(
