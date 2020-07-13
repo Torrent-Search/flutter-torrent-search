@@ -16,13 +16,15 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
+import 'package:torrentsearch/bloc/torrent_bloc.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/TorrentCard.dart';
+
+import 'ExceptionWidget.dart';
+import 'LoadingWidget.dart';
+import 'TorrentCard.dart';
 
 class Torrenttab extends StatefulWidget {
   String endpoint, query;
@@ -39,39 +41,51 @@ class Torrenttab extends StatefulWidget {
 
 class _TorrenttabState extends State<Torrenttab>
     with AutomaticKeepAliveClientMixin<Torrenttab> {
+  PreferenceProvider preferenceProvider;
+  String baseUrl;
+  TorrentBloc _torrentBloc;
+
   @override
   void initState() {
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    preferenceProvider = Provider.of<PreferenceProvider>(context);
+    baseUrl = preferenceProvider.baseUrl;
+
+    _torrentBloc = TorrentBloc();
+    _torrentBloc.add(TorrentSearch(baseUrl, widget.endpoint, widget.query));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Color accentColor = Theme.of(context).accentColor;
-    final PreferenceProvider preferenceProvider =
-        Provider.of<PreferenceProvider>(context);
-    final String baseUrl = preferenceProvider.baseUrl;
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          child: FutureBuilder<List<TorrentInfo>>(
-              future: getApiResponse(baseUrl, widget.endpoint, widget.query),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext ctxt, int index) {
-                      final TorrentInfo info = snapshot.data[index];
-                      return TorrentCard(info //[index]
-                          );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return ExceptionWidget(snapshot.error);
-                } else {
-                  return LoadingWidget();
-                }
-              }),
+        child: BlocProvider(
+          create: (context) => _torrentBloc,
+          child: BlocBuilder<TorrentBloc, TorrentState>(
+            builder: (BuildContext context, TorrentState state) {
+              if (state is TorrentLoaded) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
+                  itemCount: state.list.length,
+                  itemBuilder: (BuildContext ctxt, int index) {
+                    final TorrentInfo info = state.list[index];
+                    return TorrentCard(info //[index]
+                        );
+                  },
+                );
+              } else if (state is TorrentError) {
+                return ExceptionWidget(state.exception);
+              } else {
+                return LoadingWidget();
+              }
+            },
+          ),
         ),
       ),
     );
@@ -82,6 +96,7 @@ class _TorrenttabState extends State<Torrenttab>
 
   @override
   void dispose() {
+    _torrentBloc.dispose();
     super.dispose();
   }
 }

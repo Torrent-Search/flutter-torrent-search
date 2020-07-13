@@ -167,7 +167,7 @@ class _TorrentResultState extends State<TorrentResult>
 
   @override
   void dispose() {
-    super.dispose();
     _tabController.dispose();
+    super.dispose();
   }
 }

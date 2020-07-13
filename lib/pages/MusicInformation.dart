@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/bloc/music_bloc.dart';
 import 'package:torrentsearch/network/Network.dart';
 import 'package:torrentsearch/utils/Utils.dart';
 import 'package:torrentsearch/widgets/CustomWidgets.dart';
@@ -17,39 +19,44 @@ class MusicInformation extends StatefulWidget {
 class _MusicInformationState extends State<MusicInformation> {
   String title = "";
 
+  MusicBloc _musicBloc;
+  PreferenceProvider _provider;
+
   @override
   Widget build(BuildContext context) {
-    final PreferenceProvider _provider =
-        Provider.of<PreferenceProvider>(context);
-
-    return widget.songdata == null
-        ? FutureBuilder(
-            future: getJioSongdataWithUrl(_provider.baseUrl, widget.pid),
-            builder: (BuildContext context,
-                AsyncSnapshot<SongdataWithUrl> snapshot) {
-              if (snapshot.hasData) {
-                try {
-                  double minute = int.parse(snapshot.data.duration) / 60;
-                  snapshot.data.duration = minute.toStringAsFixed(2);
-                } on Exception {}
-                return _buildBody(snapshot.data);
-              } else if (snapshot.hasError) {
-                Scaffold(
-                  appBar: AppBar(),
-                  body: SafeArea(
-                    child: ExceptionWidget(snapshot.error),
-                  ),
-                );
-              }
-              return Scaffold(
-                appBar: AppBar(),
-                body: SafeArea(
-                  child: LoadingWidget(),
+    return Scaffold(
+      body: SafeArea(
+        child: widget.songdata == null
+            ? BlocProvider(
+                create: (context) => _musicBloc,
+                child: BlocBuilder<MusicBloc, MusicState>(
+                  builder: (BuildContext context, MusicState state) {
+                    if (state is MusicSongLoaded) {
+                      return _buildBody(
+                        context,
+                        state.data,
+                      );
+                    } else if (state is MusicError) {
+                      return ExceptionWidget(state.exception);
+                    } else {
+                      return LoadingWidget();
+                    }
+                  },
                 ),
-              );
-            },
-          )
-        : _buildBody(widget.songdata);
+              )
+            : _buildBody(context, widget.songdata),
+      ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.songdata == null) {
+      _musicBloc = MusicBloc();
+      _provider = Provider.of<PreferenceProvider>(context);
+      _musicBloc.add(GetSongDataEvent(_provider.baseUrl, widget.pid));
+    }
   }
 
   Widget _buildText(BuildContext ctx, String header, String info) {
@@ -94,117 +101,123 @@ class _MusicInformationState extends State<MusicInformation> {
     );
   }
 
-  Widget _buildBody(SongdataWithUrl songdata) {
+  Widget _buildBody(BuildContext context, SongdataWithUrl songdata) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
-    final ThemeData themeData = Theme.of(context);
     final double width = mediaQueryData.size.width;
     final double height = mediaQueryData.size.height;
-    final double blurRadius = 15.0;
-    final Color shadowColor = themeData.brightness == Brightness.dark
-        ? Color(0xff424242)
-        : Colors.black54;
-    final BorderRadius borderRadius = BorderRadius.circular(20);
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          shrinkWrap: false,
-          physics: BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverAppBar(
-              title: Text(
-                songdata.song ?? "",
-                style: TextStyle(letterSpacing: 2.0),
+    // songdata.duration = "a";
+    try {
+      final String duration =
+          (double.parse(songdata.duration) / 60).toStringAsPrecision(2) +
+              " Minute";
+      songdata.duration = duration;
+    } on Exception {}
+    return CustomScrollView(
+      shrinkWrap: false,
+      physics: BouncingScrollPhysics(),
+      slivers: <Widget>[
+        SliverAppBar(
+          title: Text(
+            songdata.song ?? "",
+            style: TextStyle(letterSpacing: 2.0),
+          ),
+          centerTitle: true,
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            SizedBox(
+              height: height * 0.35,
+              child: Center(
+                child: MusicThumbnail(
+                  url: songdata.image,
+                  showProgress: false,
+                ),
               ),
-              centerTitle: true,
             ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                SizedBox(
-                  height: height * 0.35,
-                  child: Center(
-                    child: MusicThumbnail(
-                      url: songdata.image,
-                      showProgress: false,
-                    ),
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Center(
+                child: Text(
+                  songdata.song ?? "",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    fontFamily: "OpenSans",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Center(
-                    child: Text(
-                      songdata.song ?? "",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        letterSpacing: 2.0,
-                        fontFamily: "OpenSans",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                      ),
-                    ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(
+                  width: width * 0.50,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _buildText(context, "Album", songdata.album),
+                      SizedBox(height: 20.0),
+                      _buildText(context, "Singer", songdata.singers),
+                    ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Container(
-                      width: width * 0.50,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          _buildText(context, "Album", songdata.album),
-                          SizedBox(height: 20.0),
-                          _buildText(context, "Singer", songdata.singers),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: width * 0.50,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          _buildText(context, "Duration", songdata.duration),
-                          SizedBox(height: 20.0),
-                          _buildText(context, "Year", songdata.year),
-                        ],
-                      ),
-                    )
-                  ],
                 ),
                 Container(
-                  padding: EdgeInsets.all(20.0),
-                  child: Center(
-                    child: RaisedButton.icon(
-                      label: Text(
-                        "Download",
-                        style: TextStyle(
-                          letterSpacing: 2.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      icon: Icon(
-                        Icons.file_download,
-                        color: Colors.white,
-                      ),
-                      onPressed: () async {
-                        final String fileName = getFileName(songdata.song);
-                        showFlushBar(
-                            context,
-                            await DownloadService.requestDownload(TaskInfo(
-                                name: fileName,
-                                link: songdata.encryptedMediaUrl)));
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      color: themeData.accentColor,
-                    ),
+                  width: width * 0.50,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _buildText(context, "Duration", songdata.duration),
+                      SizedBox(height: 20.0),
+                      _buildText(context, "Year", songdata.year),
+                    ],
                   ),
                 )
-              ]),
+              ],
             ),
-          ],
+            Container(
+              padding: EdgeInsets.all(20.0),
+              child: Center(
+                child: RaisedButton.icon(
+                  label: Text(
+                    "Download",
+                    style: TextStyle(
+                      letterSpacing: 2.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.file_download,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    final String fileName = getFileName(songdata.song);
+                    showFlushBar(
+                        context,
+                        await DownloadService.requestDownload(TaskInfo(
+                            name: fileName, link: songdata.encryptedMediaUrl)));
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0)),
+                  color: Theme
+                      .of(context)
+                      .accentColor,
+                ),
+              ),
+            )
+          ]),
         ),
-      ),
+      ],
     );
+  }
+
+  @override
+  void dispose() {
+    if (widget.songdata == null) {
+      _musicBloc.dispose();
+    }
+    super.dispose();
   }
 }

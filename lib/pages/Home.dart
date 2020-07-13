@@ -17,7 +17,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:torrentsearch/pages/Music.dart';
+import 'package:torrentsearch/pages/MusicHome.dart';
 import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class Home extends StatefulWidget {
@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
               }),
               children: <Widget>[
                 Torrent(),
-                Music(),
+                MusicHome(),
               ],
             ),
             Container(
@@ -95,8 +95,8 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    super.dispose();
     _pageController.dispose();
+    super.dispose();
   }
 
   void goToNextPage() {

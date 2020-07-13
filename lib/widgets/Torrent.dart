@@ -244,7 +244,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _textEditingController.dispose();
+    super.dispose();
   }
 }

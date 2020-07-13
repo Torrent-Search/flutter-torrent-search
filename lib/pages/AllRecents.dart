@@ -16,7 +16,9 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/bloc/torrent_bloc.dart';
 import 'package:torrentsearch/network/Network.dart';
 import 'package:torrentsearch/utils/Utils.dart';
 import 'package:torrentsearch/widgets/CustomWidgets.dart';
@@ -31,10 +33,11 @@ class AllRecents extends StatefulWidget {
 }
 
 class _AllRecentsState extends State<AllRecents> {
+  TorrentBloc _torrentBloc;
+  PreferenceProvider _provider;
+
   @override
   Widget build(BuildContext context) {
-    final PreferenceProvider preferenceProvider =
-        Provider.of<PreferenceProvider>(context);
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double width = mediaQueryData.size.width;
     final double height = mediaQueryData.size.height;
@@ -50,46 +53,56 @@ class _AllRecentsState extends State<AllRecents> {
                 style: TextStyle(letterSpacing: 3.0),
               ),
               centerTitle: true,
-              iconTheme: IconThemeData(
-                color:
-                    preferenceProvider.darkTheme ? Colors.white : Colors.black,
-              ),
               floating: true,
             ),
-            FutureBuilder(
-                future: widget.movies
-                    ? getRecentMovies(preferenceProvider.baseUrl,
-                        longList: true)
-                    : getRecentSeries(preferenceProvider.baseUrl,
-                        longList: true),
-                builder: (BuildContext ctx,
-                    AsyncSnapshot<List<RecentInfo>> snapshot) {
-                  if (snapshot.hasData) {
-                    return SliverPadding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      sliver: SliverGrid.count(
-                        crossAxisCount:
-                            Orientation.portrait == orientation ? 2 : 3,
-                        mainAxisSpacing: 5.0,
-                        crossAxisSpacing: 5.0,
-                        childAspectRatio:
-                            (((width) / 2) / ((height / 2) - height * 0.1)),
-                        children: snapshot.data.map((e) {
-                          return Thumbnail(e);
-                        }).toList(),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
+            BlocProvider(
+              create: (context) => _torrentBloc,
+              child: BlocBuilder<TorrentBloc, TorrentState>(
+                builder: (BuildContext context, TorrentState state) {
+                  if (state is TorrentRecentLoaded) {
+                    return _buildBody(orientation, width, height, state.list);
+                  } else if (state is TorrentError) {
                     return SliverFillRemaining(
-                      child: ExceptionWidget(snapshot.error),
-                    );
+                        child: ExceptionWidget(state.exception));
                   } else {
                     return SliverFillRemaining(child: LoadingWidget());
                   }
-                }),
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _torrentBloc = TorrentBloc();
+    _provider = Provider.of<PreferenceProvider>(context);
+    _torrentBloc.add(TorrentRecent(_provider.baseUrl, widget.movies, true));
+  }
+
+  SliverPadding _buildBody(Orientation orientation, double width, double height,
+      List<RecentInfo> list) {
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      sliver: SliverGrid.count(
+        crossAxisCount: Orientation.portrait == orientation ? 2 : 3,
+        mainAxisSpacing: 5.0,
+        crossAxisSpacing: 5.0,
+        childAspectRatio: (((width) / 2) / ((height / 2) - height * 0.1)),
+        children: list.map((e) {
+          return Thumbnail(e);
+        }).toList(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _torrentBloc.dispose();
+    super.dispose();
   }
 }

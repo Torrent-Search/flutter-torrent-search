@@ -205,10 +205,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    super.dispose();
     dbhelper.close();
     _unbindBackgroundIsolate();
     DownloadService.dispose();
+    super.dispose();
   }
 
   void _saveDeviceToken() async {

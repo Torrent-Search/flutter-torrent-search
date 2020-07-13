@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
+import 'package:torrentsearch/bloc/music_bloc.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/widgets/ExceptionWidget.dart';
@@ -18,85 +19,104 @@ class PlaylistInformation extends StatefulWidget {
 }
 
 class PlaylistInformationState extends State<PlaylistInformation> {
+  MusicBloc _musicBloc;
+  PreferenceProvider _provider;
+
   @override
   Widget build(BuildContext context) {
-    final PreferenceProvider _provider =
-        Provider.of<PreferenceProvider>(context);
+    return Scaffold(
+      body: SafeArea(
+        child: BlocProvider(
+          create: (context) => _musicBloc,
+          child: BlocBuilder<MusicBloc, MusicState>(
+            builder: (BuildContext context, MusicState state) {
+              if (state is MusicPlaylistLoaded) {
+                return _buildBody(
+                  context,
+                  state.data,
+                );
+              } else if (state is MusicError) {
+                return ExceptionWidget(state.exception);
+              } else {
+                return LoadingWidget();
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _musicBloc = MusicBloc();
+    _provider = Provider.of<PreferenceProvider>(context);
+    _musicBloc.add(GetPlaylistDataEvent(_provider.baseUrl, widget.id));
+  }
+
+  CustomScrollView _buildBody(
+    BuildContext context,
+    Playlist playlist,
+  ) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double height = mediaQueryData.size.height;
     final double width = mediaQueryData.size.width;
-
-    return FutureBuilder(
-      future: getPlaylist(_provider.baseUrl, widget.id),
-      builder: (BuildContext context, AsyncSnapshot<Playlist> snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            body: SafeArea(
-              child: CustomScrollView(
-                physics: BouncingScrollPhysics(),
-                slivers: <Widget>[
-                  SliverAppBar(
-                    title: Text(
-                      snapshot.data.name,
-                      style: TextStyle(letterSpacing: 2.0),
-                    ),
-                    centerTitle: true,
+    return CustomScrollView(
+      physics: BouncingScrollPhysics(),
+      slivers: <Widget>[
+        SliverAppBar(
+          title: Text(
+            playlist.name,
+            style: TextStyle(letterSpacing: 2.0),
+          ),
+          centerTitle: true,
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              Container(
+                height: height * 0.35,
+                width: width,
+                child: Center(
+                  child: MusicThumbnail(
+                    url: playlist.image,
+                    showProgress: false,
                   ),
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        Container(
-                          height: height * 0.35,
-                          width: width,
-                          child: Center(
-                            child: MusicThumbnail(
-                              url: snapshot.data.image,
-                              showProgress: false,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Center(
-                            child: Text(
-                              snapshot.data.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                letterSpacing: 2.0,
-                                fontFamily: "OpenSans",
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                      final SongdataWithUrl data = snapshot.data.songs[index];
-                      return MusicTile(data);
-                    }, childCount: snapshot.data.songs.length),
-                  )
-                ],
+                ),
               ),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          Scaffold(
-            appBar: AppBar(),
-            body: SafeArea(
-              child: ExceptionWidget(snapshot.error),
-            ),
-          );
-        }
-        return Scaffold(
-          appBar: AppBar(),
-          body: SafeArea(child: LoadingWidget()),
-        );
-      },
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Center(
+                  child: Text(
+                    playlist.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      letterSpacing: 2.0,
+                      fontFamily: "OpenSans",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SliverList(
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) {
+            final SongdataWithUrl songdata = playlist.songs[index];
+            return MusicTile(songdata);
+          }, childCount: playlist.songs.length),
+        )
+      ],
     );
+  }
+
+  @override
+  void dispose() {
+    _musicBloc.dispose();
+    super.dispose();
   }
 }
