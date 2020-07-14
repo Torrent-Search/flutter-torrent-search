@@ -37,6 +37,7 @@ class ApiConstants {
   static const String JIOSAAVALBUM = "api/jiosaavnalbum";
   static const String JIOSAAVPLAYLIST = "api/jiosaavnplaylist";
   static const String JIOSAAVHOME = "api/jiosaavnhome";
+  static const String RECENTS = "api/recent";
 
   static const List INDEXERS = [
     "1337x",

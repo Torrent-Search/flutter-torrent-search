@@ -35,3 +35,12 @@ class TorrentRecentLoaded extends TorrentState {
   @override
   List<Object> get props => [list];
 }
+
+class TorrentHomeRecentLoaded extends TorrentState {
+  final RecentResponse data;
+
+  TorrentHomeRecentLoaded(this.data);
+
+  @override
+  List<Object> get props => [data];
+}

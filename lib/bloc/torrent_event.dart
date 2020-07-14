@@ -23,3 +23,12 @@ class TorrentRecent extends TorrentEvent {
   @override
   List<Object> get props => [base_url, movie, long_list];
 }
+
+class TorrentHomeRecent extends TorrentEvent {
+  final String base_url;
+
+  TorrentHomeRecent(this.base_url);
+
+  @override
+  List<Object> get props => [base_url];
+}

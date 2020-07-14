@@ -17,25 +17,30 @@
 
 import 'dart:convert';
 
-RecentResponse RecentResponseFromJson(String str) =>
-    RecentResponse.fromJson(json.decode(str));
-
-String RecentResponseToJson(RecentResponse data) => json.encode(data.toJson());
-
 class RecentResponse {
   RecentResponse({
-    this.data,
+    this.movies,
+    this.shows,
   });
 
-  List<RecentInfo> data;
+  final List<RecentInfo> movies;
+  final List<RecentInfo> shows;
+
+  factory RecentResponse.fromRawJson(String str) =>
+      RecentResponse.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
 
   factory RecentResponse.fromJson(Map<String, dynamic> json) => RecentResponse(
-        data: List<RecentInfo>.from(
-            json["Data"].map((x) => RecentInfo.fromJson(x))),
+        movies: List<RecentInfo>.from(
+            json["movies"].map((x) => RecentInfo.fromJson(x))),
+        shows: List<RecentInfo>.from(
+            json["shows"].map((x) => RecentInfo.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "Data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "movies": List<dynamic>.from(movies.map((x) => x.toJson())),
+        "shows": List<dynamic>.from(shows.map((x) => x.toJson())),
       };
 }
 

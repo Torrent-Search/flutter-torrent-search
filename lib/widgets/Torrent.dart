@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:torrentsearch/bloc/music_bloc.dart';
+import 'package:torrentsearch/bloc/torrent_bloc.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
 import 'package:torrentsearch/network/NetworkProvider.dart';
+import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 import 'package:torrentsearch/utils/Preferences.dart';
@@ -22,81 +26,68 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
 
   final DatabaseHelper databaseHelper = DatabaseHelper();
   final Preferences pref = Preferences();
-  bool torrent = true;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  TorrentBloc _torrentBloc;
+  PreferenceProvider _provider;
 
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = Theme.of(context).accentColor;
+    return Scaffold(
+      body: SafeArea(
+        child: BlocProvider(
+          create: (context) => _torrentBloc,
+          child: BlocBuilder<TorrentBloc, TorrentState>(
+            builder: (BuildContext context, TorrentState state) {
+              if (state is TorrentHomeRecentLoaded) {
+                return _buildBody(context, data: state.data, loading: false);
+              } else if (state is TorrentError) {
+                return ExceptionWidget(state.exception);
+              } else {
+                return _buildBody(context);
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _torrentBloc = TorrentBloc();
+    _provider = Provider.of<PreferenceProvider>(context);
+    _torrentBloc.add(TorrentHomeRecent(_provider.baseUrl));
+  }
+
+  ListView _buildBody(BuildContext context,
+      {RecentResponse data, bool loading = true}) {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: <Widget>[
         _buildSearch(context),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
-          child: Row(
-            children: <Widget>[
-              Text(
-                "Movies",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2.0,
-                    fontSize: 16),
-                textAlign: TextAlign.left,
-              ),
-              Spacer(),
-              InkWell(
-                child: Text(
-                  "View all",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, "/allrecents", arguments: true);
-                },
-              ),
-            ],
-          ),
+        _buildHeader(
+          "Movies",
+          () {
+            Navigator.pushNamed(context, "/allrecents", arguments: true);
+          },
         ),
-        _buildRecent(context),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
-          child: Row(
-            children: <Widget>[
-              Text(
-                "TV Shows",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2.0,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              Spacer(),
-              InkWell(
-                child: Text(
-                  "View all",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, "/allrecents", arguments: false);
-                },
-              )
-            ],
-          ),
+        loading
+            ? _buildRecent(context, null)
+            : data.movies.length > 0
+                ? _buildRecent(context, data.movies, loading: false)
+                : ExceptionWidget(NoContentFoundException()),
+        _buildHeader(
+          "TV Shows",
+          () {
+            Navigator.pushNamed(context, "/allrecents", arguments: false);
+          },
         ),
-        _buildRecent(context, movies: false),
+        loading
+            ? _buildRecent(context, null)
+            : data.shows.length > 0
+                ? _buildRecent(context, data.shows, loading: false)
+                : ExceptionWidget(NoContentFoundException()),
         SizedBox(height: 70.0),
       ],
     );
@@ -209,36 +200,55 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  Widget _buildRecent(BuildContext context, {movies = true}) {
+  Widget _buildRecent(BuildContext context, List<RecentInfo> list,
+      {bool loading = true}) {
     final PreferenceProvider preferenceProvider =
         Provider.of<PreferenceProvider>(context);
     final String baseUrl = preferenceProvider.baseUrl;
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double width = mediaQueryData.size.width;
-    final double height = MediaQuery.of(context).size.height;
-    final Color accentColor = Theme.of(context).accentColor;
+    final double height = mediaQueryData.size.height;
+
     return Container(
-      height: height * 0.35,
-      padding: EdgeInsets.only(left: 5.0),
-      child: FutureBuilder<List<RecentInfo>>(
-          future: movies ? getRecentMovies(baseUrl) : getRecentSeries(baseUrl),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
+        height: height * 0.35,
+        child: loading
+            ? LoadingWidget()
+            : ListView.builder(
                 physics: BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.length,
+                itemCount: list.length,
                 shrinkWrap: true,
                 itemBuilder: (BuildContext ctxt, int index) {
-                  return Thumbnail(snapshot.data[index], width: width * 0.40);
+                  return Thumbnail(list[index], width: width * 0.40);
                 },
-              );
-            } else if (snapshot.hasError) {
-              return ExceptionWidget(snapshot.error);
-            } else {
-              return LoadingWidget();
-            }
-          }),
+              ));
+  }
+
+  Widget _buildHeader(String header, Function onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+      child: Row(
+        children: <Widget>[
+          Text(
+            header,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, letterSpacing: 2.0, fontSize: 16),
+            textAlign: TextAlign.left,
+          ),
+          Spacer(),
+          InkWell(
+            child: Text(
+              "View all",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14.0,
+                letterSpacing: 1.0,
+              ),
+            ),
+            onTap: onTap,
+          ),
+        ],
+      ),
     );
   }
 

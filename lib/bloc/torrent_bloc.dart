@@ -37,6 +37,16 @@ class TorrentBloc extends Bloc<TorrentEvent, TorrentState> {
         yield TorrentError(e);
       }
     }
+
+    if (event is TorrentHomeRecent) {
+      yield TorrentInitial();
+      try {
+        RecentResponse data = await getRecents(event.base_url);
+        yield TorrentHomeRecentLoaded(data);
+      } on Exception catch (e) {
+        yield TorrentError(e);
+      }
+    }
   }
 
   void dispose() {
