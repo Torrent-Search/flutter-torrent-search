@@ -49,7 +49,7 @@ class _AlbumInformationState extends State<AlbumInformation> {
               } else if (state is MusicError) {
                 return ExceptionWidget(state.exception);
               } else {
-                return LoadingWidget();
+                return AppbarWithLoadingWidget();
               }
             },
           ),

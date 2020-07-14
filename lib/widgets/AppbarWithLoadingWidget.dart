@@ -14,14 +14,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:flutter/material.dart';
 
-export 'AppbarWithLoadingWidget.dart';
-export 'ExceptionWidget.dart';
-export 'IndexersList.dart';
-export 'LoadingWidget.dart';
-export 'MusicThumbnail.dart';
-export 'MusicTile.dart';
-export 'Thumbnail.dart';
-export 'Torrent.dart';
-export 'TorrentCard.dart';
-export 'Torrenttab.dart';
+import 'LoadingWidget.dart';
+
+class AppbarWithLoadingWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(slivers: <Widget>[
+      SliverAppBar(
+        title: Text(""),
+      ),
+      SliverFillRemaining(child: Center(child: LoadingWidget())),
+    ]);
+  }
+}

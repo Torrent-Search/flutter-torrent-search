@@ -52,7 +52,7 @@ class PlaylistInformationState extends State<PlaylistInformation> {
               } else if (state is MusicError) {
                 return ExceptionWidget(state.exception);
               } else {
-                return LoadingWidget();
+                return AppbarWithLoadingWidget();
               }
             },
           ),
@@ -69,8 +69,10 @@ class PlaylistInformationState extends State<PlaylistInformation> {
     _musicBloc.add(GetPlaylistDataEvent(_provider.baseUrl, widget.id));
   }
 
-  CustomScrollView _buildBody(BuildContext context,
-      Playlist playlist,) {
+  CustomScrollView _buildBody(
+    BuildContext context,
+    Playlist playlist,
+  ) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double height = mediaQueryData.size.height;
     final double width = mediaQueryData.size.width;

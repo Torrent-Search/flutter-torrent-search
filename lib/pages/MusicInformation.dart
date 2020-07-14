@@ -45,22 +45,22 @@ class _MusicInformationState extends State<MusicInformation> {
       body: SafeArea(
         child: widget.songdata == null
             ? BlocProvider(
-          create: (context) => _musicBloc,
-          child: BlocBuilder<MusicBloc, MusicState>(
-            builder: (BuildContext context, MusicState state) {
-              if (state is MusicSongLoaded) {
-                return _buildBody(
-                  context,
-                  state.data,
-                );
-              } else if (state is MusicError) {
-                return ExceptionWidget(state.exception);
-              } else {
-                return LoadingWidget();
-              }
-            },
-          ),
-        )
+                create: (context) => _musicBloc,
+                child: BlocBuilder<MusicBloc, MusicState>(
+                  builder: (BuildContext context, MusicState state) {
+                    if (state is MusicSongLoaded) {
+                      return _buildBody(
+                        context,
+                        state.data,
+                      );
+                    } else if (state is MusicError) {
+                      return ExceptionWidget(state.exception);
+                    } else {
+                      return AppbarWithLoadingWidget();
+                    }
+                  },
+                ),
+              )
             : _buildBody(context, widget.songdata),
       ),
     );
