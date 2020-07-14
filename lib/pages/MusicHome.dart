@@ -32,7 +32,7 @@ class MusicHome extends StatefulWidget {
 class MusicHomeState extends State<MusicHome>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController =
-  TextEditingController(text: "");
+      TextEditingController(text: "");
 
   final DatabaseHelper databaseHelper = DatabaseHelper();
   final Preferences pref = Preferences();
@@ -65,7 +65,7 @@ class MusicHomeState extends State<MusicHome>
               } else if (state is MusicError) {
                 return ExceptionWidget(state.exception);
               } else {
-                return LoadingWidget();
+                return _buildBody(context, loading: true);
               }
             },
           ),
