@@ -50,6 +50,7 @@ dependencies:
   path_provider: ^1.6.11
   flutter_bloc: ^5.0.1
   equatable: ^1.2.2
+  percent_indicator: ^2.1.5
 
 dev_dependencies:
   flutter_test:

@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:torrentsearch/utils/Utils.dart';
 
 class DownloadInfo extends StatefulWidget {
@@ -27,6 +28,7 @@ class DownloadInfo extends StatefulWidget {
 class _DownloadInfoState extends State<DownloadInfo> {
   @override
   Widget build(BuildContext context) {
+    final bool dark_mode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -64,7 +66,20 @@ class _DownloadInfoState extends State<DownloadInfo> {
                   subtitle: taskInfo.progress == 100
                       ? Text("Downloade Complete")
                       : (statusString == "Running"
-                      ? Text("Downloaded : ${taskInfo.progress}%")
+                      ? LinearPercentIndicator(
+                    progressColor:
+                    Theme
+                        .of(context)
+                        .accentColor,
+                    backgroundColor: dark_mode
+                        ? Color(0xff424242)
+                        : Colors.black12,
+                    addAutomaticKeepAlive: false,
+                    leading: Text('${taskInfo.progress}%'),
+                    percent:
+                    (taskInfo.progress / 100).toDouble(),
+//                                    lineHeight: 15.0,
+                  )
                       : Text(
                     statusString,
                   )),
