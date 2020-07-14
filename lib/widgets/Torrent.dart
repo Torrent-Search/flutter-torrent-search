@@ -1,10 +1,25 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:torrentsearch/bloc/music_bloc.dart';
 import 'package:torrentsearch/bloc/torrent_bloc.dart';
 import 'package:torrentsearch/database/DatabaseHelper.dart';
-import 'package:torrentsearch/network/NetworkProvider.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
@@ -22,7 +37,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   final TextEditingController _textEditingController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
 
   final DatabaseHelper databaseHelper = DatabaseHelper();
   final Preferences pref = Preferences();
@@ -68,26 +83,26 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
         _buildSearch(context),
         _buildHeader(
           "Movies",
-          () {
+              () {
             Navigator.pushNamed(context, "/allrecents", arguments: true);
           },
         ),
         loading
             ? _buildRecent(context, null)
             : data.movies.length > 0
-                ? _buildRecent(context, data.movies, loading: false)
-                : ExceptionWidget(NoContentFoundException()),
+            ? _buildRecent(context, data.movies, loading: false)
+            : ExceptionWidget(NoContentFoundException()),
         _buildHeader(
           "TV Shows",
-          () {
+              () {
             Navigator.pushNamed(context, "/allrecents", arguments: false);
           },
         ),
         loading
             ? _buildRecent(context, null)
             : data.shows.length > 0
-                ? _buildRecent(context, data.shows, loading: false)
-                : ExceptionWidget(NoContentFoundException()),
+            ? _buildRecent(context, data.shows, loading: false)
+            : ExceptionWidget(NoContentFoundException()),
         SizedBox(height: 70.0),
       ],
     );
@@ -203,7 +218,7 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
   Widget _buildRecent(BuildContext context, List<RecentInfo> list,
       {bool loading = true}) {
     final PreferenceProvider preferenceProvider =
-        Provider.of<PreferenceProvider>(context);
+    Provider.of<PreferenceProvider>(context);
     final String baseUrl = preferenceProvider.baseUrl;
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final double width = mediaQueryData.size.width;
@@ -214,14 +229,14 @@ class _TorrentState extends State<Torrent> with AutomaticKeepAliveClientMixin {
         child: loading
             ? LoadingWidget()
             : ListView.builder(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                itemCount: list.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext ctxt, int index) {
-                  return Thumbnail(list[index], width: width * 0.40);
-                },
-              ));
+          physics: BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          itemCount: list.length,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext ctxt, int index) {
+            return Thumbnail(list[index], width: width * 0.40);
+          },
+        ));
   }
 
   Widget _buildHeader(String header, Function onTap) {

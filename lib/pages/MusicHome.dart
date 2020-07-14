@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +32,7 @@ class MusicHome extends StatefulWidget {
 class MusicHomeState extends State<MusicHome>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
 
   final DatabaseHelper databaseHelper = DatabaseHelper();
   final Preferences pref = Preferences();
@@ -131,7 +148,7 @@ class MusicHomeState extends State<MusicHome>
               if (_textEditingController.text != "") {
                 databaseHelper.insert(
                     history:
-                        History(_textEditingController.text, type: "music"));
+                    History(_textEditingController.text, type: "music"));
                 Navigator.pushNamed(context, "/musicresult",
                     arguments: _textEditingController.text);
               }
@@ -160,7 +177,7 @@ class MusicHomeState extends State<MusicHome>
                 if (_textEditingController.text != "") {
                   databaseHelper.insert(
                       history:
-                          History(_textEditingController.text, type: "music"));
+                      History(_textEditingController.text, type: "music"));
 
                   Navigator.pushNamed(
                     context,
@@ -204,44 +221,44 @@ class MusicHomeState extends State<MusicHome>
     final double width = mediaQueryData.size.width;
     return loading
         ? Container(
-            height: width * 0.35,
-            width: width * 0.40,
-            child: LoadingWidget(),
-          )
+      height: width * 0.35,
+      width: width * 0.40,
+      child: LoadingWidget(),
+    )
         : Container(
-            height: width * 0.40,
-            width: width * 0.40,
-            padding: EdgeInsets.only(left: 5.0),
-            child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: data.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext ctxt, int index) {
-                final JioSaavnInfo info = data[index];
-                return MusicThumbnail(
-                  url: info.image,
-                  onpressed: () {
-                    switch (info.type) {
-                      case "album":
-                        Navigator.of(context)
-                            .pushNamed("/albuminfo", arguments: info.id);
-                        break;
-                      case "playlist":
-                        Navigator.of(context)
-                            .pushNamed("/playlistinfo", arguments: info.id);
-                        break;
-                      case "song":
-                        Navigator.of(context)
-                            .pushNamed("/musicinfo", arguments: info.id);
-                        break;
-                      default:
-                    }
-                  },
-                );
-              },
-            ),
+      height: width * 0.40,
+      width: width * 0.40,
+      padding: EdgeInsets.only(left: 5.0),
+      child: ListView.builder(
+        physics: BouncingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemCount: data.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext ctxt, int index) {
+          final JioSaavnInfo info = data[index];
+          return MusicThumbnail(
+            url: info.image,
+            onpressed: () {
+              switch (info.type) {
+                case "album":
+                  Navigator.of(context)
+                      .pushNamed("/albuminfo", arguments: info.id);
+                  break;
+                case "playlist":
+                  Navigator.of(context)
+                      .pushNamed("/playlistinfo", arguments: info.id);
+                  break;
+                case "song":
+                  Navigator.of(context)
+                      .pushNamed("/musicinfo", arguments: info.id);
+                  break;
+                default:
+              }
+            },
           );
+        },
+      ),
+    );
   }
 
   Widget _buildBody(BuildContext context,
@@ -256,12 +273,12 @@ class MusicHomeState extends State<MusicHome>
             loading
                 ? () {}
                 : () {
-                    Navigator.pushNamed(
-                      context,
-                      "/allmusic",
-                      arguments: {"list": data.charts, "type": "Charts"},
-                    );
-                  }),
+              Navigator.pushNamed(
+                context,
+                "/allmusic",
+                arguments: {"list": data.charts, "type": "Charts"},
+              );
+            }),
         _buildList(context,
             data: loading ? null : data.charts, loading: loading),
         _buildHeader(
@@ -269,12 +286,12 @@ class MusicHomeState extends State<MusicHome>
             loading
                 ? () {}
                 : () {
-                    Navigator.pushNamed(
-                      context,
-                      "/allmusic",
-                      arguments: {"list": data.trending, "type": "Trending"},
-                    );
-                  }),
+              Navigator.pushNamed(
+                context,
+                "/allmusic",
+                arguments: {"list": data.trending, "type": "Trending"},
+              );
+            }),
         _buildList(context,
             data: loading ? null : data.trending, loading: loading),
         _buildHeader(
@@ -282,15 +299,15 @@ class MusicHomeState extends State<MusicHome>
             loading
                 ? () {}
                 : () {
-                    Navigator.pushNamed(
-                      context,
-                      "/allmusic",
-                      arguments: {
-                        "list": data.topPlaylists,
-                        "type": "Top Playlists"
-                      },
-                    );
-                  }),
+              Navigator.pushNamed(
+                context,
+                "/allmusic",
+                arguments: {
+                  "list": data.topPlaylists,
+                  "type": "Top Playlists"
+                },
+              );
+            }),
         _buildList(context,
             data: loading ? null : data.topPlaylists, loading: loading),
         SizedBox(height: 70.0),

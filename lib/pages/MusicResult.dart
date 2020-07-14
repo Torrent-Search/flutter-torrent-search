@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +48,7 @@ class _MusicResultState extends State<MusicResult> {
   @override
   Widget build(BuildContext context) {
     final PreferenceProvider _provider =
-        Provider.of<PreferenceProvider>(context);
+    Provider.of<PreferenceProvider>(context);
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -80,24 +97,24 @@ class _MusicResultState extends State<MusicResult> {
         ),
         data.albums.data.length > 0
             ? Container(
-                height: width * 0.40,
-                width: width * 0.40,
-                child: ListView.builder(
-                  itemCount: data.albums.data.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    final AlbumsData albumData = data.albums.data[index];
-                    return MusicThumbnail(
-                      albumsData: albumData,
-                      onpressed: () {
-                        Navigator.pushNamed(context, "/albuminfo",
-                            arguments: albumData.id);
-                      },
-                      showProgress: true,
-                    );
-                  },
-                ),
-              )
+          height: width * 0.40,
+          width: width * 0.40,
+          child: ListView.builder(
+            itemCount: data.albums.data.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (BuildContext context, int index) {
+              final AlbumsData albumData = data.albums.data[index];
+              return MusicThumbnail(
+                albumsData: albumData,
+                onpressed: () {
+                  Navigator.pushNamed(context, "/albuminfo",
+                      arguments: albumData.id);
+                },
+                showProgress: true,
+              );
+            },
+          ),
+        )
             : ExceptionWidget(NoContentFoundException()),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
@@ -110,24 +127,24 @@ class _MusicResultState extends State<MusicResult> {
         ),
         data.songs.data.length > 0
             ? Container(
-          height: width * 0.40,
-          width: width * 0.40,
-          child: ListView.builder(
-            itemCount: data.songs.data.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, int index) {
-              final SongData songdata = data.songs.data[index];
-              return MusicThumbnail(
-                songData: songdata,
-                onpressed: () {
-                  Navigator.pushNamed(context, "/musicinfo",
-                      arguments: songdata.id);
-                },
-                showProgress: true,
-              );
-            },
-          ),
-        )
+                height: width * 0.40,
+                width: width * 0.40,
+                child: ListView.builder(
+                  itemCount: data.songs.data.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    final SongData songdata = data.songs.data[index];
+                    return MusicThumbnail(
+                      songData: songdata,
+                      onpressed: () {
+                        Navigator.pushNamed(context, "/musicinfo",
+                            arguments: songdata.id);
+                      },
+                      showProgress: true,
+                    );
+                  },
+                ),
+              )
             : ExceptionWidget(NoContentFoundException()),
       ],
     );

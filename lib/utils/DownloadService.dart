@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'dart:async';
 import 'dart:io';
 
@@ -8,7 +25,7 @@ class DownloadService {
   static List<TaskInfo> _tasks = [];
   static String _localPath = "";
   static StreamController _streamController =
-      StreamController<TaskInfo>.broadcast();
+  StreamController<TaskInfo>.broadcast();
 
   static void addTask(TaskInfo task) {
     _tasks.add(task);
@@ -18,8 +35,7 @@ class DownloadService {
 
   static Stream get stream => _streamController.stream;
 
-  static Stream<TaskInfo> updateData(
-      String id, DownloadTaskStatus status, int progress) {
+  static Stream<TaskInfo> updateData(String id, DownloadTaskStatus status, int progress) {
     var task = _tasks?.firstWhere((task) => task.taskId == id);
     if (task != null) {
       task.status = status;
@@ -101,7 +117,7 @@ class DownloadService {
 
   static bool checkIfDownloading(String name) {
     TaskInfo task =
-        _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
+    _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
     if (task == null) {
       return false;
     }

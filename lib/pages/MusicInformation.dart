@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -28,22 +45,22 @@ class _MusicInformationState extends State<MusicInformation> {
       body: SafeArea(
         child: widget.songdata == null
             ? BlocProvider(
-                create: (context) => _musicBloc,
-                child: BlocBuilder<MusicBloc, MusicState>(
-                  builder: (BuildContext context, MusicState state) {
-                    if (state is MusicSongLoaded) {
-                      return _buildBody(
-                        context,
-                        state.data,
-                      );
-                    } else if (state is MusicError) {
-                      return ExceptionWidget(state.exception);
-                    } else {
-                      return LoadingWidget();
-                    }
-                  },
-                ),
-              )
+          create: (context) => _musicBloc,
+          child: BlocBuilder<MusicBloc, MusicState>(
+            builder: (BuildContext context, MusicState state) {
+              if (state is MusicSongLoaded) {
+                return _buildBody(
+                  context,
+                  state.data,
+                );
+              } else if (state is MusicError) {
+                return ExceptionWidget(state.exception);
+              } else {
+                return LoadingWidget();
+              }
+            },
+          ),
+        )
             : _buildBody(context, widget.songdata),
       ),
     );
@@ -201,9 +218,7 @@ class _MusicInformationState extends State<MusicInformation> {
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5.0)),
-                  color: Theme
-                      .of(context)
-                      .accentColor,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
             )

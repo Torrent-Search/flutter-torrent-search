@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
+ *
+ *     torrentsearch is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     torrentsearch is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:torrentsearch/utils/Utils.dart';
@@ -28,90 +45,90 @@ class _DownloadInfoState extends State<DownloadInfo> {
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             return DownloadService.tasks.length > 0
                 ? ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: DownloadService.tasks.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final TaskInfo taskInfo = DownloadService.tasks[index];
-                      final String statusString =
-                          getDownloadStatus(taskInfo.status);
-                      return ListTile(
-                        onTap: () {
-                          if (taskInfo.progress == 100 &&
-                              DownloadService.isExist(taskInfo.name)) {
-                            DownloadService.openDownloadedFile(taskInfo);
-                          }
-                        },
-                        title: Text(
-                          taskInfo.name,
-                        ),
-                        subtitle: taskInfo.progress == 100
-                            ? Text("Downloade Complete")
-                            : (statusString == "Running"
-                                ? Text("Downloaded : ${taskInfo.progress}%")
-                                : Text(
-                                    statusString,
-                                  )),
-                        trailing:
-                            taskInfo.progress == 100 && statusString != "Failed"
-                                ? _buildDeletButton(taskInfo)
-                                : statusString == "Paused"
-                                    ? Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: Icon(Icons.play_arrow),
-                                            onPressed: () {
-                                              if (taskInfo.progress != 100)
-                                                DownloadService.resumeDownload(
-                                                    taskInfo);
-                                            },
-                                          ),
-                                          _buildDeletButton(taskInfo),
-                                        ],
-                                      )
-                                    : Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: Icon(Icons.pause),
-                                            onPressed: () {
-                                              if (taskInfo.progress != 100)
-                                                DownloadService.pauseDownload(
-                                                    taskInfo);
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Icon(Icons.cancel),
-                                            onPressed: () {
-                                              if (taskInfo.progress != 100)
-                                                DownloadService.cancelDownload(
-                                                    taskInfo);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                      );
-                    },
-                  )
-                : Center(
-                    child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              physics: BouncingScrollPhysics(),
+              itemCount: DownloadService.tasks.length,
+              itemBuilder: (BuildContext context, int index) {
+                final TaskInfo taskInfo = DownloadService.tasks[index];
+                final String statusString =
+                getDownloadStatus(taskInfo.status);
+                return ListTile(
+                  onTap: () {
+                    if (taskInfo.progress == 100 &&
+                        DownloadService.isExist(taskInfo.name)) {
+                      DownloadService.openDownloadedFile(taskInfo);
+                    }
+                  },
+                  title: Text(
+                    taskInfo.name,
+                  ),
+                  subtitle: taskInfo.progress == 100
+                      ? Text("Downloade Complete")
+                      : (statusString == "Running"
+                      ? Text("Downloaded : ${taskInfo.progress}%")
+                      : Text(
+                    statusString,
+                  )),
+                  trailing:
+                  taskInfo.progress == 100 && statusString != "Failed"
+                      ? _buildDeletButton(taskInfo)
+                      : statusString == "Paused"
+                      ? Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Icon(
-                        Icons.cancel,
-                        size: 50.0,
+                      IconButton(
+                        icon: Icon(Icons.play_arrow),
+                        onPressed: () {
+                          if (taskInfo.progress != 100)
+                            DownloadService.resumeDownload(
+                                taskInfo);
+                        },
                       ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        "No Downloads",
-                        style: TextStyle(
-                          fontSize: 20.0,
-                        ),
-                      )
+                      _buildDeletButton(taskInfo),
                     ],
-                  ));
+                  )
+                      : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.pause),
+                        onPressed: () {
+                          if (taskInfo.progress != 100)
+                            DownloadService.pauseDownload(
+                                taskInfo);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.cancel),
+                        onPressed: () {
+                          if (taskInfo.progress != 100)
+                            DownloadService.cancelDownload(
+                                taskInfo);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            )
+                : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.cancel,
+                      size: 50.0,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Text(
+                      "No Downloads",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    )
+                  ],
+                ));
             ;
             ;
           },
