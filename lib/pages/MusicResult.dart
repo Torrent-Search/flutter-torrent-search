@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/bloc/music_bloc.dart';
+import 'package:torrentsearch/network/Network.dart';
 import 'package:torrentsearch/network/exceptions/NoContentFoundException.dart';
-import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/widgets/ExceptionWidget.dart';
-import 'package:torrentsearch/widgets/LoadingWidget.dart';
-import 'package:torrentsearch/widgets/MusicThumbnail.dart';
+import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class MusicResult extends StatefulWidget {
   final String query;
@@ -82,24 +80,24 @@ class _MusicResultState extends State<MusicResult> {
         ),
         data.albums.data.length > 0
             ? Container(
-          height: width * 0.40,
-          width: width * 0.40,
-          child: ListView.builder(
-            itemCount: data.albums.data.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, int index) {
-              final AlbumsData albumData = data.albums.data[index];
-              return MusicThumbnail(
-                albumsData: albumData,
-                onpressed: () {
-                  Navigator.pushNamed(context, "/albuminfo",
-                      arguments: albumData.id);
-                },
-                showProgress: true,
-              );
-            },
-          ),
-        )
+                height: width * 0.40,
+                width: width * 0.40,
+                child: ListView.builder(
+                  itemCount: data.albums.data.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    final AlbumsData albumData = data.albums.data[index];
+                    return MusicThumbnail(
+                      albumsData: albumData,
+                      onpressed: () {
+                        Navigator.pushNamed(context, "/albuminfo",
+                            arguments: albumData.id);
+                      },
+                      showProgress: true,
+                    );
+                  },
+                ),
+              )
             : ExceptionWidget(NoContentFoundException()),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),

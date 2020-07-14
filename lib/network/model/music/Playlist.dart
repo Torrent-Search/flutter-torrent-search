@@ -17,31 +17,38 @@
 
 import 'dart:convert';
 
-import 'package:torrentsearch/network/model/music/Albums.dart';
 import 'package:torrentsearch/network/model/music/Songs.dart';
 
-class JioSaavnRawQuery {
-  JioSaavnRawQuery({
-    this.albums,
+class Playlist {
+  Playlist({
+    this.id,
+    this.name,
+    this.image,
     this.songs,
   });
 
-  final Albums albums;
-  final Songs songs;
+  final String name;
+  final String image;
+  final String id;
+  final List<SongdataWithUrl> songs;
 
-  factory JioSaavnRawQuery.fromRawJson(String str) =>
-      JioSaavnRawQuery.fromJson(json.decode(str));
+  factory Playlist.fromRawJson(String str) =>
+      Playlist.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory JioSaavnRawQuery.fromJson(Map<String, dynamic> json) =>
-      JioSaavnRawQuery(
-        albums: Albums.fromJson(json["albums"]),
-        songs: Songs.fromJson(json["songs"]),
+  factory Playlist.fromJson(Map<String, dynamic> json) => Playlist(
+        id: json["listid"],
+        name: json["listname"],
+        image: json["image"],
+        songs: List<SongdataWithUrl>.from(
+            json["songs"].map((x) => SongdataWithUrl.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "albums": albums.toJson(),
-        "songs": songs.toJson(),
+        "listid": id,
+        "listname": name,
+        "image": image,
+        "songs": List<dynamic>.from(songs.map((x) => x.toJson())),
       };
 }

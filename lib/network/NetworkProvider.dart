@@ -25,16 +25,19 @@ import 'package:torrentsearch/network/model/Imdb.dart';
 import 'package:torrentsearch/network/model/Magnet.dart';
 import 'package:torrentsearch/network/model/RecentResponse.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
-import 'package:torrentsearch/network/model/TorrentRepo.dart';
 import 'package:torrentsearch/network/model/Update.dart';
+import 'package:torrentsearch/network/model/music/Albums.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnHome.dart';
 import 'package:torrentsearch/network/model/music/JioSaavnRawQuery.dart';
+import 'package:torrentsearch/network/model/music/Playlist.dart';
+import 'package:torrentsearch/network/model/music/Songs.dart';
 
 Future<List<TorrentInfo>> getApiResponse(
     String BASE_URL, String endpoint, String query) async {
   http.Response response = await http.get('$BASE_URL$endpoint?search=$query');
   if (response.statusCode == 200) {
-    return TorrentRepo.fromJSON(json.decode(response.body)).torrentInfo;
+    return List<TorrentInfo>.from(
+        json.decode(response.body)["data"].map((x) => TorrentInfo.fromJson(x)));
   } else if (response.statusCode == 204) {
     throw NoContentFoundException();
   } else if (response.statusCode == 500) {
