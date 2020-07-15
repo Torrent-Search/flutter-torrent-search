@@ -316,5 +316,6 @@ class _MyAppState extends State<MyApp> {
     } else {
       _permissionReady = await _checkPermission();
     }
+    DownloadService.loadTasks(await FlutterDownloader.loadTasks());
   }
 }

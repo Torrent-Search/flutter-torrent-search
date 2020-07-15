@@ -18,6 +18,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -25,17 +26,28 @@ class DownloadService {
   static List<TaskInfo> _tasks = [];
   static String _localPath = "";
   static StreamController _streamController =
-  StreamController<TaskInfo>.broadcast();
-
+      StreamController<TaskInfo>.broadcast();
+  static MethodChannel platform = const MethodChannel('flutter.native/helper');
   static void addTask(TaskInfo task) {
     _tasks.add(task);
   }
 
   static List<TaskInfo> get tasks => _tasks;
+  static void loadTasks(List<DownloadTask> list) {
+    _tasks = list
+        .map((e) => TaskInfo(
+            name: e.filename,
+            link: e.url,
+            taskId: e.taskId,
+            progress: e.progress,
+            status: e.status))
+        .toList();
+  }
 
   static Stream get stream => _streamController.stream;
 
-  static Stream<TaskInfo> updateData(String id, DownloadTaskStatus status, int progress) {
+  static Stream<TaskInfo> updateData(
+      String id, DownloadTaskStatus status, int progress) {
     var task = _tasks?.firstWhere((task) => task.taskId == id);
     if (task != null) {
       task.status = status;
@@ -57,6 +69,9 @@ class DownloadService {
     if (!await Permission.storage.isGranted) {
       return "Give Storage permission to Download Song";
     }
+    if (_localPath == "") {
+      _localPath = await platform.invokeMethod("getDownloadDirectory");
+    }
     if (checkIfDownloading(task.name)) {
       return "Already Downloading/Paused";
     }
@@ -71,7 +86,7 @@ class DownloadService {
         showNotification: true,
         fileName: task.name,
         openFileFromNotification: true);
-    _tasks.add(task);
+    _tasks.insert(0, task);
     return "Downloading to Internal/Download";
   }
 
@@ -117,7 +132,7 @@ class DownloadService {
 
   static bool checkIfDownloading(String name) {
     TaskInfo task =
-    _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
+        _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
     if (task == null) {
       return false;
     }
@@ -143,5 +158,10 @@ class TaskInfo {
   int progress = 0;
   DownloadTaskStatus status = DownloadTaskStatus.undefined;
 
-  TaskInfo({this.name, this.link});
+  TaskInfo(
+      {this.name,
+      this.link,
+      this.taskId,
+      this.progress = 0,
+      this.status = DownloadTaskStatus.undefined});
 }
