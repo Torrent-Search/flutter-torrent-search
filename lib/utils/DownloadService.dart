@@ -44,6 +44,12 @@ class DownloadService {
         .toList();
   }
 
+  static void clearTasks() async {
+    _tasks.forEach((e) {
+      delete(e, shouldDeleteContent: false);
+    });
+  }
+
   static Stream get stream => _streamController.stream;
 
   static Stream<TaskInfo> updateData(
