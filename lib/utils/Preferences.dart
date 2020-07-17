@@ -25,6 +25,7 @@ class Preferences {
   static const String INDEXERS = "INDEXERS";
   static const String SYSTEMACCENT = "SYSTEMACCENT";
   static const String TACACCPTED = "TACACCPTED";
+  static const String FIRSTOPEN = "FIRSTOPEN";
 
   setDarkTheme(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -84,5 +85,15 @@ class Preferences {
   Future<bool> getTacAccepted() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(TACACCPTED) ?? false;
+  }
+
+  setFirstOpen(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(FIRSTOPEN, value);
+  }
+
+  Future<bool> getFirstOpen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(FIRSTOPEN) ?? true;
   }
 }

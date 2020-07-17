@@ -18,6 +18,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:torrentsearch/pages/MusicHome.dart';
+import 'package:torrentsearch/utils/Preferences.dart';
 import 'package:torrentsearch/widgets/CustomWidgets.dart';
 
 class Home extends StatefulWidget {
@@ -32,6 +33,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    _init();
   }
 
   @override
@@ -102,6 +104,28 @@ class _HomeState extends State<Home> {
   void goToNextPage() {
     _pageController.animateToPage(current_page == 1 ? 0 : 1,
         duration: Duration(milliseconds: 500), curve: Curves.linear);
+  }
+
+  void _init() async {
+    if (await Preferences().getFirstOpen()) {
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("Important Note"),
+          content:
+              Text("Song Download directory is Changed to Internal / Music"),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () async {
+                await Preferences().setFirstOpen(false);
+                Navigator.pop(context);
+              },
+              child: Text("Ok"),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildAppBar(Color accentColor) {
