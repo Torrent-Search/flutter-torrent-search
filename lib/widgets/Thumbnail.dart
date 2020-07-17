@@ -35,7 +35,7 @@ class Thumbnail extends StatelessWidget {
     return Container(
       height: height ?? null,
       width: width ?? null,
-      margin: EdgeInsets.all(blurRadius),
+      margin: EdgeInsets.all(blurRadius + 5.0),
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         color: Colors.transparent,
@@ -68,6 +68,7 @@ class Thumbnail extends StatelessWidget {
                 ),
               );
             },
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         ),
       ),

@@ -48,7 +48,7 @@ class MusicThumbnail extends StatelessWidget {
     return Container(
       height: height ?? null,
       width: width ?? null,
-      margin: EdgeInsets.all(blurRadius),
+      margin: EdgeInsets.all(blurRadius + 5.0),
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         color: Colors.transparent,
@@ -78,11 +78,13 @@ class MusicThumbnail extends StatelessWidget {
                       ),
                     );
                   },
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 )
               : CachedNetworkImage(
-                  fit: BoxFit.fitHeight,
+                  fit: BoxFit.fill,
                   imageUrl: url ??
                       (albumsData == null ? songData.image : albumsData.image),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
         ),
       ),
