@@ -338,9 +338,11 @@ packages:
   flutter_downloader:
     dependency: "direct main"
     description:
-      name: flutter_downloader
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "46e6e567cfd3a4f5378347a8f85d008c5b7c4c5d"
+      url: "git://github.com/Tejasvp25/flutter_downloader.git"
+    source: git
     version: "1.4.4"
   flutter_emoji:
     dependency: "direct main"

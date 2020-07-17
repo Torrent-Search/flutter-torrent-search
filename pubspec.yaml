@@ -45,12 +45,15 @@ dependencies:
   flutter_material_color_picker: ^1.0.5
   downloader: ^0.0.1
   firebase_remote_config: ^0.3.1
-  flutter_downloader: ^1.4.4
+#  flutter_downloader: ^1.4.4
   permission_handler: ^5.0.1+1
   path_provider: ^1.6.11
   flutter_bloc: ^5.0.1
   equatable: ^1.2.2
   percent_indicator: ^2.1.5
+  flutter_downloader:
+    git:
+      url: git://github.com/Tejasvp25/flutter_downloader.git
 
 dev_dependencies:
   flutter_test:

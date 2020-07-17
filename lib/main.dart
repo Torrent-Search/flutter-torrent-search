@@ -309,12 +309,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _init() async {
-    _permissionReady = await _checkPermission();
+    DownloadService.isApi29 = await platform.invokeMethod("isApi29");
+    DownloadService.downloadString = "Internal/Music";
+    if (!DownloadService.isApi29) {
+      _permissionReady = await _checkPermission();
+    } else {
+      _permissionReady = true;
+    }
     if (_permissionReady) {
       DownloadService.localPath =
           await platform.invokeMethod("getDownloadDirectory");
-    } else {
-      _permissionReady = await _checkPermission();
     }
     DownloadService.loadTasks(await FlutterDownloader.loadTasks());
   }

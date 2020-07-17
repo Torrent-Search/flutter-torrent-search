@@ -28,6 +28,9 @@ class DownloadService {
   static StreamController _streamController =
       StreamController<TaskInfo>.broadcast();
   static MethodChannel platform = const MethodChannel('flutter.native/helper');
+  static bool isApi29;
+  static String downloadString;
+
   static void addTask(TaskInfo task) {
     _tasks.add(task);
   }
@@ -72,17 +75,19 @@ class DownloadService {
   static String get localPath => _localPath;
 
   static Future<String> requestDownload(TaskInfo task) async {
-    if (!await Permission.storage.isGranted) {
-      return "Give Storage permission to Download Song";
+    if (!isApi29) {
+      if (!await Permission.storage.isGranted) {
+        return "Give Storage permission to Download Song";
+      }
     }
     if (_localPath == "") {
       _localPath = await platform.invokeMethod("getDownloadDirectory");
     }
-    if (checkIfDownloading(task.name)) {
+    if (checkIfDownloading(task.link)) {
       return "Already Downloading/Paused";
     }
-    if (isExist(task.name)) {
-      return "Already Downloaded to Internal/Download";
+    if (await isExist(task.name)) {
+      return "Already Downloaded to Internal/Music";
     }
 
     task.taskId = await FlutterDownloader.enqueue(
@@ -91,9 +96,9 @@ class DownloadService {
         savedDir: _localPath,
         showNotification: true,
         fileName: task.name,
-        openFileFromNotification: true);
+        openFileFromNotification: !isApi29);
     _tasks.insert(0, task);
-    return "Downloading to Internal/Download";
+    return "Downloading to Internal/Music";
   }
 
   static void cancelDownload(TaskInfo task) async {
@@ -111,7 +116,7 @@ class DownloadService {
     String newTaskId = await FlutterDownloader.resume(taskId: task.taskId);
     task.taskId = newTaskId;
     _tasks.remove(task);
-    _tasks.add(task);
+    _tasks.insert(0, task);
   }
 
   static void retryDownload(TaskInfo task) async {
@@ -132,13 +137,16 @@ class DownloadService {
     _streamController.add(task);
   }
 
-  static bool isExist(String filename) {
+  static Future<bool> isExist(String filename) async {
+    if (isApi29) {
+      return await platform.invokeMethod("isExist", {"filename": filename});
+    }
     return File(_localPath + "/" + filename).existsSync();
   }
 
-  static bool checkIfDownloading(String name) {
+  static bool checkIfDownloading(String link) {
     TaskInfo task =
-        _tasks?.firstWhere((task) => task.name == name, orElse: () => null);
+        _tasks?.firstWhere((task) => task.link == link, orElse: () => null);
     if (task == null) {
       return false;
     }
