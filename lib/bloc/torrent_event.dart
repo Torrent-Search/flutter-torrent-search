@@ -22,12 +22,21 @@ abstract class TorrentEvent extends Equatable {
 }
 
 class TorrentSearch extends TorrentEvent {
-  final String base_url, endpoint, query;
+  final String baseUrl, endpoint, query;
 
-  TorrentSearch(this.base_url, this.endpoint, this.query);
+  TorrentSearch(this.baseUrl, this.endpoint, this.query);
 
   @override
-  List<Object> get props => [base_url, query, query];
+  List<Object> get props => [baseUrl, query, query];
+}
+
+class TorrenteNextPage extends TorrentEvent {
+  final String baseUrl, endpoint, query;
+
+  TorrenteNextPage(this.baseUrl, this.endpoint, this.query);
+
+  @override
+  List<Object> get props => [baseUrl, query, query];
 }
 
 class TorrentRecent extends TorrentEvent {

@@ -33,8 +33,10 @@ import 'package:torrentsearch/network/model/music/Playlist.dart';
 import 'package:torrentsearch/network/model/music/Songs.dart';
 
 Future<List<TorrentInfo>> getApiResponse(
-    String BASE_URL, String endpoint, String query) async {
-  http.Response response = await http.get('$BASE_URL$endpoint?search=$query');
+    String BASE_URL, String endpoint, String query,
+    {int page = 0}) async {
+  http.Response response = await http
+      .get('$BASE_URL$endpoint?search=$query&page=${page == 0 ? "" : page}');
   if (response.statusCode == 200) {
     return List<TorrentInfo>.from(
         json.decode(response.body)["data"].map((x) => TorrentInfo.fromJson(x)));

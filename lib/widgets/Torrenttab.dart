@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:torrentsearch/bloc/torrent_bloc.dart';
+import 'package:torrentsearch/network/ApiConstants.dart';
 import 'package:torrentsearch/network/model/TorrentInfo.dart';
 import 'package:torrentsearch/utils/PreferenceProvider.dart';
 
@@ -72,11 +73,36 @@ class _TorrenttabState extends State<Torrenttab>
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: BouncingScrollPhysics(),
-                  itemCount: state.list.length,
+                  itemCount: extraSupported()
+                      ? state.list.length + 1
+                      : state.list.length,
                   itemBuilder: (BuildContext ctxt, int index) {
+                    if (extraSupported()) {
+                      if (index >= state.list.length) {
+                        return state.maxReached
+                            ? Container(height: 0.0, width: 0.0)
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 15.0),
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    _torrentBloc.add(TorrenteNextPage(baseUrl,
+                                        widget.endpoint, widget.query));
+                                  },
+                                  child: const Text(
+                                    "Load More",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                ),
+                              );
+                      }
+                    }
+
                     final TorrentInfo info = state.list[index];
-                    return TorrentCard(info //[index]
-                        );
+                    return TorrentCard(info);
                   },
                 );
               } else if (state is TorrentError) {
@@ -97,6 +123,24 @@ class _TorrenttabState extends State<Torrenttab>
   @override
   void dispose() {
     _torrentBloc.dispose();
+
     super.dispose();
+  }
+
+  bool extraSupported() {
+    switch (widget.endpoint) {
+      case ApiConstants.ENDPOINT_1337x:
+      case ApiConstants.HORRIBLESUBS_ENDPOINT:
+      case ApiConstants.KICKASS_ENDPOINT:
+      case ApiConstants.LIMETORRENTS_ENDPOINT:
+      case ApiConstants.NYAA_ENDPOINT:
+      case ApiConstants.SKYTORRENT_ENDPOINT:
+      case ApiConstants.TORRENTDOWNLOADS_ENDPOINT:
+      case ApiConstants.ZOOQLE:
+        return true;
+
+      default:
+        return false;
+    }
   }
 }

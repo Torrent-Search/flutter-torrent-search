@@ -28,8 +28,8 @@ class TorrentInitial extends TorrentState {
 
 class TorrentLoaded extends TorrentState {
   final List<TorrentInfo> list;
-
-  TorrentLoaded(this.list);
+  final bool maxReached;
+  TorrentLoaded(this.list, {this.maxReached = false});
 
   @override
   List<Object> get props => [list];

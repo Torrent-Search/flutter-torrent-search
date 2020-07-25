@@ -26,15 +26,37 @@ part 'torrent_event.dart';
 part 'torrent_state.dart';
 
 class TorrentBloc extends Bloc<TorrentEvent, TorrentState> {
+  int page = 0;
   TorrentBloc() : super(TorrentInitial());
 
   @override
-  Stream<TorrentState> mapEventToState(TorrentEvent event,) async* {
+  Stream<TorrentState> mapEventToState(
+    TorrentEvent event,
+  ) async* {
+    if (event is TorrenteNextPage) {
+      page++;
+      try {
+        List<TorrentInfo> list = await getApiResponse(
+            event.baseUrl, event.endpoint, event.query,
+            page: page);
+
+        if (state is TorrentLoaded) {
+          list = (state as TorrentLoaded).list + list;
+        }
+
+        yield TorrentLoaded(list);
+      } on Exception catch (e) {
+        if (state is TorrentLoaded) {
+          yield TorrentLoaded((state as TorrentLoaded).list, maxReached: true);
+        }
+      }
+    }
     if (event is TorrentSearch) {
       yield TorrentInitial();
       try {
         List<TorrentInfo> list =
-        await getApiResponse(event.base_url, event.endpoint, event.query);
+            await getApiResponse(event.baseUrl, event.endpoint, event.query);
+
         yield TorrentLoaded(list);
       } on Exception catch (e) {
         yield TorrentError(e);
