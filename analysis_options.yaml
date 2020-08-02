@@ -1,0 +1,9 @@
+include: package:lint/analysis_options.yaml
+
+analyzer:
+  errors:
+    unused_import: error
+    missing_required_param: error
+    prefer_const_constructors_in_immutables: error
+    unused_local_variable: error
+    prefer_const_constructors: error

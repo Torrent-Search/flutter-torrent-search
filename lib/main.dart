@@ -1,325 +1,121 @@
-/*
- *     Copyright (C) 2020 by Tejas Patil <tejasvp25@gmail.com>
- *
- *     torrentsearch is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     torrentsearch is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with torrentsearch.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info/device_info.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:torrentsearch/pages/About.dart';
-import 'package:torrentsearch/pages/AlbumInformation.dart';
-import 'package:torrentsearch/pages/AllMusic.dart';
-import 'package:torrentsearch/pages/AllRecents.dart';
-import 'package:torrentsearch/pages/DownloadInfo.dart';
-import 'package:torrentsearch/pages/FavouriteTorrents.dart';
-import 'package:torrentsearch/pages/Home.dart';
-import 'package:torrentsearch/pages/MusicInformation.dart';
-import 'package:torrentsearch/pages/MusicResult.dart';
-import 'package:torrentsearch/pages/PlaylistInformation.dart';
-import 'package:torrentsearch/pages/RecentInformation.dart';
-import 'package:torrentsearch/pages/SearchHistory.dart';
-import 'package:torrentsearch/pages/Settings.dart';
-import 'package:torrentsearch/pages/SplashScreen.dart';
-import 'package:torrentsearch/pages/TermsandConditions.dart';
-import 'package:torrentsearch/pages/TorrentResult.dart';
-import 'package:torrentsearch/utils/DownloadService.dart';
-import 'package:torrentsearch/utils/FadeRouteBuilder.dart';
-import 'package:torrentsearch/utils/PreferenceProvider.dart';
-import 'package:torrentsearch/utils/Preferences.dart';
-import 'package:torrentsearch/utils/Themes.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torrentsearch/core/bloc/styles_bloc.dart';
+import 'package:torrentsearch/core/pages/splash_screen.dart';
+import 'package:torrentsearch/core/routes/routes.gr.dart';
+import 'package:torrentsearch/core/utils/method_channel_utils.dart';
+import 'package:torrentsearch/core/utils/preferences.dart';
+import 'package:torrentsearch/features/torrent/data/database/database_helper.dart';
+import 'package:torrentsearch/features/torrent/data/datasources/torrent_api_source.dart';
+import 'package:torrentsearch/injector.dart';
 
-import 'database/DatabaseHelper.dart';
-
-void main() async {
-  await FlutterDownloader.initialize(debug: false);
-  runApp(MyApp());
-}
-
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  return Future<void>.value();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initInjector();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp();
+  static String appVersion;
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  final PreferenceProvider preferenceProvider = PreferenceProvider();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FirebaseAnalytics analytics = FirebaseAnalytics();
-  final Firestore _db = Firestore.instance;
-  final FirebaseMessaging _fcm = FirebaseMessaging();
-  final Preferences _preferences = Preferences();
-  RemoteConfig _remoteConfig;
+  final StylesBloc _stylesBloc = StylesBloc();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
-  final DatabaseHelper dbhelper = DatabaseHelper();
-  static const platform = const MethodChannel('flutter.native/helper');
-  bool _permissionReady;
-  int accent;
-  ReceivePort _port = ReceivePort();
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
-  }
-
+  bool nightMode = false;
   @override
   void initState() {
     super.initState();
-    getCurrentAppTheme();
-    _firebaseMessaging.configure(
-        onMessage: (Map<String, dynamic> message) async {
-          openTgChannel(message['data']['tg']);
-        },
-        onLaunch: (Map<String, dynamic> message) async {
-          openTgChannel(message['data']['tg']);
-        },
-        onResume: (Map<String, dynamic> message) async {
-          openTgChannel(message['data']['tg']);
-        },
-        onBackgroundMessage: myBackgroundMessageHandler);
-    _saveDeviceToken();
-    _initializeRemoteConfig();
-    _bindBackgroundIsolate();
-    _permissionReady = false;
-    _init();
-    FlutterDownloader.registerCallback(downloadCallback);
+    _initPrefs();
+    _initRemoteConfig();
+    _initFirebaseMessaging();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => preferenceProvider,
-      child: Consumer<PreferenceProvider>(
-        builder:
-            (BuildContext context, PreferenceProvider value, Widget child) {
+    return BlocProvider<StylesBloc>(
+      create: (context) => _stylesBloc,
+      child: BlocBuilder<StylesBloc, StylesState>(
+        bloc: _stylesBloc,
+        builder: (BuildContext context, StylesState state) {
           return MaterialApp(
-            home: SplashScreen(),
-            onGenerateRoute: (RouteSettings settings) {
-              dynamic args = settings.arguments;
-              switch (settings.name) {
-                case '/home':
-                  return FadeRouteBuilder(page: Home());
-                  break;
-                case '/result':
-                  return FadeRouteBuilder(page: TorrentResult(args));
-                  break;
-                case '/recentinfo':
-                  return FadeRouteBuilder(page: RecentInformation(args));
-                  break;
-                case '/allrecents':
-                  return FadeRouteBuilder(page: AllRecents(args));
-                  break;
-                case '/settings':
-                  return FadeRouteBuilder(page: Settings());
-                  break;
-                case '/favourite':
-                  return FadeRouteBuilder(page: FavouriteTorrents(type: args));
-                  break;
-                case '/history':
-                  return FadeRouteBuilder(page: SearchHistory(type: args));
-                  break;
-                case '/tac':
-                  return FadeRouteBuilder(page: TermsandConditions());
-                  break;
-                case '/about':
-                  return FadeRouteBuilder(page: About());
-                  break;
-                case '/musicinfo':
-                  if (args.runtimeType == String) {
-                    return FadeRouteBuilder(
-                        page: MusicInformation(
-                      pid: args,
-                    ));
-                  }
-                  return FadeRouteBuilder(
-                      page: MusicInformation(
-                    songdata: args,
-                  ));
-                  break;
-                case '/albuminfo':
-                  return FadeRouteBuilder(
-                      page: AlbumInformation(
-                    id: args,
-                  ));
-                  break;
-                case '/playlistinfo':
-                  return FadeRouteBuilder(
-                      page: PlaylistInformation(
-                    id: args,
-                  ));
-                  break;
-                case '/allmusic':
-                  return FadeRouteBuilder(
-                      page: AllMusic(args['list'], args['type']));
-                  break;
-                case '/musicresult':
-                  return FadeRouteBuilder(page: MusicResult(args));
-                  break;
-                case '/downloads':
-                  return FadeRouteBuilder(page: DownloadInfo());
-                  break;
-              }
-            },
+            debugShowCheckedModeBanner: false,
+            theme: state.themeData,
+            home: const SplashScreen(),
+            builder: ExtendedNavigator.builder(
+              router: Router(),
+              initialRoute: "/",
+              builder: (_, extendedNav) {
+                return Theme(
+                  data: state.themeData,
+                  child: extendedNav,
+                );
+              },
+            ),
             navigatorObservers: [
               FirebaseAnalyticsObserver(analytics: analytics)
             ],
-            debugShowCheckedModeBanner: false,
-            theme: Themes.themeData(preferenceProvider.darkTheme, context,
-                color: preferenceProvider.useSystemAccent
-                    ? preferenceProvider.systemaccent
-                    : preferenceProvider.accent),
           );
         },
       ),
     );
   }
 
+  Future<void> _initPrefs() async {
+    _stylesBloc.add(
+      StylesEvent(
+          darkMode: Preferences.nightMode(),
+          colorCode: Preferences.accentCode()),
+    );
+  }
+
   @override
   void dispose() {
-    dbhelper.close();
-    _unbindBackgroundIsolate();
-    DownloadService.dispose();
+    _stylesBloc.dispose();
+    DatabaseHelper().close();
     super.dispose();
   }
 
-  void _saveDeviceToken() async {
-    final AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
-
-    String uid = info.androidId;
-    String fcmToken = await _fcm.getToken();
-
-    if (fcmToken != null) {
-      if (!await _preferences.getIsTokenSaved()) {
-        var tokens = _db
-            .collection('users')
-            .document(uid)
-            .collection('tokens')
-            .document(fcmToken);
-
-        await tokens
-            .setData({
-              'uid': uid,
-              'token': fcmToken,
-              'createdAt': FieldValue.serverTimestamp(), // optional
-              'platform': Platform.operatingSystem // optional
-            })
-            .then((value) => _preferences.setIsTokenSaved(true))
-            .catchError((err) {
-              _preferences.setIsTokenSaved(false);
-            });
-      }
-    }
-  }
-
-  void _initializeRemoteConfig() async {
-    _remoteConfig = await RemoteConfig.instance;
-    try {
-      _remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: false));
-      _remoteConfig.setDefaults(<String, dynamic>{
-        'baseUrl': 'https://torr-scraper.herokuapp.com/',
-      });
-      _remoteConfig.fetch(expiration: Duration(hours: 12));
-      _remoteConfig.activateFetched();
-      preferenceProvider.remoteconfig = _remoteConfig;
-    } on FetchThrottledException catch (_) {}
-  }
-
-  Future<bool> _checkPermission() async {
-    PermissionStatus permission = await Permission.storage.status;
-    if (permission != PermissionStatus.granted) {
-      permission = await Permission.storage.request();
-      if (permission.isGranted == PermissionStatus.granted) {
-        return true;
-      }
-    } else {
-      return true;
-    }
-    return false;
-  }
-
-  void openTgChannel(String url) async {
-    if (await canLaunch(url)) {
-      launch(url);
-    }
-  }
-
-  void _bindBackgroundIsolate() {
-    bool isSuccess = IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    if (!isSuccess) {
-      _unbindBackgroundIsolate();
-      _bindBackgroundIsolate();
-      return;
-    }
-    _port.listen((dynamic data) {
-      String id = data[0];
-      DownloadTaskStatus status = data[1];
-      int progress = data[2];
-
-      DownloadService.updateData(id, status, progress);
+  Future<void> _initRemoteConfig() async {
+    MyApp.appVersion = await MethodChannelUtils.getVersion();
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    remoteConfig.setDefaults({
+      'baseUrl': "https://torr-scraper.herokuapp.com/",
     });
+    try {
+      await remoteConfig.fetch(expiration: const Duration(hours: 6));
+      await remoteConfig.activateFetched();
+      sl<TorrentApiDataSource>().baseUrl = remoteConfig.getString("baseUrl");
+    } on FetchThrottledException {}
   }
 
-  void _unbindBackgroundIsolate() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
+  void _initFirebaseMessaging() {
+    firebaseMessaging.configure(
+      onMessage: firebaseMessagingCallback,
+      onLaunch: firebaseMessagingCallback,
+      onResume: firebaseMessagingCallback,
+      onBackgroundMessage: myBackgroundMessageHandler,
+    );
   }
 
-  void getCurrentAppTheme() async {
-    preferenceProvider.tacaccepted =
-        await preferenceProvider.preferences.getTacAccepted();
-    preferenceProvider.darkTheme =
-        await preferenceProvider.preferences.getTheme();
-    preferenceProvider.useSystemAccent =
-        await preferenceProvider.preferences.UseSystemAccent();
-    Color fromChannel = Color(await platform.invokeMethod("getSystemAccent"));
-    Color compatilbleToFlutter = Color.fromRGBO(
-        fromChannel.red, fromChannel.green, fromChannel.blue, 1.0);
-    preferenceProvider.systemaccent = compatilbleToFlutter.value;
-    preferenceProvider.accent =
-        await preferenceProvider.preferences.getAccent();
+  static Future<dynamic> myBackgroundMessageHandler(
+      Map<String, dynamic> message) async {
+    return Future<void>.value();
   }
 
-  Future<void> _init() async {
-    DownloadService.isApi29 = await platform.invokeMethod("isApi29");
-    DownloadService.downloadString = "Internal/Music";
-    if (!DownloadService.isApi29) {
-      _permissionReady = await _checkPermission();
-    } else {
-      _permissionReady = true;
-    }
-    if (_permissionReady) {
-      DownloadService.localPath =
-          await platform.invokeMethod("getDownloadDirectory");
-    }
-    DownloadService.loadTasks(await FlutterDownloader.loadTasks());
+  static Future<dynamic> firebaseMessagingCallback(
+      Map<String, dynamic> message) {
+    MethodChannelUtils.openLink(message['data']['tg'] as String);
   }
 }
