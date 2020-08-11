@@ -1,5 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:torrentsearch/features/torrent/data/datasources/torrent_api_source.dart';
 import 'package:torrentsearch/features/torrent/data/repositories/torrent_repository_impl.dart';
@@ -40,5 +41,5 @@ Future<void> initInjector() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton(() => Dio());
 }

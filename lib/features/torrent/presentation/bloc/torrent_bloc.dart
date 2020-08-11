@@ -44,8 +44,8 @@ class TorrentBloc extends Bloc<TorrentEvent, TorrentState> {
 //    }
     if (event is GetTorrentEvent) {
       try {
-        final List<Torrent> torrents =
-            await getTorrent.call(Param(event.endpoint, event.query));
+        final List<Torrent> torrents = await getTorrent
+            .call(Param(event.endpoint, event.query, pageNo: event.pageNo));
         yield TorrentLoaded(torrents);
       } on Exception catch (e) {
         yield TorrentErrorState(e);
@@ -57,7 +57,6 @@ class TorrentBloc extends Bloc<TorrentEvent, TorrentState> {
       try {
         final List<Torrent> torrents = await getTorrent
             .call(Param(event.endpoint, event.query, pageNo: event.pageNo));
-
         yield TorrentLoaded(
             (currentState as TorrentLoaded).torrents + torrents);
       } on Exception {

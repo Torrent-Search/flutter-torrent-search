@@ -19,9 +19,10 @@ class GetRecentEvent extends TorrentEvent {
 
 class GetTorrentEvent extends TorrentEvent {
   final String endpoint, query;
-  const GetTorrentEvent(this.endpoint, this.query);
+  final int pageNo;
+  const GetTorrentEvent(this.endpoint, this.query, {this.pageNo = 0});
   @override
-  List<Object> get props => [endpoint, query];
+  List<Object> get props => [endpoint, query, pageNo];
 }
 
 class GetNextPageEvent extends TorrentEvent {

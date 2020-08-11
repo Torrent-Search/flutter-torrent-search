@@ -162,7 +162,7 @@ class _SettingState extends State<Settings> {
     final TextStyle textStyle =
         Theme.of(context).textTheme.subtitle1.copyWith(letterSpacing: 2.0);
     return FutureBuilder(
-      future: getAppVersion(sl<TorrentApiDataSource>().baseUrl),
+      future: getAppVersion(sl<TorrentApiDataSource>().getBaseUrl()),
       builder:
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.hasData &&

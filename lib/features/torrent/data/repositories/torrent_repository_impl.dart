@@ -10,7 +10,7 @@ class TorrentRepositoryImpl implements TorrentRepository {
   @override
   Future<List<TorrentInfoModel>> getTorrent(
       String endpoint, String query, int pageNo) async {
-    return _dataSource.getTorrent(endpoint, query);
+    return _dataSource.getTorrent(endpoint, query, pageNo: pageNo);
   }
 
 //  @override

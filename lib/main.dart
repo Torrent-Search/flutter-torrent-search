@@ -96,7 +96,8 @@ class _MyAppState extends State<MyApp> {
     try {
       await remoteConfig.fetch(expiration: const Duration(hours: 6));
       await remoteConfig.activateFetched();
-      sl<TorrentApiDataSource>().baseUrl = remoteConfig.getString("baseUrl");
+      sl<TorrentApiDataSource>().setBaseUrl(remoteConfig.getString("baseUrl"));
+      // ignore: empty_catches
     } on FetchThrottledException {}
   }
 
@@ -117,5 +118,6 @@ class _MyAppState extends State<MyApp> {
   static Future<dynamic> firebaseMessagingCallback(
       Map<String, dynamic> message) {
     MethodChannelUtils.openLink(message['data']['tg'] as String);
+    return Future<void>.value();
   }
 }

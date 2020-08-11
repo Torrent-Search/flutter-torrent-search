@@ -7,3 +7,4 @@ analyzer:
     prefer_const_constructors_in_immutables: error
     unused_local_variable: error
     prefer_const_constructors: error
+    argument_type_not_assignable: warning

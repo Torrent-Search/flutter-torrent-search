@@ -1,42 +1,66 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
 import 'package:torrentsearch/core/errors/internal_server_error.dart';
 import 'package:torrentsearch/core/errors/no_content_found.dart';
 import 'package:torrentsearch/features/torrent/data/models/torrent_info_model.dart';
 
-//  ignore_for_file:argument_type_not_assignable
-
 abstract class TorrentApiDataSource {
-  Future<List<TorrentInfoModel>> getTorrent(String endpoint, String query);
+  Future<List<TorrentInfoModel>> getTorrent(String endpoint, String query,
+      {int pageNo = 0});
 //  Future<Recent> getRecent();
 //  Future<List<RecentData>> getSpecificRecent({bool movie, bool longlist});
   Future<String> getMagnet(String endpoint, String url);
+  void setBaseUrl(String baseUrl);
+  String getBaseUrl();
 //  Future<RecentDataWithImdbModel> getRecentData(String imdbCode);
-  String baseUrl;
+
 }
 
 class TorrentApiDataSourceImpl implements TorrentApiDataSource {
-  final http.Client client;
-  @override
-  String baseUrl;
+  final Dio _dioClient;
 
-  TorrentApiDataSourceImpl(this.client) {
-    baseUrl = 'https://torr-scraper.herokuapp.com/';
+  TorrentApiDataSourceImpl(this._dioClient) {
+    _dioClient.options.baseUrl = 'http://torr-scraper.herokuapp.com/';
+  }
+
+  // ignore: use_setters_to_change_properties
+  @override
+  void setBaseUrl(String baseUrl) {
+    _dioClient.options.baseUrl = baseUrl;
+  }
+
+  @override
+  String getBaseUrl() {
+    return _dioClient.options.baseUrl;
   }
 
   @override
   Future<List<TorrentInfoModel>> getTorrent(String endpoint, String query,
       {int pageNo = 0}) async {
-    final http.Response res = await client.get(
-        '$baseUrl$endpoint?search=$query&page=${pageNo == 0 ? "" : pageNo}');
+    final Response<String> res = await _dioClient.get<String>(
+      endpoint,
+      queryParameters: {
+        'search': query,
+        'page': pageNo,
+      },
+    );
     if (res.statusCode == 204) {
       throw NoContentFoundException();
     } else if (res.statusCode == 500) {
       throw InternalServerError();
     }
-    return List<TorrentInfoModel>.from((json.decode(res.body)["data"])
-        .map((x) => TorrentInfoModel.fromJson(x)));
+    // if (endpoint == Constants.SKYTORRENT_ENDPOINT) {
+    //   return List<TorrentInfoModel>.from((json
+    //           .decode(json.encode(res.data.toString()))["data"]
+    //           .toString() as List)
+    //       .map((x) => TorrentInfoModel.fromJson(x as Map<String, dynamic>)));
+    // }
+    //  ignore:argument_type_not_assignable
+
+    return List<TorrentInfoModel>.from((json.decode(res.data)["data"] as List)
+        .map((x) => TorrentInfoModel.fromJson(x as Map<String, dynamic>)));
   }
 
 //  @override
@@ -67,13 +91,18 @@ class TorrentApiDataSourceImpl implements TorrentApiDataSource {
 
   @override
   Future<String> getMagnet(String endpoint, String url) async {
-    final http.Response res = await client.get('$baseUrl$endpoint?url=$url');
+    final Response<String> res = await _dioClient.get(
+      endpoint,
+      queryParameters: {
+        'url': url,
+      },
+    );
     if (res.statusCode == 204) {
       throw NoContentFoundException();
     } else if (res.statusCode == 500) {
       throw InternalServerError();
     }
-    return (json.decode(res.body))["magnet"].toString();
+    return jsonDecode(res.data)["magnet"].toString();
   }
 
 //  @override

@@ -11,7 +11,6 @@ class ExceptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(exception.toString());
     switch (exception.runtimeType) {
       case NoContentFoundException:
         return noContentFound(context);

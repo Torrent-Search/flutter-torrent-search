@@ -20,13 +20,19 @@ class TorrentTab extends StatefulWidget {
 class _TorrentTabState extends State<TorrentTab>
     with AutomaticKeepAliveClientMixin {
   TorrentBloc _torrentBloc;
-  int pageNo = 0;
+  int pageNo = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _torrentBloc = sl<TorrentBloc>();
-    _torrentBloc.add(GetTorrentEvent(widget.endpoint, widget.query));
+    _torrentBloc
+        .add(GetTorrentEvent(widget.endpoint, widget.query, pageNo: pageNo));
   }
 
   @override
@@ -80,8 +86,6 @@ class _TorrentTabState extends State<TorrentTab>
           return torrentLoaded.torrents.length;
         }
         break;
-      default:
-        return torrentLoaded.torrents.length;
     }
     return torrentLoaded.torrents.length;
   }
