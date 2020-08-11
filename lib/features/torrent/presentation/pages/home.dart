@@ -81,6 +81,8 @@ class _HomeState extends State<Home> {
                     icon: const Icon(Icons.search, color: Colors.white),
                     onPressed: () {
                       if (_searchEditingController.text != "") {
+                        DatabaseHelper().insert(
+                            history: History(_searchEditingController.text));
                         ExtendedNavigator.of(context).push(
                           "/result",
                           arguments: TorrentResultArguments(
