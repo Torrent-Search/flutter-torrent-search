@@ -56,7 +56,6 @@ class _SettingState extends State<Settings> {
           width: width,
           child: ListView(
             shrinkWrap: true,
-            scrollDirection: Axis.vertical,
             children: <Widget>[
               _buildDecoration(),
               ListTile(
@@ -114,7 +113,6 @@ class _SettingState extends State<Settings> {
           children: <Widget>[
             Container(
               child: MaterialColorPicker(
-                allowShades: true,
                 selectedColor: BlocProvider.of<StylesBloc>(context)
                     .state
                     .themeData

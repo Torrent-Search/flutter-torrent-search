@@ -141,7 +141,6 @@ class _HomeState extends State<Home> {
         decoration: decoration,
         cursorColor: accentColor,
         keyboardType: TextInputType.text,
-        maxLines: 1,
         textAlign: TextAlign.center,
         textInputAction: TextInputAction.search,
         onSubmitted: (term) {
