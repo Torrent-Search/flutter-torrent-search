@@ -1,8 +1,15 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 
 class Torrent extends Equatable {
+  /// @param [name] Name of the Torrent File/Folder
+  /// @param [url] Direct Url of the Torrent File/Folder info page
+  /// @param [seeders] Seeders of the Torrent File/Folder
+  /// @param [leechers] Leechers of the Torrent File/Folder
+  /// @param [uploadDate] Uploade Data of the Torrent File/Folder
+  /// @param [size] Size of the Torrent File/Folder
+  /// @param [uploader] Uploader of the Torrent File/Folder
+  /// @param [magner] Magner Link of the Torrent File/Folder
+  /// @param [website] Name of Website from Where the Torrent Info is Scraped
   const Torrent({
     this.name,
     this.torrentUrl,
@@ -27,11 +34,7 @@ class Torrent extends Equatable {
   final String website;
   final String torrentFileUrl;
 
-  factory Torrent.fromRawJson(String str) =>
-      Torrent.fromJson(json.decode(str) as Map<String, dynamic>);
-
-  String toRawJson() => json.encode(toJson());
-
+  /// Return [Torrent] from Json
   factory Torrent.fromJson(Map<String, dynamic> json) => Torrent(
         name: json["name"] as String,
         torrentUrl: json["torrent_url"] as String,
@@ -82,6 +85,7 @@ class Torrent extends Equatable {
         'website': website,
       };
 
+  /// Return [Torrent] from Json
   factory Torrent.fromMap(Map<String, dynamic> json) => Torrent(
         name: json["name"] as String,
         torrentUrl: json["torrent_url"] as String,

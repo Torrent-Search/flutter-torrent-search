@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 
+///* APP CONSTANTS
 class Constants {
   // ignore_for_file: constant_identifier_names
 
-  static const String CHANNEL = "com.tejas.torrentsearch";
-
+  ///* API Constants [Endpoints]
   static const String ENDPOINT_1337x = "api/1337x";
   static const String ENDPOINT_MG_1337x = "api/1337x_mg";
   static const String SKYTORRENT_ENDPOINT = "api/skytorrents";
@@ -32,6 +32,7 @@ class Constants {
 
   static const String IMDB = "api/imdb";
 
+  ///* List of Indexer Titles
   static const List<String> INDEXERS = [
     "1337x",
     "Eztv",
@@ -46,6 +47,9 @@ class Constants {
     "Nyaa",
     "Horriblesubs"
   ];
+
+  ///*  Method Channel Constants
+  static const String CHANNEL = "com.tejas.torrentsearch";
 
   static const MethodChannel METHOD_CHANNEL = MethodChannel(CHANNEL);
 

@@ -15,6 +15,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
+    /// Call [decideRoute] after 2 Seconds
     Timer(const Duration(seconds: 2), () => decideRoute(context));
   }
 
@@ -41,8 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  // ignore: avoid_void_async
-  void decideRoute(BuildContext context) async {
+  /// Decide which Screen To Show Depending of the Terms and Condition Statues [tacStatus]
+  void decideRoute(BuildContext context) {
     final bool tac = Preferences.tacStatus();
     if (tac) {
       ExtendedNavigator.of(context).popAndPush("/home");

@@ -16,12 +16,16 @@ import 'package:torrentsearch/injector.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  ///* Inject Dependancies
   await initInjector();
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp();
+
+  ///*  [appVersion] holds the Current App Version
   static String appVersion;
 
   @override
@@ -33,12 +37,17 @@ class _MyAppState extends State<MyApp> {
   final StylesBloc _stylesBloc = StylesBloc();
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
-  bool nightMode = false;
   @override
   void initState() {
     super.initState();
+
+    /// Initializae Preferences
     _initPrefs();
+
+    /// Configure Remote Config
     _initRemoteConfig();
+
+    /// Configure Firebase Messaging
     _initFirebaseMessaging();
   }
 
@@ -72,6 +81,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  /// Initialize Preferences and Queue StylesEvent According to Shared Preferences
   Future<void> _initPrefs() async {
     _stylesBloc.add(
       StylesEvent(
@@ -82,25 +92,38 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    /// Dispose Styles Bloc
     _stylesBloc.dispose();
+
+    /// Dispose Styles Bloc
     DatabaseHelper().close();
     super.dispose();
   }
 
+  /// Configure Firebase Remote Config Modeule
   Future<void> _initRemoteConfig() async {
+    /// [App Version] sets current app version
+    /// [MethodChannelUtils.getVersion()] return the Current App Version
     MyApp.appVersion = await MethodChannelUtils.getVersion();
+
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
+
+    /// Set Remote Config Defaults
     remoteConfig.setDefaults({
       'baseUrl': "https://torr-scraper.herokuapp.com/",
     });
     try {
+      /// Fetch and Activate Remote Configs
       await remoteConfig.fetch(expiration: const Duration(hours: 6));
       await remoteConfig.activateFetched();
+
+      ///* Set base url in TorrentApiSource
       sl<TorrentApiDataSource>().setBaseUrl(remoteConfig.getString("baseUrl"));
       // ignore: empty_catches
     } on FetchThrottledException {}
   }
 
+  /// Configure Firebase Messaging Modeule
   void _initFirebaseMessaging() {
     firebaseMessaging.configure(
       onMessage: firebaseMessagingCallback,
@@ -110,13 +133,16 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  /// Background Callback handler for Firebase Messaging
   static Future<dynamic> myBackgroundMessageHandler(
       Map<String, dynamic> message) async {
     return Future<void>.value();
   }
 
+  /// Callback handler for Firebase Messaging
   static Future<dynamic> firebaseMessagingCallback(
       Map<String, dynamic> message) {
+    /// Open Tg Channel on Notification
     MethodChannelUtils.openLink(message['data']['tg'] as String);
     return Future<void>.value();
   }

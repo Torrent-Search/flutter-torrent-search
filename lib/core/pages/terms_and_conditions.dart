@@ -142,6 +142,8 @@ class TermsandConditions extends StatelessWidget {
     );
   }
 
+  ///* Return [Text] depending on given [msg] string and [color] color
+  /// if [color] is null Derive color from [Theme.brightness]
   Widget _buildMultiplineText(BuildContext ctx, String msg, {Color color}) {
     if (color == null) {
       final Brightness br = Theme.of(ctx).brightness;

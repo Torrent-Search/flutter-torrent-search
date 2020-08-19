@@ -1,6 +1,15 @@
 import 'package:torrentsearch/features/torrent/domain/entities/torrent.dart';
 
 class TorrentInfoModel extends Torrent {
+  /// @param [name] Name of the Torrent File/Folder
+  /// @param [url] Direct Url of the Torrent File/Folder info page
+  /// @param [seeders] Seeders of the Torrent File/Folder
+  /// @param [leechers] Leechers of the Torrent File/Folder
+  /// @param [uploadDate] Uploade Data of the Torrent File/Folder
+  /// @param [size] Size of the Torrent File/Folder
+  /// @param [uploader] Uploader of the Torrent File/Folder
+  /// @param [magner] Magner Link of the Torrent File/Folder
+  /// @param [website] Name of Website from Where the Torrent Info is Scraped
   const TorrentInfoModel(
       {String name,
       String torrentUrl,
@@ -24,6 +33,7 @@ class TorrentInfoModel extends Torrent {
             website: website,
             torrentFileUrl: torrentFileUrl);
 
+  /// Returns [TorrentInfoModel] from Json
   factory TorrentInfoModel.fromJson(Map<String, dynamic> json) =>
       TorrentInfoModel(
         name: json["name"] as String,

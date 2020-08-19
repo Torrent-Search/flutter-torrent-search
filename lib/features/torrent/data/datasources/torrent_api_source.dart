@@ -6,6 +6,7 @@ import 'package:torrentsearch/core/errors/internal_server_error.dart';
 import 'package:torrentsearch/core/errors/no_content_found.dart';
 import 'package:torrentsearch/features/torrent/data/models/torrent_info_model.dart';
 
+/// Base Class for TorrentApiDataSource
 abstract class TorrentApiDataSource {
   Future<List<TorrentInfoModel>> getTorrent(String endpoint, String query,
       {int pageNo = 0});
@@ -22,20 +23,27 @@ class TorrentApiDataSourceImpl implements TorrentApiDataSource {
   final Dio _dioClient;
 
   TorrentApiDataSourceImpl(this._dioClient) {
+    /// Sets Default [baseUrl] for [_dioClient]
     _dioClient.options.baseUrl = 'http://torr-scraper.herokuapp.com/';
   }
 
+  /// Sets @param[baseUrl] as [_dioClient.options.baseUrl]
   // ignore: use_setters_to_change_properties
   @override
   void setBaseUrl(String baseUrl) {
     _dioClient.options.baseUrl = baseUrl;
   }
 
+  /// Returns [_dioClient.options.baseUrl]
   @override
-  String getBaseUrl() {
-    return _dioClient.options.baseUrl;
-  }
+  String getBaseUrl() => _dioClient.options.baseUrl;
 
+  /// Returns [Future<List<TorrentInfoModel>>]
+  /// Throws [NoContentFoundException] if Response.statusCode is 204
+  /// Throws [InternalServerError] if Response.statusCode is 500
+  /// @param endpoint API ENDPOINT
+  /// @param query Query(Search) string
+  /// @param pageNo Requested Page No
   @override
   Future<List<TorrentInfoModel>> getTorrent(String endpoint, String query,
       {int pageNo = 0}) async {
@@ -89,6 +97,11 @@ class TorrentApiDataSourceImpl implements TorrentApiDataSource {
 //    return RecentModel.fromJson(json.decode(res.body));
 //  }
 
+  /// Returns [Future<String>] [TORRENT MAGNET LINK]
+  /// Throws [NoContentFoundException] if Response.statusCode is 204
+  /// Throws [InternalServerError] if Response.statusCode is 500
+  /// @param endpoint API ENDPOINT
+  /// @param url Url String string
   @override
   Future<String> getMagnet(String endpoint, String url) async {
     final Response<String> res = await _dioClient.get(

@@ -32,6 +32,7 @@ class _SettingState extends State<Settings> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
+    /// subtitle1[TextStyle] with Letter Spacing 2.0
     final TextStyle textStyle =
         Theme.of(context).textTheme.subtitle1.copyWith(letterSpacing: 2.0);
 
@@ -99,6 +100,7 @@ class _SettingState extends State<Settings> {
     );
   }
 
+  ///* Return [ExpansionTile] with Accent Color Picker and Dark Mode Switch
   Widget _buildDecoration() {
     final TextStyle textStyle =
         Theme.of(context).textTheme.subtitle1.copyWith(letterSpacing: 2.0);
@@ -156,6 +158,11 @@ class _SettingState extends State<Settings> {
     );
   }
 
+  ///* Returns [FutureBuilder]
+  /// Compares Current App Version with The Latest Vaersion
+  /// Code Obtained From Server
+  /// Renders [ExpansionTile] if Latest Version is Available
+  /// Otherwise Renders [Container]
   Widget _buildUpdateTile() {
     final TextStyle textStyle =
         Theme.of(context).textTheme.subtitle1.copyWith(letterSpacing: 2.0);

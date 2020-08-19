@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+///*  Default [primaryColor] and [accentColor]
 const Color primaryColor = Colors.deepPurpleAccent;
 const Color accentColor = Colors.deepPurpleAccent;
 
+///* Darl ThemeData
 final ThemeData dark = ThemeData.dark().copyWith(
   primaryColor: primaryColor,
   accentColor: accentColor,
@@ -46,6 +48,7 @@ final ThemeData dark = ThemeData.dark().copyWith(
   textSelectionHandleColor: Colors.white,
 );
 
+///* Light ThemeData
 final ThemeData light = ThemeData.light().copyWith(
   primaryColor: primaryColor,
   accentColor: accentColor,
@@ -87,6 +90,7 @@ final ThemeData light = ThemeData.light().copyWith(
 );
 
 abstract class Styles {
+  ///* Return [ThemeData] according to [darkMode] and [color]
   static ThemeData themeData({bool darkMode, int color}) {
     if (darkMode) {
       return dark.copyWith(

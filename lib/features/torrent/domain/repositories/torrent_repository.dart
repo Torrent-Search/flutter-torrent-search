@@ -1,5 +1,6 @@
 import 'package:torrentsearch/features/torrent/domain/entities/torrent.dart';
 
+/// [Base Class] for [TorrentRepository]
 abstract class TorrentRepository {
   Future<List<Torrent>> getTorrent(String endpoint, String query, int pageNo);
 //  Future<Recent> getRecents();

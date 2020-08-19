@@ -11,6 +11,7 @@ class ExceptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// return Widget According to the type of [exception]
     switch (exception.runtimeType) {
       case NoContentFoundException:
         return noContentFound(context);
@@ -26,6 +27,7 @@ class ExceptionWidget extends StatelessWidget {
     }
   }
 
+  ///* Returns [Widget] for [NoContentFoundException]
   Widget noContentFound(BuildContext context) {
     final textStyle =
         Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0);
@@ -47,6 +49,7 @@ class ExceptionWidget extends StatelessWidget {
     ));
   }
 
+  ///* Returns [Widget] for [InternalServerError]
   Widget serverError(BuildContext context) {
     final textStyle =
         Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0);
@@ -68,6 +71,7 @@ class ExceptionWidget extends StatelessWidget {
     ));
   }
 
+  ///* Returns [Widget] for [SocketException]
   Widget noInternet(BuildContext context) {
     final textStyle =
         Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0);
@@ -91,6 +95,7 @@ class ExceptionWidget extends StatelessWidget {
     ));
   }
 
+  ///* Returns [Widget] for [Exception]
   Widget unExpectedError(BuildContext context) {
     final textStyle =
         Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0);

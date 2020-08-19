@@ -8,9 +8,12 @@ import 'package:torrentsearch/features/torrent/domain/entities/torrent.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
-
   factory DatabaseHelper() => _instance;
+
+  /// Table [torrent_info] Name
   String tableTorrentInfo = "torrent_info";
+
+  ///Table [torrent_info] columns
   String columnName = "name";
   String columnUrl = "url";
   String columnSeeders = "seeders";
@@ -22,7 +25,10 @@ class DatabaseHelper {
   String columnWebsite = "website";
   String columnTorrentFile = "torrenfileurl";
 
+  /// Table [history] Name
   String tableHistory = "history";
+
+  /// Table [history] Column
   String columnSearchHistory = "search";
 
   static Database _db;
@@ -40,11 +46,11 @@ class DatabaseHelper {
   Future<Database> initDb() async {
     final String databasesPath = await getDatabasesPath();
     final String path = join(databasesPath, 'torrent.db');
-
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
-    return db;
+    // ignore: unnecessary_await_in_return
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
+  /// OnCreate Callback method for [openDatabase]
   void _onCreate(Database db, int newVersion) async {
     await db.execute(
         'CREATE TABLE IF NOT EXISTS $tableTorrentInfo($columnName TEXT UNIQUE, $columnUrl TEXT'
@@ -56,6 +62,7 @@ class DatabaseHelper {
         'CREATE TABLE IF NOT EXISTS $tableHistory($columnSearchHistory TEXT UNIQUE)');
   }
 
+  /// Insert [Torrent] or [History] and Return lastInserted Column id
   Future<int> insert({Torrent torrentinfo, History history}) async {
     final Database dbClient = await db;
     int result = 0;
@@ -70,6 +77,8 @@ class DatabaseHelper {
     return result;
   }
 
+  /// Query all [Torrent] or [History] depending on Param
+  /// and Add Result to Stream
   Future<void> queryAll(
       {bool torrentinfo = false, bool history = false}) async {
     final Database dbClient = await db;
@@ -100,6 +109,7 @@ class DatabaseHelper {
     return count > 0;
   }
 
+  /// Query all [Torrent] or [History] depending on Param and Return Count
   Future<int> getCount({bool torrentinfo = false, bool history = false}) async {
     final Database dbClient = await db;
     int count;
@@ -114,6 +124,7 @@ class DatabaseHelper {
     return count;
   }
 
+  /// Return [Torrent] where [columnName] is @param[name]
   Future<Torrent> getTorrentInfo(String name) async {
     final Database dbClient = await db;
     final List<Map> result = await dbClient
@@ -125,6 +136,7 @@ class DatabaseHelper {
     return null;
   }
 
+  /// Return int where [columnSearchHistory] is @param[name] and return Count
   Future<int> getHistoyCount(String name) async {
     final Database dbClient = await db;
     final List<Map> result = await dbClient.query(tableHistory,
@@ -136,6 +148,7 @@ class DatabaseHelper {
     return 0;
   }
 
+  /// Return int where [columnName] is @param[name] and return Count
   Future<int> getTorrentInfoCount(String name) async {
     final Database dbClient = await db;
     final List<Map> result = await dbClient
