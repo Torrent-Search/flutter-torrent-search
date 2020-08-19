@@ -24,7 +24,7 @@ class TorrentApiDataSourceImpl implements TorrentApiDataSource {
 
   TorrentApiDataSourceImpl(this._dioClient) {
     /// Sets Default [baseUrl] for [_dioClient]
-    _dioClient.options.baseUrl = 'http://torr-scraper.herokuapp.com/';
+    _dioClient.options.baseUrl = 'https://torr-scraper-mirror-2.herokuapp.com/';
   }
 
   /// Sets @param[baseUrl] as [_dioClient.options.baseUrl]
