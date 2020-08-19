@@ -73,11 +73,11 @@ class About extends StatelessWidget {
                         ),
                         TextSpan(
                           text:
-                              "https://github.com/Tejasvp25/flutter-torrent-search",
+                              "https://github.com/Torrent-Search/flutter-torrent-search",
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               MethodChannelUtils.openLink(
-                                  "https://github.com/Tejasvp25/flutter-torrent-search");
+                                  "https://github.com/Torrent-Search/flutter-torrent-search");
                             },
                           style: textStyleWithColor,
                         ),
@@ -88,11 +88,11 @@ class About extends StatelessWidget {
                         ),
                         TextSpan(
                           text:
-                              "https://github.com/Tejasvp25/torr_scraper_golang",
+                              "https://github.com/Torrent-Search/torr_scraper_golang",
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               MethodChannelUtils.openLink(
-                                  "https://github.com/Tejasvp25/torr_scraper_golang");
+                                  "https://github.com/Torrent-Search/torr_scraper_golang");
                             },
                           style: textStyleWithColor,
                         ),
