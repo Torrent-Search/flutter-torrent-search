@@ -1,16 +1,34 @@
-# torrentsearch
 
-A new Flutter application.
+Torrent Search (for Android)
+=======================
+![GitHub](https://img.shields.io/github/license/Tejasvp25/flutter-torrent-search)    ![GitHub last commit](https://img.shields.io/github/last-commit/Tejasvp25/flutter-torrent-search)
 
-## Getting Started
+Features
+--------
 
-This project is a starting point for a Flutter application.
+* Free and Open Source Software - no ads
+* Several themes such as Night mode (i.e. dark theme)
+* Search Multple Torrent Sites
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Building
+--------
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Torrent Search is built using Flutter SDK. Several dependencies are required (and
+listed in pubspec.yaml).
+
+License
+-------
+
+Torrent Search is licensed under the GPL, version 3. A copy of the license is
+included in [LICENSE](LICENSE).
+
+
+Credits
+------
+
+* [Git-Ashwin](https://github.com/Git-Ashwin/Downloader) for the [Downloader]([https://pub.dev/packages/downloader](https://pub.dev/packages/downloader))
+* Google Firebase
+* [Shared Preference]([https://pub.dev/packages/shared_preferences](https://pub.dev/packages/shared_preferences)) by Flutter Team
+* [Sqflite]([https://pub.dev/packages/sqflite](https://pub.dev/packages/sqflite)) by [Alex Tekartik]([https://github.com/tekartik/sqflite](https://github.com/tekartik/sqflite)) 
+
