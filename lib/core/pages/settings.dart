@@ -44,9 +44,13 @@ class _SettingState extends State<Settings> {
           style: textStyle.copyWith(
             fontWeight: FontWeight.bold,
             letterSpacing: 3.0,
+            color: Theme.of(context).accentColor,
           ),
         ),
         centerTitle: true,
+        iconTheme: Theme.of(context).iconTheme.copyWith(
+              color: Theme.of(context).accentColor,
+            ),
       ),
       body: SafeArea(
         child: Container(
